@@ -188,10 +188,21 @@ module.exports = async (req, res) => {
     if(newHp > 0) {
         newMatchStats.board[to.y][to.x].hp = newHp
     } else {
-        // TODO: if base is destroyed, end game
+        // if base is destroyed, end game
         const type = newMatchStats.board[to.y][to.x].type
         newMatchStats.board[to.y][to.x] = {}
-        if(type === "base") newMatchStats.winner = playerNumber
+        if(type === "base") { // game ended
+            newMatchStats.winner = playerNumber
+            const players = db.collection("players")
+            await Promise.all([
+                players.updateOne({address:newMatchStats.player0}, {
+                    $unset:{activeGame:""}
+                }),
+                players.updateOne({address:newMatchStats.player1}, {
+                    $unset:{activeGame:""}
+                })
+            ])
+        }
     }
     // Update fuel
     fuel -= fromAttributes.attackFuelCost;
