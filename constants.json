@@ -10,8 +10,7 @@
           {},
           {
             "type": "base",
-            "owner": 1,
-            "hp": 100
+            "owner": 1
           },
           {},
           {},
@@ -23,28 +22,23 @@
           {},
           {
             "type": "destroyer",
-            "owner": 1,
-            "hp": 100
+            "owner": 1
           },
           {
             "type": "scout",
-            "owner": 1,
-            "hp": 100
+            "owner": 1
           },
           {
             "type": "fighter",
-            "owner": 1,
-            "hp": 100
+            "owner": 1
           },
           {
             "type": "carrier",
-            "owner": 1,
-            "hp": 100
+            "owner": 1
           },
           {
             "type": "gunship",
-            "owner": 1,
-            "hp": 100
+            "owner": 1
           },
           {},
           {}
@@ -109,28 +103,23 @@
           {},
           {
             "type": "destroyer",
-            "owner": 0,
-            "hp": 100
+            "owner": 0
           },
           {
             "type": "scout",
-            "owner": 0,
-            "hp": 100
+            "owner": 0
           },
           {
             "type": "fighter",
-            "owner": 0,
-            "hp": 100
+            "owner": 0
           },
           {
             "type": "carrier",
-            "owner": 0,
-            "hp": 100
+            "owner": 0
           },
           {
             "type": "gunship",
-            "owner": 0,
-            "hp": 100
+            "owner": 0
           },
           {},
           {}
@@ -142,13 +131,47 @@
           {},
           {
             "type": "base",
-            "owner": 0,
-            "hp": 100
+            "owner": 0
           },
           {},
           {},
           {},
           {}
         ]
-      ]
+      ],
+    "spaceshipsAttributes": {
+      "base": {
+        "hp": 100
+      },
+      "fighter": {
+        "attack": 25,
+        "hp": 60,
+        "moveFuelCost": 2,
+        "attackFuelCost": 3
+      },
+      "scout": {
+        "attack": 15,
+        "hp": 50,
+        "moveFuelCost": 1,
+        "attackFuelCost": 3
+      },
+      "carrier": {
+        "repairPercent": 25,
+        "hp": 50,
+        "moveFuelCost": 2,
+        "repairFuelCost": 2
+      },
+      "gunship": {
+        "attack": 30,
+        "hp": 60,
+        "moveFuelCost": 2,
+        "attackFuelCost": 3
+      },
+      "destroyer": {
+        "attack": 20,
+        "hp": 100,
+        "moveFuelCost": 2,
+        "attackFuelCost": 3
+      }
+    }
     }

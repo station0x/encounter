@@ -2,7 +2,9 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
 import * as Realm from "realm-web"
+import Queue from 'promise-queue'
 
+const axiosQueue = new Queue(1)
 const realm = new Realm.App({ id: process.env.VUE_APP_REALM_APP_ID });
 const credentials = Realm.Credentials.anonymous();
 
@@ -35,6 +37,25 @@ export default new Vuex.Store({
             matchDoc.state = matchDoc.board
             delete matchDoc.board
             state.matchState = matchDoc
+        },
+        setBoard(state, board) {
+            const matchState = {...state.matchState}
+            matchState.state = board;
+            state.matchState = matchState;
+        },
+        endTurn(state) {
+            const matchState = {...state.matchState}
+            matchState.playerTurn = matchState.playerTurn === 0 ? 1 : 0;
+            state.matchState = matchState;
+        },
+        setMyFuel(state, newFuel) {
+            const matchState = {...state.matchState}
+            if(matchState.playerIs === 0) {
+                matchState.fuel0 = newFuel
+            } else if(matchState.playerIs === 1) {
+                matchState.fuel1 = newFuel
+            }
+            state.matchState = matchState;
         }
     },
     actions: {
@@ -85,9 +106,13 @@ export default new Vuex.Store({
             commit("setMatchState", intialMatchDoc)
             const watcher = matches.watch({ids:[Realm.BSON.ObjectId(state.matchId)]})
             for await (const change of watcher) {
-                const { fullDocument: matchDoc } = change;
-                commit("setMatchState", matchDoc)
+                const { fullDocument: matchDoc } = change
+                if(axiosQueue.getQueueLength() === 0 && axiosQueue.getPendingLength() === 0) commit("setMatchState", matchDoc)
             }
+        },
+        enqueue(_, axiosPromise) {
+            console.log(axiosPromise)
+            axiosQueue.add(() => axiosPromise)
         }
     },
     plugins: [

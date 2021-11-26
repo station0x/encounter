@@ -36,6 +36,14 @@ module.exports = async (req, res) => {
     if(playerDoc.address === enemyDoc.address) throw new Error("player can't play against himself")
     if(playerDoc.activeMatch) throw new Error("player already in match")
     const matches = db.collection("matches")
+    const board = CONSTANTS.initialBoardState.map(row => row.map(col => {
+        if(!col.type) {
+            return col
+        }
+
+        col.hp = CONSTANTS.spaceshipsAttributes[col.type].hp
+        return col
+    }))
     const result = await matches.insertOne({
         player0: enemyDoc.address,
         player1: playerDoc.address,
@@ -46,7 +54,7 @@ module.exports = async (req, res) => {
         numTurns: 0,
         winner: undefined,
         history: [],
-        board: CONSTANTS.initialBoardState
+        board
     })
     const id = result.insertedId
 
