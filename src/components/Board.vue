@@ -265,6 +265,9 @@ export default {
 						newState[y][x].hp = newHp
 						const fuelCost = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].repairFuelCost
 						this.$store.commit('setMyFuel', this.myFuel - fuelCost)
+						if(this.myFuel - fuelCost === 0) {
+							this.$store.commit('endTurn')
+						}
 						this.$store.commit('setBoard', newState)
 						this.$store.dispatch('enqueue', axios.get('/api/boardAction', {
 							params:{
@@ -296,6 +299,9 @@ export default {
 				}
 				const fuelCost = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].attackFuelCost
 				this.$store.commit('setMyFuel', this.myFuel - fuelCost)
+				if(this.myFuel - fuelCost === 0) {
+					this.$store.commit('endTurn')
+				}
 				this.$store.commit('setBoard', newState)
 				this.$store.dispatch('enqueue', axios.get('/api/boardAction', {
 					params:{
