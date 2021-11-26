@@ -18,8 +18,6 @@
           {}
         ],
         [
-          {},
-          {},
           {
             "type": "destroyer",
             "owner": 1
@@ -29,7 +27,11 @@
             "owner": 1
           },
           {
-            "type": "fighter",
+            "type": "destroyer",
+            "owner": 1
+          },
+          {
+            "type": "scout",
             "owner": 1
           },
           {
@@ -37,11 +39,23 @@
             "owner": 1
           },
           {
+            "type": "fighter",
+            "owner": 1
+          },
+
+          {
             "type": "gunship",
             "owner": 1
           },
-          {},
-          {}
+          {
+            "type": "fighter",
+            "owner": 1
+          },
+
+          {
+            "type": "gunship",
+            "owner": 1
+          }
         ],
         [
           {},
@@ -99,8 +113,6 @@
           {}
         ],
         [
-          {},
-          {},
           {
             "type": "destroyer",
             "owner": 0
@@ -110,7 +122,11 @@
             "owner": 0
           },
           {
-            "type": "fighter",
+            "type": "destroyer",
+            "owner": 0
+          },
+          {
+            "type": "scout",
             "owner": 0
           },
           {
@@ -118,11 +134,23 @@
             "owner": 0
           },
           {
+            "type": "fighter",
+            "owner": 0
+          },
+
+          {
             "type": "gunship",
             "owner": 0
           },
-          {},
-          {}
+          {
+            "type": "fighter",
+            "owner": 0
+          },
+
+          {
+            "type": "gunship",
+            "owner": 0
+          }
         ],
         [
           {},
