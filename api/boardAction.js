@@ -166,9 +166,9 @@ module.exports = async (req, res) => {
     if(fuel === 0) { // if remaining fuel is 0, automatically end turn
         newMatchStats.playerTurn = newMatchStats.playerTurn === 0 ? 1 : 0
         if(playerNumber === 0) {
-            newMatchStats.fuel1 += Math.min(newMatchStats.fuel1 + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
+            newMatchStats.fuel1 = Math.min(newMatchStats.fuel1 + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
         } else if(playerNumber === 1) {
-            newMatchStats.fuel0 += Math.min(newMatchStats.fuel0 + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
+            newMatchStats.fuel0 = Math.min(newMatchStats.fuel0 + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
         }
     }
 
@@ -214,9 +214,9 @@ module.exports = async (req, res) => {
     if(fuel === 0) { // if remaining fuel is 0, automatically end turn
         newMatchStats.playerTurn = newMatchStats.playerTurn === 0 ? 1 : 0
         if(playerNumber === 0) {
-            newMatchStats.fuel1 += Math.min(newMatchStats.fuel1 + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
+            newMatchStats.fuel1 = Math.min(newMatchStats.fuel1 + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
         } else if(playerNumber === 1) {
-            newMatchStats.fuel0 += Math.min(newMatchStats.fuel0 + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
+            newMatchStats.fuel0 = Math.min(newMatchStats.fuel0 + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
         }
     }
 
@@ -246,9 +246,9 @@ module.exports = async (req, res) => {
     if(fuel === 0) { // if remaining fuel is 0, automatically end turn
         newMatchStats.playerTurn = newMatchStats.playerTurn === 0 ? 1 : 0
         if(playerNumber === 0) {
-            newMatchStats.fuel1 += Math.min(newMatchStats.fuel1 + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
+            newMatchStats.fuel1 = Math.min(newMatchStats.fuel1 + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
         } else if(playerNumber === 1) {
-            newMatchStats.fuel0 += Math.min(newMatchStats.fuel0 + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
+            newMatchStats.fuel0 = Math.min(newMatchStats.fuel0 + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
         }
     }
 
