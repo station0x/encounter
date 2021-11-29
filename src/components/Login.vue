@@ -1,11 +1,9 @@
 <template>
-    <div>
-    <section>
+    <section class="onboarding">
         <b-button @click="connectMetamask">Connect Metamask</b-button>
         <b-button @click="connectAsGuest">What? Play as Guest</b-button>
         
     </section>
-    </div>
 </template>
 
 <script>
@@ -39,5 +37,7 @@ export default {
 </script>
 
 <style scoped>
-
+.onboarding {
+    background: red;
+}
 </style>
