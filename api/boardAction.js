@@ -129,8 +129,9 @@ module.exports = async (req, res) => {
    const client = await clientPromise;
    const db = client.db()
    const address = getAddress(req.query.signature)
-   const from = JSON.parse(req.query.from);
-   const to = JSON.parse(req.query.to);
+   const from = JSON.parse(req.query.from)
+   const to = JSON.parse(req.query.to)
+   const action = req.query.action
    const matches = db.collection("matches")
    const matchDoc = (await matches.find({_id:ObjectId(req.query.matchId)}).limit(1).toArray())[0];
    if(!matchDoc) throw new Error("Match does not exist")
@@ -146,7 +147,7 @@ module.exports = async (req, res) => {
    let fuel = playerNumber === 0? matchDoc.fuel0: matchDoc.fuel1
    const fromAttributes = CONSTANTS.spaceshipsAttributes[board[from.y][from.x].type]
 
-   if(req.query.action === "move") {
+   if(action === "move") {
     if(isOccupied(board, to.x, to.y)) throw new Error("Destination is already occupied")
     if(!isLegalMove(board, from.x, from.y, to.x, to.y)) throw new Error("Illegal move")
     if(!fromAttributes.moveFuelCost || fuel < fromAttributes.moveFuelCost) throw new Error("Insufficient fuel to move")
@@ -172,10 +173,13 @@ module.exports = async (req, res) => {
         }
     }
 
+    // Update Match History
+    newMatchStats.history.push({from, to, action})
+
     await matches.updateOne({_id:matchDoc._id}, {
         $set:newMatchStats
     })
-   } else if(req.query.action === "attack") {
+   } else if(action === "attack") {
     if(!isOccupied(board, to.x, to.y)) throw new Error("Destination is not occupied")
     if(!isLegalAttack(board, from.x, from.y, to.x, to.y)) throw new Error("Illegal attack")
     if(!fromAttributes.attackFuelCost || fuel < fromAttributes.attackFuelCost) throw new Error("Insufficient fuel to attack")
@@ -220,10 +224,13 @@ module.exports = async (req, res) => {
         }
     }
 
+    // Update Match History
+    newMatchStats.history.push({from, to, action})
+
     await matches.updateOne({_id:matchDoc._id}, {
         $set:newMatchStats
     })
-   } else if(req.query.action === "repair") {
+   } else if(action === "repair") {
     if(!isOccupied(board, to.x, to.y)) throw new Error("Destination is not occupied")
     if(!isLegalRepair(board, from.x, from.y, to.x, to.y)) throw new Error("Illegal repair")
     if(!fromAttributes.repairFuelCost || fuel < fromAttributes.repairFuelCost) throw new Error("Insufficient fuel to repair")
@@ -251,6 +258,9 @@ module.exports = async (req, res) => {
             newMatchStats.fuel0 = Math.min(newMatchStats.fuel0 + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
         }
     }
+
+    // Update Match History
+    newMatchStats.history.push({from, to, action})
 
     await matches.updateOne({_id:matchDoc._id}, {
         $set:newMatchStats
