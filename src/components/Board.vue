@@ -1,6 +1,6 @@
 <template>
 	<center>
-		{{isMyTurn}} {{myFuel}}
+		{{isMyTurn}} {{myFuel}} {{enemyFuel}}
 		<div id="hex-grid" :class="{rotate: playerIs === 1}">
 			<div class="row" v-for="(row, y) in ourState" :key="y">
 				<div @click="select(col, x, y)" class="col" v-for="(col, x) in row" :key="x">
