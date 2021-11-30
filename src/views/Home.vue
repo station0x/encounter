@@ -16,11 +16,15 @@ export default {
     Match
   },
   methods: {
-	logout() {
-		this.$store.dispatch('disconnect')
-	}
+    logout() {
+      this.$store.dispatch('disconnect')
+    }
   },
-  
+  created() {
+    if(this.$store.state.matchState && (this.$store.state.matchState.winner === 0 || this.$store.state.matchState.winner === 1) && !this.$store.state.interval) {
+      this.$store.dispatch("startPolling")
+    }
+  }
 
 }
 </script>

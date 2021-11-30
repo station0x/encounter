@@ -8,7 +8,6 @@ const axiosQueue = new Queue(1)
 const realm = new Realm.App({ id: process.env.VUE_APP_REALM_APP_ID });
 const credentials = Realm.Credentials.anonymous();
 
-console.log(realm)
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -30,6 +29,7 @@ export default new Vuex.Store({
         },
         setActiveMatchId(state, matchId) {
             state.matchId = matchId
+            if(!matchId) state.matchState = undefined
         },
         setMatchState(state, matchDoc) {
             matchDoc._id =  matchDoc._id.toString()
@@ -56,6 +56,11 @@ export default new Vuex.Store({
                 matchState.fuel1 = newFuel
             }
             state.matchState = matchState;
+        },
+        setWinner (state, playerNumber) {
+            const matchState = {...state.matchState}
+            matchState.winner = playerNumber;
+            state.matchState = matchState;
         }
     },
     actions: {
@@ -76,18 +81,16 @@ export default new Vuex.Store({
                 clearInterval(state.intervalId)
             }
             const intervalFunc = async function(){
-                if(!state.matchId){
-                    const res = await axios.get('/api/getActiveMatchId', {
-                        params:{
-                            signature: state.signature
-                        }
-                    })
-                    if(res.data.matchId && state.matchId !== res.data.matchId) {
-                        dispatch("startRealm")
+                const res = await axios.get('/api/getActiveMatchId', {
+                    params:{
+                        signature: state.signature
                     }
-                    commit('setActiveMatchId', res.data.matchId)   
-                    console.log(res.data.matchId)
+                })
+                if(res.data.matchId && state.matchId !== res.data.matchId) {
+                    dispatch("startRealm")
+                    dispatch("stopPolling")
                 }
+                commit('setActiveMatchId', res.data.matchId)   
             }
             intervalFunc()
             const intervalId = setInterval(intervalFunc, 5000)
@@ -97,7 +100,7 @@ export default new Vuex.Store({
             clearInterval(state.intervalId)
             commit('setIntervalId')
         },
-        async startRealm({state, commit}) {
+        async startRealm({state, commit, dispatch}) {
             await realm.logIn(credentials);
             const mongodb = realm.currentUser.mongoClient("mongodb-atlas");
             const matches = mongodb.db("encounter").collection("matches");
@@ -108,10 +111,10 @@ export default new Vuex.Store({
             for await (const change of watcher) {
                 const { fullDocument: matchDoc } = change
                 if(axiosQueue.getQueueLength() === 0 && axiosQueue.getPendingLength() === 0) commit("setMatchState", matchDoc)
+                if(matchDoc.winner === 0 || matchDoc.winner === 1) break;
             }
         },
         enqueue(_, axiosPromise) {
-            console.log(axiosPromise)
             axiosQueue.add(() => axiosPromise)
         }
     },
