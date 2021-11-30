@@ -178,7 +178,7 @@
         "attackFuelCost": 3
       },
       "scout": {
-        "attack": 15,
+        "attack": 10,
         "hp": 50,
         "moveFuelCost": 1,
         "attackFuelCost": 3
@@ -197,7 +197,7 @@
       },
       "destroyer": {
         "attack": 20,
-        "hp": 100,
+        "hp": 90,
         "moveFuelCost": 2,
         "attackFuelCost": 3
       }
