@@ -27,6 +27,12 @@ module.exports = async (req, res) => {
     } else if(playerNumber === 1) {
         newMatchStats.fuel0 = Math.min(newMatchStats.fuel0 + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
     }
+    // Update Match History
+    newMatchStats.history.push({from: {}, to: {}, action: 'endTurn', playerNumber})
+
+    // Increment Turn Number
+    newMatchStats.turnNum = newMatchStats.turnNum + 1
+
     await matches.updateOne({_id:matchDoc._id}, {
         $set:newMatchStats
     })

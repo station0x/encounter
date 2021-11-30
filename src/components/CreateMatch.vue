@@ -21,7 +21,6 @@ export default {
                 }
             })
             this.invitationLink = window.location.origin + '/play/' + res.data.inviteLink
-            console.log(res.data, this.$store.state.address)
         }
     }
 }

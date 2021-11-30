@@ -41,19 +41,25 @@ module.exports = async (req, res) => {
             return col
         }
 
+        col.lastAttackTurn = 0
+        col.lastRepairTurn = 0
+
         col.hp = CONSTANTS.spaceshipsAttributes[col.type].hp
         return col
     }))
     const result = await matches.insertOne({
         player0: enemyDoc.address,
         player1: playerDoc.address,
+        player0Alias: '',
+        player1Alias: '',
         fuel0: CONSTANTS.initFuel,
         fuel1: CONSTANTS.initFuel,
+        turnNum: 1,
         playerTurn: Math.floor(Math.random() * 2),
         lastTurnTimestamp: undefined,
-        numTurns: 0,
         winner: undefined,
         history: [],
+        initialBoard: board,
         board
     })
     const id = result.insertedId

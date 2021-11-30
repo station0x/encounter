@@ -7,9 +7,10 @@
             :playerTurn="$store.state.matchState.playerTurn"
             :fuel0="$store.state.matchState.fuel0"    
             :fuel1="$store.state.matchState.fuel1"    
+            :turnNum="$store.state.matchState.turnNum"
         />
-        <h1 v-else-if="$store.state.matchState.playerIs === $store.state.matchState.winner">You Won</h1>
-        <h1 v-else-if="$store.state.matchState.playerIs !== $store.state.matchState.winner">You Lost</h1>
+        <h1 v-else-if="$store.state.matchState.playerIs === $store.state.matchState.winner">You Won <b-button @click="continueBtn">Continue</b-button></h1>
+        <h1 v-else-if="$store.state.matchState.playerIs !== $store.state.matchState.winner">You Lost <b-button @click="continueBtn">Continue</b-button></h1>
     </div>
 </template>
 
@@ -23,6 +24,11 @@ export default {
     },
     components: {
         Board
+    },
+    methods: {
+        async continueBtn () {
+            await this.$store.dispatch("startPolling")
+        }
     }
 }
 </script>
