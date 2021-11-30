@@ -6,7 +6,11 @@ import VueRouter from 'vue-router'
 import Home from './views/Home.vue'
 import Link from './views/Link.vue'
 import 'buefy/dist/buefy.css'
+import VueClipboard from 'vue-clipboard2'
+import Gravatar from 'vue-gravatar'
 
+Vue.component('v-gravatar', Gravatar)
+Vue.use(VueClipboard)
 Vue.use(VueRouter)
 Vue.use(Buefy)
 

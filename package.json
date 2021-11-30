@@ -16,6 +16,8 @@
     "promise-queue": "^2.2.5",
     "realm-web": "^1.5.1",
     "vue": "^2.6.11",
+    "vue-clipboard2": "^0.3.3",
+    "vue-gravatar": "^1.4.1",
     "vue-router": "^3.5.3",
     "vuex": "^3.6.2"
   },
