@@ -1,12 +1,28 @@
 <template>
-    <section class="onboarding">
-        <b-button @click="connectMetamask">Connect Metamask</b-button>
-        <b-button @click="connectAsGuest">What? Play as Guest</b-button>
-        
-    </section>
+    <div class="section onboarding">
+        <center>
+            <img
+            src="/logo.png"
+            alt="Station0x Encounter Logo"
+            />
+            <div class="onboarding-wrapper">
+                <div class="minor-text">Welcome to</div>
+                <div class="major-text">Station ZeroX: Encounter</div>
+                <div class="divider"></div>
+                
+                <b-button class="primary-btn" @click="connectMetamask">Connect Metamask</b-button>
+                <b-button class="secondary-btn" @click="connectAsGuest">Play as a guest</b-button>
+
+                <div @click="openGameGuideModal" class="clickable-text">Game Guide  <b-icon icon="alert-circle" size="is-small" style="margin-left: 5px"></b-icon></div>
+                <div class="info-text">This is a beta testing version use it on your own risk</div>
+                
+            </div>
+        </center>
+    </div>
 </template>
 
 <script>
+import GameGuide from '@/components/GameGuide.vue'
 import { ethers } from 'ethers'
 
 export default {
@@ -28,6 +44,11 @@ export default {
             const signer = ethers.Wallet.createRandom()
             const signature = await signer.signMessage("Station Labs Login")
             this.$store.dispatch('connect', {signature, address: await signer.getAddress()})
+        },
+        openGameGuideModal() {
+            this.$buefy.modal.open({
+                component: GameGuide
+            })
         }
     },
     computed: {
@@ -37,7 +58,36 @@ export default {
 </script>
 
 <style scoped>
-.onboarding {
-    background: red;
+.primary-btn {
+    background: #F88C09;
+    color: black;
+    border: none;
+    width: 230px;
+    height: 60px;
+    margin: 15px;
+    padding: 15px;
+    font-size: 19px;
+    font-weight: 500;
+    transition: 250ms ease-in-out;
+}
+.primary-btn:hover {
+    background: #f39a2d;
+}
+.secondary-btn {
+    background: rgba(248, 140, 9, 0.1);
+    border: 1px solid #F88C09;
+    color: #F88C09;
+    width: 230px;
+    height: 60px;
+    margin: 15px;
+    padding: 15px;
+    font-size: 19px;
+    font-weight: 500;
+    transition: 250ms ease-in-out;
+}
+.secondary-btn:hover {
+    color: black;
+    background: #F88C09;
+    border: #F88C09;
 }
 </style>
