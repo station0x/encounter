@@ -1,26 +1,37 @@
 <template>
-	<center>
-		{{isMyTurn}} {{myFuel}} {{enemyFuel}}
-		<div id="hex-grid" :class="{rotate: playerIs === 1}">
-			<div class="row" v-for="(row, y) in ourState" :key="y">
-				<div @click="select(col, x, y)" class="col" v-for="(col, x) in row" :key="x">
-					<img :class="hexClasses(x,y)" src="hex.png" height="80px"/>
-					<img :class="pieceClasses(col.owner, x, y)" :src="isLegalMove(x,y)? 'circle.png' : col.img" height="45px"/>
-					<div v-if="col.type" :class="{tooltip:true, rotate: playerIs === 1}">
-						<span class="attribute" v-for="(value, key) in getSpaceshipAttributes(col)" :key="key">
-						{{key}}: {{value}}
-						</span>
+	<div class="main-wrapper">
+		<div class="left">
+			<EnemyCard playerAddress="0x6BDD6Bb68Ec6927F56749b46746F0AFA7CdA9F3c"/>
+		</div>
+		<div class="middle">
+			<div id="hex-grid" :class="{rotate: playerIs === 1}">
+				<div class="row" v-for="(row, y) in ourState" :key="y">
+					<div @click="select(col, x, y)" class="col" v-for="(col, x) in row" :key="x">
+						<img :class="hexClasses(x,y)" src="hex.png" height="80px"/>
+						<img :class="pieceClasses(col.owner, x, y)" :src="col.img"/>
+						<img v-if="isLegalMove(x,y)" class="move-circle" src="circle.png"/>
+						<div v-if="col.type" :class="{tooltip:true, rotate: playerIs === 1}">
+							<span class="attribute" v-for="(value, key) in getSpaceshipAttributes(col)" :key="key">
+							{{key}}: {{value}}
+							</span>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-		<b-button v-if="isMyTurn" @click="endTurn">End Turn</b-button>
-	</center>
+		<div class="right">
+			<PlayerCard playerAddress="0x6BDD6Bb68Ec6927F56749b46746F0AFA7CdA9F3c"/>
+		</div>
+	</div>
+	<!-- <b-button v-if="isMyTurn" @click="endTurn">End Turn</b-button>
+	{{isMyTurn}} {{myFuel}} {{enemyFuel}} -->
 </template>
 
 <script>
 import axios from 'axios'
 import CONSTANTS from "../../constants.json"
+import PlayerCard from "@/components/PlayerCard.vue"
+import EnemyCard from "@/components/EnemyCard.vue"
 
 export default {
   name: 'Board',
@@ -29,6 +40,10 @@ export default {
 	return {
 		selected:undefined
 	}
+  },
+  components: {
+		PlayerCard,
+		EnemyCard
   },
   computed:{
 	  ourState () {
@@ -373,16 +388,18 @@ h1 {
 	margin: 0;
 }
 #hex-grid {
-	margin:0 auto;
-	width:auto;
+	margin-left: -56px !important;
+    width: fit-content;
+    margin: 0 auto;
+	min-width: 110%;
 }
 .row {
 	display: block;
 }
 .row:nth-child(even) {
-	transform:translateX(35px);
-	margin-top:-25px;
-	margin-bottom:-25px;
+	transform:translateX(52.5px);
+	margin-top:-37.5px;
+	margin-bottom:-37.5px;
 }
 .col {
 	display: inline;
@@ -391,7 +408,7 @@ h1 {
 .hex-parcel {
 	filter:invert();
 	opacity: 0.3;
-	height: 80px;
+	height: 120px;
 	cursor: pointer;
 }
 .col:hover .hex-parcel {
@@ -418,9 +435,18 @@ h1 {
 .col-piece {
 	position: absolute;
 	opacity: 1 !important;
-	left: 12.5px;
-	bottom: 17.5px;
+	left: 18.75px;
+	bottom: 26.25px;
+	height: 67.5px;
+}
+
+.move-circle {
+	position: absolute;
+	opacity: 1 !important;
+	left: 30px;
+	bottom: 40px;
 	height: 45px;
+	opacity: 0.6 !important;
 }
 .enemy {
 	filter: sepia(1) hue-rotate(270deg) saturate(100);
@@ -440,5 +466,37 @@ h1 {
 }
 .attribute {
 	display: block;
+}
+.main-wrapper {
+	border: 1px solid #797979;
+	height: 830px;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content: space-between;
+	align-items: stretch;
+	/* padding-top: 7.5vh; */
+}
+.left, .right {
+	flex-grow: 0;
+   	flex-shrink: 0;
+	flex-basis: 21.8%;
+	position: relative;
+}
+.middle {
+	flex-grow: 0;
+   	flex-shrink: 0;
+  	flex-basis: 50%;
+}
+.left {
+	order: 1;
+	border-right: 1px solid #797979;
+}
+.middle {
+	order: 2;
+}
+.right {
+	order: 3;
+	border-left: 1px solid #797979;
 }
 </style>

@@ -196,7 +196,7 @@
         "attackFuelCost": 3
       },
       "destroyer": {
-        "attack": 20,
+        "attack": 15,
         "hp": 90,
         "moveFuelCost": 2,
         "attackFuelCost": 3

@@ -16,7 +16,8 @@ export default new Vuex.Store({
         address: window.localStorage.getItem('address'),
         intervalId: undefined,
         matchId: undefined,
-        matchState: undefined
+        matchState: undefined,
+        loaded: false
     },
     getters: {},
     mutations: {
@@ -61,6 +62,9 @@ export default new Vuex.Store({
             const matchState = {...state.matchState}
             matchState.winner = playerNumber;
             state.matchState = matchState;
+        },
+        load (state) {
+            state.loaded = true
         }
     },
     actions: {
@@ -91,6 +95,10 @@ export default new Vuex.Store({
                     dispatch("stopPolling")
                 }
                 commit('setActiveMatchId', res.data.matchId)   
+
+                if(!res.data.matchId) {
+                    commit('load')
+                }
             }
             intervalFunc()
             const intervalId = setInterval(intervalFunc, 5000)
@@ -107,6 +115,7 @@ export default new Vuex.Store({
             const intialMatchDoc = await matches.findOne({_id:Realm.BSON.ObjectId(state.matchId)})
 
             commit("setMatchState", intialMatchDoc)
+            commit('load')
             const watcher = matches.watch({ids:[Realm.BSON.ObjectId(state.matchId)]})
             for await (const change of watcher) {
                 const { fullDocument: matchDoc } = change
