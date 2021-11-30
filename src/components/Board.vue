@@ -24,7 +24,7 @@ import CONSTANTS from "../../constants.json"
 
 export default {
   name: 'Board',
-  props:['state','playerIs', 'playerTurn', 'fuel0', 'fuel1'],
+  props:['state','playerIs', 'playerTurn', 'fuel0', 'fuel1', 'turnNum'],
   data() {
 	return {
 		selected:undefined
@@ -68,15 +68,17 @@ export default {
 		if(!this.selected || !this.isMyTurn) return false
 		const type = this.state[this.selected.y][this.selected.x].type
 		if(!type) return false
+		if(this.state[this.selected.y][this.selected.x].lastAttackTurn === this.turnNum) return false
 		const attributes = CONSTANTS.spaceshipsAttributes[type]
-		return this.myFuel >= attributes.attackFuelCost;
+		return this.myFuel >= attributes.attackFuelCost
 	  },
 	  canRepair() {
 		if(!this.selected || !this.isMyTurn) return false
 		const type = this.state[this.selected.y][this.selected.x].type
 		if(!type) return false
+		if(this.state[this.selected.y][this.selected.x].lastRepairTurn === this.turnNum) return false
 		const attributes = CONSTANTS.spaceshipsAttributes[type]
-		return this.myFuel >= attributes.repairFuelCost;
+		return this.myFuel >= attributes.repairFuelCost
 	  },
 	  legalMoves() {
 		  if(!this.selected || !this.isMyTurn || !this.canMove) {
@@ -268,6 +270,7 @@ export default {
 						if(this.myFuel - fuelCost === 0) {
 							this.$store.commit('endTurn')
 						}
+						newState[y][x].lastRepairTurn = this.turnNum
 						this.$store.commit('setBoard', newState)
 						this.$store.dispatch('enqueue', axios.get('/api/boardAction', {
 							params:{
@@ -295,6 +298,9 @@ export default {
 				if(newHp > 0) {
 					newState[y][x].hp = newHp
 				} else {
+					if(newState[y][x].type === "base") {
+						this.$store.commit('setWinner', this.playerIs)
+					}
 					newState[y][x] = {}
 				}
 				const fuelCost = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].attackFuelCost
@@ -302,6 +308,7 @@ export default {
 				if(this.myFuel - fuelCost === 0) {
 					this.$store.commit('endTurn')
 				}
+				newState[y][x].lastAttackTurn = this.turnNum
 				this.$store.commit('setBoard', newState)
 				this.$store.dispatch('enqueue', axios.get('/api/boardAction', {
 					params:{

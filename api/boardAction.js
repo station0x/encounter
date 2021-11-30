@@ -52,6 +52,15 @@ function isMyPiece(board, playerNumber, x ,y) {
     return board[y][x].owner === playerNumber
 }
 
+function canMakeAction(action, board, x, y, turnNum) {
+    if(action === 'attack') {
+        return board[y][x].lastAttackTurn !== turnNum
+    } else if(action === 'repair') {
+        return board[y][x].lastRepairTurn !== turnNum
+    }
+    return false
+}
+
 function legalAttacks(board, x, y) {
     const type = board[y][x].type
     const attack = CONSTANTS.spaceshipsAttributes[type].attack
@@ -135,7 +144,7 @@ module.exports = async (req, res) => {
    const matches = db.collection("matches")
    const matchDoc = (await matches.find({_id:ObjectId(req.query.matchId)}).limit(1).toArray())[0];
    if(!matchDoc) throw new Error("Match does not exist")
-   const board = matchDoc.board;
+   const board = matchDoc.board
    if(matchDoc.winner) throw new Error("Match already ended")
    let playerNumber;
    if(matchDoc.player0 === address) playerNumber = 0
@@ -164,17 +173,22 @@ module.exports = async (req, res) => {
     } else if(playerNumber === 1) {
         newMatchStats.fuel1 = fuel
     }
+
+    // Update Match History
+    newMatchStats.history.push({from, to, action, playerNumber})
+
     if(fuel === 0) { // if remaining fuel is 0, automatically end turn
         newMatchStats.playerTurn = newMatchStats.playerTurn === 0 ? 1 : 0
+        // Push to history
+        newMatchStats.history.push({from: {}, to: {}, action: 'endTurn', playerNumber})
+        // Increment Turn Number
+        newMatchStats.turnNum = newMatchStats.turnNum + 1
         if(playerNumber === 0) {
             newMatchStats.fuel1 = Math.min(newMatchStats.fuel1 + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
         } else if(playerNumber === 1) {
             newMatchStats.fuel0 = Math.min(newMatchStats.fuel0 + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
         }
     }
-
-    // Update Match History
-    newMatchStats.history.push({from, to, action})
 
     await matches.updateOne({_id:matchDoc._id}, {
         $set:newMatchStats
@@ -183,6 +197,7 @@ module.exports = async (req, res) => {
     if(!isOccupied(board, to.x, to.y)) throw new Error("Destination is not occupied")
     if(!isLegalAttack(board, from.x, from.y, to.x, to.y)) throw new Error("Illegal attack")
     if(!fromAttributes.attackFuelCost || fuel < fromAttributes.attackFuelCost) throw new Error("Insufficient fuel to attack")
+    if(!canMakeAction(action, board, from.x, from.y, matchDoc.turnNum)) throw new Error('Piece already made an action in this turn')
 
     let newMatchStats = {...matchDoc}
     const attack = CONSTANTS.spaceshipsAttributes[newMatchStats.board[from.y][from.x].type].attack
@@ -200,14 +215,15 @@ module.exports = async (req, res) => {
             const players = db.collection("players")
             await Promise.all([
                 players.updateOne({address:newMatchStats.player0}, {
-                    $unset:{activeGame:""}
+                    $unset:{activeMatch:""}
                 }),
                 players.updateOne({address:newMatchStats.player1}, {
-                    $unset:{activeGame:""}
+                    $unset:{activeMatch:""}
                 })
             ])
         }
     }
+
     // Update fuel
     fuel -= fromAttributes.attackFuelCost;
     if(playerNumber === 0) {
@@ -215,17 +231,25 @@ module.exports = async (req, res) => {
     } else if(playerNumber === 1) {
         newMatchStats.fuel1 = fuel
     }
+
+    // Update Last turn used
+    newMatchStats.board[from.y][from.x].lastAttackTurn = newMatchStats.turnNum
+
+    // Update Match History
+    newMatchStats.history.push({from, to, action, playerNumber})
+
     if(fuel === 0) { // if remaining fuel is 0, automatically end turn
         newMatchStats.playerTurn = newMatchStats.playerTurn === 0 ? 1 : 0
+        // Push to history
+        newMatchStats.history.push({from: {}, to: {}, action: 'endTurn', playerNumber})
+        // Increment Turn Number
+        newMatchStats.turnNum = newMatchStats.turnNum + 1
         if(playerNumber === 0) {
             newMatchStats.fuel1 = Math.min(newMatchStats.fuel1 + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
         } else if(playerNumber === 1) {
             newMatchStats.fuel0 = Math.min(newMatchStats.fuel0 + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
         }
     }
-
-    // Update Match History
-    newMatchStats.history.push({from, to, action})
 
     await matches.updateOne({_id:matchDoc._id}, {
         $set:newMatchStats
@@ -234,6 +258,7 @@ module.exports = async (req, res) => {
     if(!isOccupied(board, to.x, to.y)) throw new Error("Destination is not occupied")
     if(!isLegalRepair(board, from.x, from.y, to.x, to.y)) throw new Error("Illegal repair")
     if(!fromAttributes.repairFuelCost || fuel < fromAttributes.repairFuelCost) throw new Error("Insufficient fuel to repair")
+    if(!canMakeAction(action, board, from.x, from.y, matchDoc.turnNum)) throw new Error('Piece already made an action in this turn')
 
     let newMatchStats = {...matchDoc}
     const maxHp = CONSTANTS.spaceshipsAttributes[newMatchStats.board[to.y][to.x].type].hp
@@ -250,17 +275,25 @@ module.exports = async (req, res) => {
     } else if(playerNumber === 1) {
         newMatchStats.fuel1 = fuel
     }
+
+    // Update Last turn used
+    newMatchStats.board[from.y][from.x].lastRepairTurn = newMatchStats.turnNum
+
+    // Update Match History
+    newMatchStats.history.push({from, to, action, playerNumber})
+    
     if(fuel === 0) { // if remaining fuel is 0, automatically end turn
         newMatchStats.playerTurn = newMatchStats.playerTurn === 0 ? 1 : 0
+        // Push to history
+        newMatchStats.history.push({from: {}, to: {}, action: 'endTurn', playerNumber})
+        // Increment Turn Number
+        newMatchStats.turnNum = newMatchStats.turnNum + 1
         if(playerNumber === 0) {
             newMatchStats.fuel1 = Math.min(newMatchStats.fuel1 + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
         } else if(playerNumber === 1) {
             newMatchStats.fuel0 = Math.min(newMatchStats.fuel0 + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
         }
     }
-
-    // Update Match History
-    newMatchStats.history.push({from, to, action})
 
     await matches.updateOne({_id:matchDoc._id}, {
         $set:newMatchStats
