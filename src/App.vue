@@ -16,9 +16,11 @@ export default {
 </script>
 
 <style>
+@import "./assets/styles.css";
 body, html {
 	margin: 0;
 	padding: 0;
+	font-family: 'Roboto';
 }
 #app {
 	background-color: black;
