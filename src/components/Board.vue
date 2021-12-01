@@ -1,7 +1,7 @@
 <template>
 	<div class="main-wrapper">
 		<div class="left">
-			<EnemyCard playerAddress="0x6BDD6Bb68Ec6927F56749b46746F0AFA7CdA9F3c" :fuel="enemyFuel"/>
+			<EnemyCard :playerAddress="enemyAddress" :fuel="enemyFuel"/>
 		</div>
 		<div class="middle">
 			<div id="hex-grid" :class="{rotate: playerIs === 1}">
@@ -20,7 +20,7 @@
 			</div>
 		</div>
 		<div class="right">
-			<PlayerCard @endTurn="endTurn" @surrender="surrender" playerAddress="0x6BDD6Bb68Ec6927F56749b46746F0AFA7CdA9F3c" :fuel="myFuel"/>
+			<PlayerCard @endTurn="endTurn" @surrender="surrender" :playerAddress="$store.state.address" :fuel="myFuel"/>
 		</div>
 	</div>
 	<!-- <b-button v-if="isMyTurn" @click="endTurn">End Turn</b-button>
@@ -47,14 +47,16 @@ export default {
 			gunship: require('../assets/blue/gunship.png'),
 			scout: require('../assets/blue/scout.png'),
 			destoyer: require('../assets/blue/destroyer.png'),
-			carrier: require('../assets/blue/carrier.png')
+			carrier: require('../assets/blue/carrier.png'),
+			base: require('../assets/blue/base.png')
 		},
 		red: {
 			fighter: require('../assets/red/fighter.png'),
 			gunship: require('../assets/red/gunship.png'),
 			scout: require('../assets/red/scout.png'),
 			destoyer: require('../assets/red/destroyer.png'),
-			carrier: require('../assets/red/carrier.png')
+			carrier: require('../assets/red/carrier.png'),
+			base: require('../assets/red/base.png')
 		}
 	}
   },
@@ -69,7 +71,7 @@ export default {
 			  return row.map(col => {
 				if(col.owner === this.playerIs) {
 					if(col.type === "base") {
-						col.img = "/base.png"
+						col.img = this.blue.base
 					}
 					else if(col.type == "fighter") {
 						col.img = this.blue.fighter
@@ -88,7 +90,7 @@ export default {
 					}
 				} else if (col.owner !== this.playerIs) {
 					if(col.type === "base") {
-						col.img = "/base.png"
+						col.img = this.red.base
 					}
 					else if(col.type == "fighter") {
 						col.img = this.red.fighter
@@ -109,6 +111,9 @@ export default {
 				return col
 			  })
 		  })
+	  },
+	  enemyAddress() {
+		return this.$store.state.matchState.playerIs === 0 ? this.$store.state.matchState.player1 : this.$store.state.matchState.player1
 	  },
 	  canMove() {
 		if(!this.selected || !this.isMyTurn) return false

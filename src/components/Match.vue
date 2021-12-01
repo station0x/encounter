@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-if="onboarding && this.$store.state.matchState.turnNum === 1" class="onboarding-animation">
+        <div v-if="onboarding && this.$store.state.matchState.turnNum === 1 && this.$store.state.matchState.winner === null" class="onboarding-animation">
             <center>
                 <div class="wrapper">
                     <div class="paragraph para-1">The year is 2{{getRandomInt(100,999)}}</div>
@@ -22,8 +22,18 @@
                 :fuel1="$store.state.matchState.fuel1"    
                 :turnNum="$store.state.matchState.turnNum"
             />
-            <h1 v-else-if="$store.state.matchState.playerIs === $store.state.matchState.winner">You Won <b-button @click="continueBtn">Continue</b-button></h1>
-            <h1 v-else-if="$store.state.matchState.playerIs !== $store.state.matchState.winner">You Lost <b-button @click="continueBtn">Continue</b-button></h1>
+            <div class="end-wrapper" v-else-if="$store.state.matchState.playerIs === $store.state.matchState.winner">
+                <center>
+                    <img class="result-vector" :src="victory"/>
+                    <b-button class="primary-btn" @click="continueBtn">Continue</b-button>
+                </center>
+            </div>
+            <div class="end-wrapper" v-else-if="$store.state.matchState.playerIs !== $store.state.matchState.winner">
+                <center>
+                    <img class="result-vector" :src="defeat"/>
+                    <b-button class="primary-btn" @click="continueBtn">Continue</b-button>
+                </center>
+            </div>
         </div>
     </div>
 </template>
@@ -34,7 +44,10 @@ export default {
     data() {
         return {
             onboarding: true,
-            logo: require('../assets/img/logoIcon.svg')
+            logo: require('../assets/img/logoIcon.svg'),
+            victory: require('../assets/img/victory.png'),
+            defeat: require('../assets/img/defeat.png'),
+            audio: new Audio(require('../assets/sfx/soundtrack.mp3'))
         }
     },
     components: {
@@ -52,11 +65,43 @@ export default {
     },
     created () {
         setTimeout(()=> this.onboarding = false ,22000)
+		this.audio.play()
+    },
+    beforeDestroy() {
+        this.audio.pause()
     }
 }
 </script>
 
 <style scoped>
+.end-wrapper {
+    height: 100vh;
+    width: 100vw;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.result-vector {
+    margin-top: 28vh;
+    display: block;
+}
+.primary-btn {
+    background: black;
+    color: white;
+    border: none;
+    width: 230px;
+    height: 60px;
+    margin: 15px;
+    padding: 15px;
+    font-size: 19px;
+    font-weight: 500;
+    border: 1px solid white;
+    transition: 250ms ease-in-out;
+}
+.primary-btn:hover {
+    background: white;
+    color: black;
+}
 .logoIcon {
   cursor: pointer;
   position: absolute;
