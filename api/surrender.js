@@ -37,8 +37,6 @@ module.exports = async (req, res) => {
         })
     ])
 
-    console.log('success')
-
     res.status(200).json({ success: true });
 }
  
