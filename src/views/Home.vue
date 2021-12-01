@@ -16,6 +16,10 @@ import CreateMatch from '@/components/CreateMatch.vue'
 import Match from '@/components/Match.vue'
 export default {
   name: 'Home',
+  data() {
+    return {
+    }
+  },
   components: {
     CreateMatch,
     Match

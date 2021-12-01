@@ -1,5 +1,5 @@
 <template>
-    <div class="player-card">
+    <div class="player-card" :style="cardProps">
         <center>
             <div class="hexagon" :style="cssProps">
                 <div class="hexTop"></div>
@@ -7,15 +7,15 @@
             </div>
             <h1 class="you">You</h1>
             <h1 class="your-address">{{ formattedAddress }}</h1>
-            <img class="energy-icon" src="/energy.png" width="23px"/>
+            <img class="energy-icon" src="/energy.svg" width="23px"/>
             <span class="energy">{{fuel}}</span>
 
             <div class="btn-group">
-                <div class="turn-timer">Your Turn: <strong style="color: #F88C09; margin-left: 10px">{{ turnTimout }}</strong></div>
+                <!-- <div class="turn-timer">Your Turn: <strong style="color: #F88C09; margin-left: 10px">{{ turnTimout }}</strong></div> -->
                 <b-button @click="endTurn" :disabled="this.$store.state.matchState.playerTurn !== this.$store.state.matchState.playerIs" class="end-turn" icon-right="swap-horizontal-bold" type="is-danger">End Turn</b-button>
             </div>
             
-            <b-button class="surrender">Surrender</b-button>
+            <b-button @click="confirmSurrender" class="surrender">Surrender</b-button>
         </center>
         <v-gravatar style="display: none" ref="gravatar" :email="playerAddress" alt="Nobody" :size="530"/>
     </div>
@@ -32,9 +32,26 @@ export default {
     },
     computed: {
         cssProps() {
-            return {
+            let styles = {
                 '--bg-img': 'url(' + this.gravatar + ')'
             }
+            if(this.$store.state.matchState.playerTurn === this.$store.state.matchState.playerIs) {
+                styles['--border'] = 'solid 5px #416bff'
+                styles['--border-thick'] = 'solid 7.0711px #416bff'
+            } else {
+                styles['--border'] = 'solid 5px black'
+                styles['--border-thick'] = 'solid 7.0711px black'
+            }
+            return styles
+        },
+        cardProps() {
+            let cardStyles = {}
+            if(this.$store.state.matchState.playerTurn === this.$store.state.matchState.playerIs) {
+                cardStyles['--card-background'] = 'radial-gradient(50% 50% at 50% 50%, rgba(65, 107, 255, 0) 0%, rgba(65, 107, 255, 0.12) 100%)'
+            } else {
+                cardStyles['--card-background'] = 'black'
+            }
+            return cardStyles
         },
         formattedAddress() {
             return this.playerAddress.slice(0, 5) + '...' + this.playerAddress.slice(-5)
@@ -43,6 +60,19 @@ export default {
     methods: {
         endTurn() {
             this.$emit('endTurn')
+        },
+        confirmSurrender() {
+            this.$buefy.dialog.confirm({
+                title: 'Surrender',
+                message: 'Are you sure you want to surrender? This action cannot be undone.',
+                confirmText: 'Surrender',
+                type: 'is-danger',
+                hasIcon: true,
+                onConfirm: () => this.surrender()
+            })
+        },
+        surrender() {
+            this.$emit('surrender')
         }
     },
     mounted: function() {
@@ -53,12 +83,20 @@ export default {
 
 
 <style scoped>
+header.modal-card-head {
+    background: black !important;
+}
+section.modal-card-body.is-flex {
+    background: black !important;
+}
 .player-card {
     height: 500px;
     width: 100%;
     bottom: 0;
     position: absolute;
-    border-top: 1px solid #797979;
+    border-top: 1px solid #4d4d4d;
+    background: var(--card-background);
+    transition: 1000ms ease-in-out;
 }
 .energy {
     font-family: 'Roboto';
@@ -66,9 +104,9 @@ export default {
     color: #F98F09;
 }
 .energy-icon {
-    margin-bottom: -9px;
+    margin-bottom: -4px;
     margin-right: 5px;
-    width: 20px;
+    width: 25px;
 }
 .surrender {
     display: flex;
@@ -84,6 +122,7 @@ export default {
     height: 80px;
     line-height: 80px;
     transition: 400ms ease-in-out;
+    border: 1px solid #303030;
 }
 .surrender:hover {
     background: #FF4949;
@@ -105,7 +144,6 @@ export default {
 }
 .turn-timer {
     background: rgba(248, 140, 9, 0.1);
-    border: 1px solid #F88C09;
     color: #F88C09;
     height: 54px;
     width: 45%;
@@ -119,8 +157,8 @@ export default {
     border-radius: 5px;
 }
 .end-turn {
-    background: #256C83;
-    border: 1px solid #3188a5;
+    background: #416BFF !important;
+    border: 1px solid #6787fa;
     color: white;
     height: 54px;
     width: 45%;
@@ -133,6 +171,9 @@ export default {
     display: inline-block;
     border-radius: 5px;
 }
+.end-turn[disabled] {
+    background: grey !important;
+}
 .hexagon {
   position: relative;
   width: 130px; 
@@ -141,10 +182,10 @@ export default {
   background-image: var(--bg-img);
   background-size: auto 138.5641px;
   background-position: center;
-  border-left: solid 5px #416bff;
-  border-right: solid 5px #416bff;
-  margin-top: 60px;}
-
+  border-left: var(--border);
+  border-right: var(--border);
+  margin-top: 60px;
+}
 .hexTop,
 .hexBottom {
   position: absolute;
@@ -177,8 +218,8 @@ export default {
 
 .hexTop {
   top: -45.9619px;
-  border-top: solid 7.0711px #416bff;
-  border-right: solid 7.0711px #416bff;
+  border-top: var(--border-thick);
+  border-right: var(--border-thick);
 }
 
 .hexTop:after {
@@ -187,8 +228,8 @@ export default {
 
 .hexBottom {
   bottom: -45.9619px;
-  border-bottom: solid 7.0711px #416bff;
-  border-left: solid 7.0711px #416bff;
+  border-bottom: var(--border-thick);
+  border-left: var(--border-thick);
 }
 
 .hexBottom:after {
