@@ -355,7 +355,6 @@ export default {
 							}
 						}))
 						this.playSound(this.repairSfx)
-						this.selected = undefined
 					} else if(piece.type != "base") { // if not base
 						this.selected = { // select piece
 							x,
@@ -395,7 +394,6 @@ export default {
 					}
 				}))
 				this.playSound(this.shotSfx)
-				this.selected = undefined
 			}
 		} else {
 			if(this.isLegalMove(x,y)) {
@@ -418,7 +416,7 @@ export default {
 						to: {x,y}
 					}
 				}))
-				this.selected = undefined
+				this.selected = {x,y}
 			}
 		}
 	  },
@@ -441,16 +439,60 @@ export default {
 		if(constantAttributes.repairPercent) attributes.repair = `${constantAttributes.repairPercent}%`
 		return attributes
 	  }
+  },
+  watch: {
+	  "$store.state.matchState" (newState, oldState) {
+		if(oldState.playerTurn !== newState.playerTurn) this.selected = undefined
+		  const attacks = []
+		  const destroys = []
+		  const repairs = []
+		  for (let y = 0; y < oldState.state.length; y++) {
+			  const row = oldState.state[y];
+			  for (let x = 0; x < row.length; x++) {
+				  const oldPiece = row[x];
+				  const newPiece = newState.state[y][x];
+				  if(oldPiece.type) {
+					if(oldPiece.owner === this.playerIs && !newPiece.type) {
+						destroys.push(oldPiece.type)
+					} else if(oldPiece.owner === this.playerIs && newPiece.hp < oldPiece.hp) {
+						attacks.push(oldPiece.type)
+					} else if(oldPiece.owner !== this.playerIs && newPiece.hp > oldPiece.hp) {
+						repairs.push(oldPiece.type)
+					}
+				  }
+			  }
+		  }
+			const toastConfig = {
+				duration: 10000,
+				position: 'is-bottom'
+			}
+			attacks.forEach(v => {
+				this.playSound(this.shotSfx)
+				this.$buefy.toast.open({message:`Your ${v} was attacked`, type: 'is-danger', ...toastConfig})
+			})
+			destroys.forEach(v => {
+				this.playSound(this.shotSfx)
+				this.$buefy.toast.open({message:`Your ${v} was destroyed`, type: 'is-danger', ...toastConfig})
+			})
+			repairs.forEach(v => {
+				this.playSound(this.repairSfx)
+				this.$buefy.toast.open({message: `Your enemy's ${v} was repaired`, type: 'is-info' , ...toastConfig})
+			})
+	  }
   }
 }
 </script>
 
 <style>
+:root {
+	--scale: 0.9;
+}
 h1 {
 	margin: 0;
 }
 #hex-grid {
-	margin-left: -56px !important;
+	margin-left: -50px !important;
+	margin-top: 40px !important;
     width: fit-content;
     margin: 0 auto;
 	min-width: 110%;
@@ -459,9 +501,9 @@ h1 {
 	display: block;
 }
 .row:nth-child(even) {
-	transform:translateX(52.5px);
-	margin-top:-37.5px;
-	margin-bottom:-37.5px;
+	transform:translateX(calc(52.5px * var(--scale)));
+	margin-top: calc(-37.5px * var(--scale));
+	margin-bottom: calc(-37.5px * var(--scale));
 }
 .col {
 	display: inline;
@@ -470,7 +512,7 @@ h1 {
 .hex-parcel {
 	filter:invert();
 	opacity: 0.1;
-	height: 120px;
+	height: calc(120px * var(--scale));
 	cursor: pointer;
 }
 .col:hover .hex-parcel {
@@ -497,17 +539,17 @@ h1 {
 .col-piece {
 	position: absolute;
 	opacity: 1 !important;
-	left: 18.75px;
-	bottom: 26.25px;
-	height: 67.5px;
+	left: calc(18.75px * var(--scale));
+	bottom: calc(26.25px * var(--scale));
+	height: calc(67.5px * var(--scale));
 }
 
 .move-circle {
 	position: absolute;
 	opacity: 1 !important;
-	left: 30px;
-	bottom: 40px;
-	height: 45px;
+	left: calc(30px * var(--scale));
+	bottom: calc(40px * var(--scale));
+	height: calc(45px * var(--scale));
 	opacity: 0.6 !important;
 }
 .selected {
