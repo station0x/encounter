@@ -13,8 +13,10 @@
         </div>
         <div class="match-wrapper">
             <img class="logoIcon" :src="this.logo"/>
+            <div @click="openGameGuideModal" class="clickable-text in-game-btn">Game Guide  <b-icon icon="alert-circle" size="is-small" style="margin-left: 5px"></b-icon></div>
+            <b-button v-if="soundisOn" @click="soundOff" class="sound-btn" icon-right="volume-high"></b-button>
+            <b-button v-else-if="!soundisOn" @click="soundOn" class="sound-btn" icon-right="volume-off"></b-button>
             <Board
-                v-if="$store.state.matchState.winner !== 0 && $store.state.matchState.winner !== 1"
                 :state="$store.state.matchState.state"
                 :playerIs="$store.state.matchState.playerIs"
                 :playerTurn="$store.state.matchState.playerTurn"
@@ -22,16 +24,16 @@
                 :fuel1="$store.state.matchState.fuel1"    
                 :turnNum="$store.state.matchState.turnNum"
             />
-            <div class="end-wrapper" v-else-if="$store.state.matchState.playerIs === $store.state.matchState.winner">
+            <div class="end-wrapper" v-if="$store.state.matchState.playerIs === $store.state.matchState.winner">
                 <center>
                     <img class="result-vector" :src="victory"/>
                     <b-button class="primary-btn" @click="continueBtn">Continue</b-button>
                 </center>
             </div>
-            <div class="end-wrapper" v-else-if="$store.state.matchState.playerIs !== $store.state.matchState.winner">
+            <div class="end-wrapper" v-if="($store.state.matchState.playerIs === 0 ? 1 : 0) === $store.state.matchState.winner">
                 <center>
                     <img class="result-vector" :src="defeat"/>
-                    <b-button class="primary-btn" @click="continueBtn">Continue</b-button>
+                    <b-button class="primary-btn" @click="continueBtn" :loading="loading">Continue</b-button>
                 </center>
             </div>
         </div>
@@ -39,6 +41,8 @@
 </template>
 
 <script>
+import GameGuide from '@/components/GameGuide.vue'
+import { Howl } from 'howler'
 import Board from '@/components/Board.vue'
 export default {
     data() {
@@ -47,7 +51,9 @@ export default {
             logo: require('../assets/img/logoIcon.svg'),
             victory: require('../assets/img/victory.png'),
             defeat: require('../assets/img/defeat.png'),
-            audio: new Audio(require('../assets/sfx/soundtrack.mp3'))
+            audio: new Howl({src: [require('../assets/sfx/soundtrack.mp3')], loop: true}),
+            soundisOn: undefined,
+            loading: false
         }
     },
     components: {
@@ -55,20 +61,34 @@ export default {
     },
     methods: {
         async continueBtn () {
+            this.loading = true
             await this.$store.dispatch("startPolling")
         },
         getRandomInt(min, max) {
             min = Math.ceil(min);
             max = Math.floor(max);
             return Math.floor(Math.random() * (max - min + 1)) + min;
+        },
+        openGameGuideModal() {
+            this.$buefy.modal.open({
+                component: GameGuide
+            })
+        },
+        soundOn() {
+            this.audio.play()
+            this.soundisOn = true
+        },
+        soundOff() {
+            this.audio.pause()
+            this.soundisOn = false
         }
     },
     created () {
-        setTimeout(()=> this.onboarding = false ,22000)
-		this.audio.play()
+        setTimeout(()=> this.onboarding = false , 22000)
+        this.soundOn()
     },
     beforeDestroy() {
-        this.audio.pause()
+        this.soundOff()
     }
 }
 </script>
@@ -78,8 +98,41 @@ export default {
     height: 100vh;
     width: 100vw;
     position: absolute;
+    background: rgba(0,0,0,.7);
+    z-index: 5;
     top: 0;
     left: 0;
+    opacity: 1;
+    animation-name: fadeInOpacity;
+	animation-iteration-count: 1;
+	animation-timing-function: ease-in;
+	animation-duration: 3s;
+    animation-fill-mode: backwards;
+}
+.in-game-btn {
+    position: absolute;
+    top: 0.6vh;
+    right: 8vw;
+    color: white;
+}
+.in-game-btn:hover {
+    border-bottom: 1px solid white;
+}
+.sound-btn {
+    position: absolute;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 25px;
+    top: 2.8vh;
+    right: 17vw;
+}
+.sound-btn:hover {
+    color: rgba(255,255,255,0.8);
+}
+.sound-btn:focus:not(:active), .sound-btn.is-focused:not(:active) {
+    color: white;
+    box-shadow: none;
 }
 .result-vector {
     margin-top: 28vh;
