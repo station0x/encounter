@@ -84,7 +84,10 @@ export default {
 
 <style scoped>
 header.modal-card-head {
-    background: black;
+    background: black !important;
+}
+section.modal-card-body.is-flex {
+    background: black !important;
 }
 .player-card {
     height: 500px;
@@ -119,6 +122,7 @@ header.modal-card-head {
     height: 80px;
     line-height: 80px;
     transition: 400ms ease-in-out;
+    border: 1px solid #303030;
 }
 .surrender:hover {
     background: #FF4949;
