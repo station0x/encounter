@@ -1,5 +1,5 @@
 <template>
-    <div class="player-card">
+    <div class="player-card" :style="cardProps">
         <center>
             <div class="hexagon" :style="cssProps">
                 <div class="hexTop"></div>
@@ -7,7 +7,7 @@
             </div>
             <h1 class="you">Enemy</h1>
             <h1 class="your-address">{{ formattedAddress }}</h1>
-            <img class="energy-icon" src="/energy.png" width="23px"/>
+            <img class="energy-icon" src="/energy.svg" width="23px"/>
             <span class="energy">{{fuel}}</span>
         </center>
         <v-gravatar style="display: none" ref="gravatar" :email="playerAddress" alt="Nobody" :size="530"/>
@@ -24,9 +24,26 @@ export default {
     },
     computed: {
         cssProps() {
-            return {
+            let styles = {
                 '--bg-img': 'url(' + this.gravatar + ')'
             }
+            if(this.$store.state.matchState.playerTurn !== this.$store.state.matchState.playerIs) {
+                styles['--border'] = 'solid 5px #C72929'
+                styles['--border-thick'] = 'solid 7.0711px #C72929'
+            } else {
+                styles['--border'] = 'solid 5px black'
+                styles['--border-thick'] = 'solid 7.0711px black'
+            }
+            return styles
+        },
+        cardProps() {
+            let cardStyles = {}
+            if(this.$store.state.matchState.playerTurn !== this.$store.state.matchState.playerIs) {
+                cardStyles['--card-background'] = 'radial-gradient(50% 50% at 50% 50%, rgba(255, 73, 73, 0) 0%, rgba(255, 73, 73, 0.12) 100%)'
+            } else {
+                cardStyles['--card-background'] = 'black'
+            }
+            return cardStyles
         },
         formattedAddress() {
             return this.playerAddress.slice(0, 5) + '...' + this.playerAddress.slice(-5)
@@ -41,11 +58,13 @@ export default {
 
 <style scoped>
 .player-card {
-    height: 500px;
+    height: 400px;
     width: 100%;
     top: 0;
     position: absolute;
-    border-bottom: 1px solid #797979;
+    border-bottom: 1px solid #303030;
+    background: var(--card-background);
+    transition: 10000ms ease-in-out;
 }
 .energy {
     font-family: 'Roboto';
@@ -53,8 +72,9 @@ export default {
     color: #F98F09;
 }
 .energy-icon {
-    margin-bottom: -9px;
+    margin-bottom: -1px;
     margin-right: 5px;
+    width: 25px;
 }
 .surrender {
     display: flex;
@@ -92,8 +112,8 @@ align-items: center;
   background-image: var(--bg-img);
   background-size: auto 138.5641px;
   background-position: center;
-  border-left: solid 5px #C72929;
-  border-right: solid 5px #C72929;
+  border-left: var(--border);
+  border-right: var(--border);
   margin-top: 70px;
 }
 
@@ -129,8 +149,9 @@ align-items: center;
 
 .hexTop {
   top: -45.9619px;
-  border-top: solid 7.0711px #C72929;
-  border-right: solid 7.0711px #C72929;
+  border-top: var(--border-thick);
+  border-right: var(--border-thick);
+  
 }
 
 .hexTop:after {
@@ -139,8 +160,8 @@ align-items: center;
 
 .hexBottom {
   bottom: -45.9619px;
-  border-bottom: solid 7.0711px #C72929;
-  border-left: solid 7.0711px #C72929;
+  border-bottom: var(--border-thick);
+  border-left: var(--border-thick);
 }
 
 .hexBottom:after {
