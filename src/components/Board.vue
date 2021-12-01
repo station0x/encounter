@@ -1,7 +1,7 @@
 <template>
 	<div class="main-wrapper">
 		<div class="left">
-			<EnemyCard playerAddress="0x6BDD6Bb68Ec6927F56749b46746F0AFA7CdA9F3c"/>
+			<EnemyCard playerAddress="0x6BDD6Bb68Ec6927F56749b46746F0AFA7CdA9F3c" :fuel="enemyFuel"/>
 		</div>
 		<div class="middle">
 			<div id="hex-grid" :class="{rotate: playerIs === 1}">
@@ -20,7 +20,7 @@
 			</div>
 		</div>
 		<div class="right">
-			<PlayerCard playerAddress="0x6BDD6Bb68Ec6927F56749b46746F0AFA7CdA9F3c"/>
+			<PlayerCard @endTurn="endTurn" playerAddress="0x6BDD6Bb68Ec6927F56749b46746F0AFA7CdA9F3c" :fuel="myFuel"/>
 		</div>
 	</div>
 	<!-- <b-button v-if="isMyTurn" @click="endTurn">End Turn</b-button>

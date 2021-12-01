@@ -5,10 +5,10 @@
                 <div class="hexTop"></div>
                 <div class="hexBottom"></div>
             </div>
-            <h1 class="you">You</h1>
+            <h1 class="you">Enemy</h1>
             <h1 class="your-address">{{ formattedAddress }}</h1>
             <img class="energy-icon" src="/energy.png" width="23px"/>
-            <span class="energy">20</span>
+            <span class="energy">{{fuel}}</span>
         </center>
         <v-gravatar style="display: none" ref="gravatar" :email="playerAddress" alt="Nobody" :size="530"/>
     </div>
@@ -16,7 +16,7 @@
 
 <script>
 export default {
-    props:['playerAddress'],
+    props:['playerAddress', 'fuel'],
     data () {
         return {
             gravatar: null
