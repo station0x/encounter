@@ -12,6 +12,7 @@
             </center>
         </div>
         <div class="match-wrapper">
+            <img class="logoIcon" :src="this.logo"/>
             <Board
                 v-if="$store.state.matchState.winner !== 0 && $store.state.matchState.winner !== 1"
                 :state="$store.state.matchState.state"
@@ -32,7 +33,8 @@ import Board from '@/components/Board.vue'
 export default {
     data() {
         return {
-            onboarding: true
+            onboarding: true,
+            logo: require('../assets/img/logoIcon.svg')
         }
     },
     components: {
@@ -55,9 +57,15 @@ export default {
 </script>
 
 <style scoped>
+.logoIcon {
+  cursor: pointer;
+  position: absolute;
+  top: 3vh;
+  left: 3vw;
+  width: 220px;
+}
 .match-wrapper {
     padding: 11.5vh 3vw 11.5vh 3vw;
-
 }
 .onboarding-animation {
     background: black;

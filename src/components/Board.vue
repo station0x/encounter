@@ -20,7 +20,7 @@
 			</div>
 		</div>
 		<div class="right">
-			<PlayerCard @endTurn="endTurn" playerAddress="0x6BDD6Bb68Ec6927F56749b46746F0AFA7CdA9F3c" :fuel="myFuel"/>
+			<PlayerCard @endTurn="endTurn" @surrender="surrender" playerAddress="0x6BDD6Bb68Ec6927F56749b46746F0AFA7CdA9F3c" :fuel="myFuel"/>
 		</div>
 	</div>
 	<!-- <b-button v-if="isMyTurn" @click="endTurn">End Turn</b-button>
@@ -38,7 +38,24 @@ export default {
   props:['state','playerIs', 'playerTurn', 'fuel0', 'fuel1', 'turnNum'],
   data() {
 	return {
-		selected:undefined
+		selected:undefined,
+		turnSfx: require('../assets/sfx/turn.mp3'),
+		shotSfx: require('../assets/sfx/shot.mp3'),
+		repairSfx: require('../assets/sfx/repair.mp3'),
+		blue: {
+			fighter: require('../assets/blue/fighter.png'),
+			gunship: require('../assets/blue/gunship.png'),
+			scout: require('../assets/blue/scout.png'),
+			destoyer: require('../assets/blue/destroyer.png'),
+			carrier: require('../assets/blue/carrier.png')
+		},
+		red: {
+			fighter: require('../assets/red/fighter.png'),
+			gunship: require('../assets/red/gunship.png'),
+			scout: require('../assets/red/scout.png'),
+			destoyer: require('../assets/red/destroyer.png'),
+			carrier: require('../assets/red/carrier.png')
+		}
 	}
   },
   components: {
@@ -50,23 +67,44 @@ export default {
 		  if(!this.state) return []
 		  return this.state.map(row => {
 			  return row.map(col => {
-				if(col.type === "base") {
-					col.img = "/base.png"
-				}
-				else if(col.type == "fighter") {
-					col.img = "/fighter.png"
-				}
-				else if(col.type == "scout") {
-					col.img = "/scout.png"
-				}
-				else if(col.type == "destroyer") {
-					col.img = "/destroyer.png"
-				}
-				else if(col.type == "carrier") {
-					col.img = "/carrier.png"
-				}
-				else if(col.type == "gunship") {
-					col.img = "/gunship.png"
+				if(col.owner === this.playerIs) {
+					if(col.type === "base") {
+						col.img = "/base.png"
+					}
+					else if(col.type == "fighter") {
+						col.img = this.blue.fighter
+					}
+					else if(col.type == "scout") {
+						col.img = this.blue.scout
+					}
+					else if(col.type == "destroyer") {
+						col.img = this.blue.destoyer
+					}
+					else if(col.type == "carrier") {
+						col.img = this.blue.carrier
+					}
+					else if(col.type == "gunship") {
+						col.img = this.blue.gunship
+					}
+				} else if (col.owner !== this.playerIs) {
+					if(col.type === "base") {
+						col.img = "/base.png"
+					}
+					else if(col.type == "fighter") {
+						col.img = this.red.fighter
+					}
+					else if(col.type == "scout") {
+						col.img = this.red.scout
+					}
+					else if(col.type == "destroyer") {
+						col.img = this.red.destoyer
+					}
+					else if(col.type == "carrier") {
+						col.img = this.red.carrier
+					}
+					else if(col.type == "gunship") {
+						col.img = this.red.gunship
+					}
 				}
 				return col
 			  })
@@ -212,7 +250,22 @@ export default {
 	  }
   },
   methods: {
+	  	surrender() {
+			const winner = this.playerIs === 0 ? 1 : 0
+			this.$store.commit('setWinner', winner)
+			this.$store.dispatch('enqueue', axios.get('/api/surrender', {
+				params:{
+					signature:this.$store.state.signature,
+					matchId: this.$store.state.matchId
+				}
+			}))
+		},
+	    playSound(sfx) {
+			var audio = new Audio(sfx)
+			audio.play()
+		},
 	    endTurn() {
+			this.playSound(this.turnSfx)
             this.$store.commit('endTurn')
 			this.$store.dispatch('enqueue', axios.get('/api/endTurn', {
 				params:{
@@ -234,7 +287,6 @@ export default {
 		  let classes = "col-piece "
 
 		  if(owner == !this.playerIs) {
-			classes += "enemy "
 			if(this.isLegalAttack(x,y)) {
 				classes += "isTargetable "
 			}
@@ -284,6 +336,7 @@ export default {
 						this.$store.commit('setMyFuel', this.myFuel - fuelCost)
 						if(this.myFuel - fuelCost === 0) {
 							this.$store.commit('endTurn')
+							this.playSound(this.turnSfx)
 						}
 						newState[y][x].lastRepairTurn = this.turnNum
 						this.$store.commit('setBoard', newState)
@@ -296,6 +349,7 @@ export default {
 								to: {x,y}
 							}
 						}))
+						this.playSound(this.repairSfx)
 						this.selected = undefined
 					} else if(piece.type != "base") { // if not base
 						this.selected = { // select piece
@@ -322,6 +376,7 @@ export default {
 				this.$store.commit('setMyFuel', this.myFuel - fuelCost)
 				if(this.myFuel - fuelCost === 0) {
 					this.$store.commit('endTurn')
+					this.playSound(this.turnSfx)
 				}
 				newState[y][x].lastAttackTurn = this.turnNum
 				this.$store.commit('setBoard', newState)
@@ -334,6 +389,7 @@ export default {
 						to: {x,y}
 					}
 				}))
+				this.playSound(this.shotSfx)
 				this.selected = undefined
 			}
 		} else {
@@ -345,6 +401,7 @@ export default {
 				this.$store.commit('setMyFuel', this.myFuel - fuelCost)
 				if(this.myFuel - fuelCost === 0) {
 					this.$store.commit('endTurn')
+					this.playSound(this.turnSfx)
 				}
 				this.$store.commit('setBoard', newState)
 				this.$store.dispatch('enqueue', axios.get('/api/boardAction', {
@@ -407,7 +464,7 @@ h1 {
 }
 .hex-parcel {
 	filter:invert();
-	opacity: 0.3;
+	opacity: 0.1;
 	height: 120px;
 	cursor: pointer;
 }
@@ -448,9 +505,6 @@ h1 {
 	height: 45px;
 	opacity: 0.6 !important;
 }
-.enemy {
-	filter: sepia(1) hue-rotate(270deg) saturate(100);
-}
 .selected {
 	opacity:1
 }
@@ -468,7 +522,7 @@ h1 {
 	display: block;
 }
 .main-wrapper {
-	border: 1px solid #797979;
+	border: 1px solid #303030;
 	height: 830px;
 	display: flex;
 	flex-direction: row;
@@ -490,13 +544,13 @@ h1 {
 }
 .left {
 	order: 1;
-	border-right: 1px solid #797979;
+	border-right: 1px solid #303030;
 }
 .middle {
 	order: 2;
 }
 .right {
 	order: 3;
-	border-left: 1px solid #797979;
+	border-left: 1px solid #303030;
 }
 </style>
