@@ -8,11 +8,11 @@
             <h1 class="you">You</h1>
             <h1 class="your-address">{{ formattedAddress }}</h1>
             <img class="energy-icon" src="/energy.png" width="23px"/>
-            <span class="energy">20</span>
+            <span class="energy">{{fuel}}</span>
 
             <div class="btn-group">
                 <div class="turn-timer">Your Turn: <strong style="color: #F88C09; margin-left: 10px">{{ turnTimout }}</strong></div>
-                <b-button class="end-turn" icon-right="swap-horizontal-bold" type="is-danger">End Turn</b-button>
+                <b-button @click="endTurn" :disabled="this.$store.state.matchState.playerTurn !== this.$store.state.matchState.playerIs" class="end-turn" icon-right="swap-horizontal-bold" type="is-danger">End Turn</b-button>
             </div>
             
             <b-button class="surrender">Surrender</b-button>
@@ -23,7 +23,7 @@
 
 <script>
 export default {
-    props:['playerAddress'],
+    props:['playerAddress', 'fuel'],
     data () {
         return {
             gravatar: null,
@@ -38,6 +38,11 @@ export default {
         },
         formattedAddress() {
             return this.playerAddress.slice(0, 5) + '...' + this.playerAddress.slice(-5)
+        }
+    },
+    methods: {
+        endTurn() {
+            this.$emit('endTurn')
         }
     },
     mounted: function() {
