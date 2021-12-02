@@ -166,7 +166,7 @@ export default {
 }
 .match-wrapper {
     padding: 11.5vh 3vw 11.5vh 3vw;
-    max-width: 1600px;
+    max-width: 2100px;
     margin: 0 auto;
 }
 .onboarding-animation {
