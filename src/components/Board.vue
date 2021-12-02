@@ -113,7 +113,7 @@ export default {
 		  })
 	  },
 	  enemyAddress() {
-		return this.$store.state.matchState.playerIs === 0 ? this.$store.state.matchState.player1 : this.$store.state.matchState.player1
+		return this.$store.state.matchState.playerIs === 0 ? this.$store.state.matchState.player1 : this.$store.state.matchState.player0
 	  },
 	  canMove() {
 		if(!this.selected || !this.isMyTurn) return false
