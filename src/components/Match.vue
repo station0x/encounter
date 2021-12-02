@@ -16,14 +16,16 @@
             <div @click="openGameGuideModal" class="clickable-text in-game-btn">Game Guide  <b-icon icon="alert-circle" size="is-small" style="margin-left: 5px"></b-icon></div>
             <b-button v-if="soundisOn" @click="soundOff" class="sound-btn" icon-right="volume-high"></b-button>
             <b-button v-else-if="!soundisOn" @click="soundOn" class="sound-btn" icon-right="volume-off"></b-button>
-            <Board
-                :state="$store.state.matchState.state"
-                :playerIs="$store.state.matchState.playerIs"
-                :playerTurn="$store.state.matchState.playerTurn"
-                :fuel0="$store.state.matchState.fuel0"    
-                :fuel1="$store.state.matchState.fuel1"    
-                :turnNum="$store.state.matchState.turnNum"
-            />
+            <center>
+                <Board
+                    :state="$store.state.matchState.state"
+                    :playerIs="$store.state.matchState.playerIs"
+                    :playerTurn="$store.state.matchState.playerTurn"
+                    :fuel0="$store.state.matchState.fuel0"    
+                    :fuel1="$store.state.matchState.fuel1"    
+                    :turnNum="$store.state.matchState.turnNum"
+                />
+            </center>
             <div class="end-wrapper" v-if="$store.state.matchState.playerIs === $store.state.matchState.winner">
                 <center>
                     <img class="result-vector" :src="victory"/>
@@ -164,6 +166,8 @@ export default {
 }
 .match-wrapper {
     padding: 11.5vh 3vw 11.5vh 3vw;
+    max-width: 1600px;
+    margin: 0 auto;
 }
 .onboarding-animation {
     background: black;
