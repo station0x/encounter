@@ -491,7 +491,7 @@ h1 {
 	margin: 0;
 }
 #hex-grid {
-	margin-left: -50px !important;
+	margin-left: -63px !important;
 	margin-top: 40px !important;
     width: fit-content;
     margin: 0 auto;
