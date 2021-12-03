@@ -213,11 +213,19 @@ module.exports = async (req, res) => {
         if(type === "base") { // game ended
             newMatchStats.winner = playerNumber
             const players = db.collection("players")
+            let player0Doc = (await players.find({address:matchDoc.player0}).limit(1).toArray())[0]
+            let player1Doc = (await players.find({address:matchDoc.player1}).limit(1).toArray())[0]
+            let newPlayer0Stats = {...player0Doc}
+            newPlayer0Stats.matchHistory.push(ObjectId(req.query.matchId))
+            let newPlayer1Stats = {...player1Doc}
+            newPlayer1Stats.matchHistory.push(ObjectId(req.query.matchId))
             await Promise.all([
                 players.updateOne({address:newMatchStats.player0}, {
-                    $unset:{activeMatch:""}
+                    $set:newPlayer0Stats,
+                    $unset:{activeMatch:""},
                 }),
                 players.updateOne({address:newMatchStats.player1}, {
+                    $set:newPlayer1Stats,
                     $unset:{activeMatch:""}
                 })
             ])
