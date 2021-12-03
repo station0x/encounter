@@ -6,7 +6,7 @@
 		<div class="middle">
 			<div id="hex-grid" :class="{rotate: playerIs === 1}">
 				<div class="row" v-for="(row, y) in ourState" :key="y">
-					<div @click="select(col, x, y)" class="col" v-for="(col, x) in row" :key="x">
+					<div @click="select(col, x, y)" :class="colClasses(x,y)" v-for="(col, x) in row" :key="x">
 						<img :class="hexClasses(x,y)" src="hex.png" height="80px"/>
 						<img :class="pieceClasses(col.owner, x, y)" :src="col.img"/>
 						<img v-if="isLegalMove(x,y)" class="move-circle" src="circle.png"/>
@@ -322,6 +322,14 @@ export default {
 
 		return classes
 	  },
+	  colClasses(x,y) {
+		  let classes = "col "
+
+		  if(y < 5) classes += 'top '
+		  else classes += 'bottom'
+
+		  return classes
+	  },
 	  select(piece, x, y) {
 		  if(!this.isMyTurn) return
 		  if(piece.type) { // if column contains a piece
@@ -520,16 +528,22 @@ h1 {
 	
 }
 .col .tooltip {
-  visibility: hidden;
-  width: 120px;
-  background-color: black;
-  color: #fff;
-  text-align: center;
-  padding: 5px 0;
-  position: absolute;
-  z-index: 1;
-  top: 15px;
-  left: -25px;
+    visibility: hidden;
+    width: 270px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    top: 15px;
+    left: -25px;
+    border-radius: 5px;
+    border: 1px solid white;
+    background: black;
+    height: 300px;
+    padding: 20px;
+
 }
 
 /* Show the tooltip text when you mouse over the tooltip container */
