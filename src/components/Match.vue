@@ -4,7 +4,7 @@
             <center>
                 <div class="wrapper">
                     <div class="paragraph para-1">The year is 2{{getRandomInt(100,999)}}</div>
-                    <div class="paragraph para-2">Location: Vorc industrial region</div>
+                    <div class="paragraph para-2">Location: Skvorc industrial region</div>
                     <div class="paragraph para-3">Juperian fleet #{{getRandomInt(100,999)}} is securing nearby Plutonium miners</div>
                     <div class="paragraph para-4">Unidentified hostiles are approaching at high speed</div>
                     <div class="skip-btn" @click="onboarding=false">Skip</div>
@@ -16,7 +16,6 @@
             <div @click="openGameGuideModal" class="clickable-text in-game-btn">Game Guide  <b-icon icon="alert-circle" size="is-small" style="margin-left: 5px"></b-icon></div>
             <b-button v-if="soundisOn" @click="soundOff" class="sound-btn" icon-right="volume-high"></b-button>
             <b-button v-else-if="!soundisOn" @click="soundOn" class="sound-btn" icon-right="volume-off"></b-button>
-            <center>
                 <Board
                     :state="$store.state.matchState.state"
                     :playerIs="$store.state.matchState.playerIs"
@@ -25,7 +24,6 @@
                     :fuel1="$store.state.matchState.fuel1"    
                     :turnNum="$store.state.matchState.turnNum"
                 />
-            </center>
             <div class="end-wrapper" v-if="$store.state.matchState.playerIs === $store.state.matchState.winner">
                 <center>
                     <img class="result-vector" :src="victory"/>
@@ -166,7 +164,7 @@ export default {
 }
 .match-wrapper {
     padding: 11.5vh 3vw 11.5vh 3vw;
-    max-width: 2100px;
+    max-width: 1680px;
     margin: 0 auto;
 }
 .onboarding-animation {

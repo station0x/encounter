@@ -6,20 +6,43 @@
 		<div class="middle">
 			<div id="hex-grid" :class="{rotate: playerIs === 1}">
 				<div class="row" v-for="(row, y) in ourState" :key="y">
-					<div @click="select(col, x, y)" :class="colClasses(x,y)" v-for="(col, x) in row" :key="x">
+					<div @mouseover="hovered = {x,y}" @mouseleave="hovered = undefined" @click="select(col, x, y)" class="col" v-for="(col, x) in row" :key="x">
 						<img :class="hexClasses(x,y)" src="hex.png" height="80px"/>
 						<img :class="pieceClasses(col.owner, x, y)" :src="col.img"/>
 						<img v-if="isLegalMove(x,y)" class="move-circle" src="circle.png"/>
-						<div v-if="col.type" :class="{tooltip:true, rotate: playerIs === 1}">
+						<!-- <div v-if="col.type" class="tooltip">
+							<div class="spaceship-type">{{ col.type }}</div>
 							<span class="attribute" v-for="(value, key) in getSpaceshipAttributes(col)" :key="key">
 							{{key}}: {{value}}
 							</span>
-						</div>
+						</div> -->
 					</div>
 				</div>
 			</div>
 		</div>
 		<div class="right">
+			<div v-if="spaceshipStats.type" class="spaceship-stats">
+				<center>
+					<img class="spaceship-img" :src="spaceshipStats.img"/>
+					<h1 class="spaceship-type" :style="{color: spaceshipStats.owner === this.playerIs ? '#416BFF' : '#C72929'}">{{spaceshipStats.type}}</h1>
+				</center>
+				<b-progress 
+					class="hp-progress"
+					:type="spaceshipStats.hpColor" 
+					:value="spaceshipStats.hp"
+					:max="spaceshipStats.maxHp"
+					show-value>
+					<h1 class="progressbar-text">HP:  {{spaceshipStats.hp}} / {{ spaceshipStats.maxHp}}</h1>
+				</b-progress>
+				<h1 style="color: white; font-size: 17px; text-align: left; margin: 20px;font-family: 'ClashDisplay-Variable';">Abilities</h1>
+				<div class="ability move">
+					<img class="ability-icon" :src="moveIcon"/>
+					<div class="ability-text">Move</div>
+					<img class="energy-icon" src="/energy.svg" width="23px"/>
+            		<span class="energy">2</span>
+				</div>
+				{{ spaceshipStats }}
+			</div>
 			<PlayerCard @endTurn="endTurn" @surrender="surrender" :playerAddress="$store.state.address" :fuel="myFuel"/>
 		</div>
 	</div>
@@ -38,7 +61,8 @@ export default {
   props:['state','playerIs', 'playerTurn', 'fuel0', 'fuel1', 'turnNum'],
   data() {
 	return {
-		selected:undefined,
+		selected: undefined,
+		hovered: undefined,
 		turnSfx: require('../assets/sfx/turn.mp3'),
 		shotSfx: require('../assets/sfx/shot.mp3'),
 		repairSfx: require('../assets/sfx/repair.mp3'),
@@ -57,7 +81,10 @@ export default {
 			destoyer: require('../assets/red/destroyer.png'),
 			carrier: require('../assets/red/carrier.png'),
 			base: require('../assets/red/base.png')
-		}
+		},
+		moveIcon: require('../assets/img/moveIcon.svg'),
+		attackIcon: require('../assets/img/attackIcon.svg'),
+		repairIcon: require('../assets/img/repairIcon.svg')
 	}
   },
   components: {
@@ -111,6 +138,20 @@ export default {
 				return col
 			  })
 		  })
+	  },
+	  spaceshipStats() {
+		  if(this.hovered === undefined){
+			  return {}
+		  }
+		  const piece = this.ourState[this.hovered.y][this.hovered.x]
+		  if(!piece.type) return {}
+		  piece.maxHp = CONSTANTS.spaceshipsAttributes[piece.type].hp
+		  piece.hpPercentage = Math.floor(piece.hp / piece.maxHp * 100)
+		  piece.hpColor = 'is-success'
+		  if(piece.hpPercentage < 50) piece.hpColor = 'is-danger'
+		  else if(piece.hpPercentage < 100) piece.hpColor = 'is-warning'
+
+		  return piece
 	  },
 	  enemyAddress() {
 		return this.$store.state.matchState.playerIs === 0 ? this.$store.state.matchState.player1 : this.$store.state.matchState.player0
@@ -322,14 +363,6 @@ export default {
 
 		return classes
 	  },
-	  colClasses(x,y) {
-		  let classes = "col "
-
-		  if(y < 5) classes += 'top '
-		  else classes += 'bottom'
-
-		  return classes
-	  },
 	  select(piece, x, y) {
 		  if(!this.isMyTurn) return
 		  if(piece.type) { // if column contains a piece
@@ -499,7 +532,7 @@ h1 {
 	margin: 0;
 }
 #hex-grid {
-	margin-left: -63px !important;
+	margin-left: -50px !important;
 	margin-top: 40px !important;
     width: fit-content;
     margin: 0 auto;
@@ -527,25 +560,78 @@ h1 {
 	opacity: 1;
 	
 }
-.col .tooltip {
+.spaceship-stats {
+	margin: 0 auto;
+	padding: 10px;
+}
+.spaceship-type {
+	color: #416BFF;
+	font-family: 'ClashDisplay-Variable';
+	font-size: 21px;
+	text-transform: capitalize;
+}
+.spaceship-img {
+	width: 120px;
+	margin: 10px 20px 0px 20px;
+}
+.hp-progress {
+	margin: 15px 20px 10px 20px;
+}
+.progressbar-text {
+	color: black; 
+	font-size: 12px; 
+	font-weight: 500;
+}
+.ability {
+	box-sizing: border-box;
+	border-radius: 4px;
+	width: 67%;
+	margin: 0 auto;
+	height: 42px;
+	padding: 5px;
+
+}
+.move {
+	border: 0.5px solid #EFC97F;
+}
+.ability-icon {
+	width: 20px;
+	margin: 5.5px;
+}
+.ability-text {
+	font-family: 'ClashDisplay-Variable';
+	margin-top: -32px !important;
+    font-size: 16px;
+    color: #EFC97F;
+    margin-left: 35px;
+}
+.energy-icon {
+	margin-top: -10px;
+	margin-right: -50px;
+}
+/* .col .tooltip {
     visibility: hidden;
     width: 270px;
-    background-color: black;
+    background-color: black !important;
     color: #fff;
     text-align: center;
     padding: 5px 0;
     position: absolute;
-    z-index: 1;
-    top: 15px;
-    left: -25px;
+    left: -80px;
     border-radius: 5px;
     border: 1px solid white;
-    background: black;
+	opacity: 1;
     height: 300px;
     padding: 20px;
-
+	z-index: 10;
 }
-
+.bottomTooltip {
+	bottom: 125px;
+}
+.topTooltip {
+	bottom: 0px;
+	transform: translateY(150px);
+} */
 /* Show the tooltip text when you mouse over the tooltip container */
 .col:hover .tooltip {
   visibility: visible;
