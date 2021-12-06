@@ -124,7 +124,9 @@ export default new Vuex.Store({
             }
         },
         enqueue(_, axiosPromise) {
-            axiosQueue.add(() => axiosPromise)
+            axiosQueue.add(() => {
+                return axiosPromise()
+            })
         }
     },
     plugins: [
