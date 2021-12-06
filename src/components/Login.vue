@@ -4,6 +4,7 @@
             <img
             src="/logo.png"
             alt="Station0x Encounter Logo"
+            class="main-logo"
             />
             <div class="onboarding-wrapper">
                 <div class="minor-text">Welcome to</div>

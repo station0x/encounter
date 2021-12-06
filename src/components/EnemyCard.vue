@@ -1,9 +1,10 @@
 <template>
     <div class="player-card" :style="cardProps">
         <center>
-            <div class="hexagon" :style="cssProps">
-                <div class="hexTop"></div>
-                <div class="hexBottom"></div>
+            <div class="hex" :style="cssProps">
+                <div class="hex-background">
+                    <img class="gravatar" :src="gravatar">
+                </div>
             </div>
             <h1 class="you">Enemy</h1>
             <h1 class="your-address">{{ formattedAddress }}</h1>
@@ -24,15 +25,11 @@ export default {
     },
     computed: {
         cssProps() {
-            let styles = {
-                '--bg-img': 'url(' + this.gravatar + ')'
-            }
+            let styles = {}
             if(this.$store.state.matchState.playerTurn !== this.$store.state.matchState.playerIs) {
-                styles['--border'] = 'solid 5px #C72929'
-                styles['--border-thick'] = 'solid 7.0711px #C72929'
+                styles['--border'] = 'white'
             } else {
-                styles['--border'] = 'solid 5px black'
-                styles['--border-thick'] = 'solid 7.0711px black'
+                styles['--border'] = 'black'
             }
             return styles
         },
@@ -58,13 +55,14 @@ export default {
 
 <style scoped>
 .player-card {
-    height: 400px;
+    padding-top: 5%;
+    height: 48%;
     width: 100%;
     top: 0;
     position: absolute;
     border-bottom: 1px solid #303030;
     background: var(--card-background);
-    transition: 10000ms ease-in-out;
+    transition: 1000ms ease-in-out;
 }
 .energy {
     font-family: 'Roboto';
@@ -78,7 +76,7 @@ export default {
 }
 .surrender {
     display: flex;
-align-items: center;
+    align-items: center;
     position: absolute;
     bottom: 0;
     width: 100%;
@@ -98,84 +96,36 @@ align-items: center;
 .you {
     font-size: 27px;
     color: #C72929;
-    padding-top: 20px;
+    padding-top: 10px;
 }
 .your-address {
     color: white;
     margin-bottom: 20px;
 }
-.hexagon {
-  position: relative;
-  width: 130px; 
-  height: 75.06px;
-  margin: 37.53px 0;
-  background-image: var(--bg-img);
-  background-size: auto 138.5641px;
-  background-position: center;
-  border-left: var(--border);
-  border-right: var(--border);
-  margin-top: 70px;
+.hex {
+    background: var(--border);
+    display: block;
+    margin: 20px auto;
+    position: relative;
+    width: 120px;
+    height: 130px;
+    clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+    -webkit-clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+    -moz-clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
 }
-
-.hexTop,
-.hexBottom {
-  position: absolute;
-  z-index: 1;
-  width: 91.92px;
-  height: 91.92px;
-  overflow: hidden;
-  -webkit-transform: scaleY(0.5774) rotate(-45deg);
-  -ms-transform: scaleY(0.5774) rotate(-45deg);
-  transform: scaleY(0.5774) rotate(-45deg);
-  background: inherit;
-  left: 14.04px;
+.hex-background {
+    display: block;
+    margin: 0 auto;
+    position: absolute;
+    top: 5px; /* equal to border thickness */
+    right: 5px;
+    width: 110px; /* container height - (border thickness * 2) */
+    height: 120px; /* container height - (border thickness * 2) */
+    clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+    -webkit-clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+    -moz-clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
 }
-
-/*counter transform the bg image on the caps*/
-.hexTop:after,
-.hexBottom:after {
-  content: "";
-  position: absolute;
-  width: 120.0000px;
-  height: 69.2820323027551px;
-  -webkit-transform:  rotate(45deg) scaleY(1.7321) translateY(-34.6410px);
-  -ms-transform:      rotate(45deg) scaleY(1.7321) translateY(-34.6410px);
-  transform:          rotate(45deg) scaleY(1.7321) translateY(-34.6410px);
-  -webkit-transform-origin: 0 0;
-  -ms-transform-origin: 0 0;
-  transform-origin: 0 0;
-  background: inherit;
-}
-
-.hexTop {
-  top: -45.9619px;
-  border-top: var(--border-thick);
-  border-right: var(--border-thick);
-  
-}
-
-.hexTop:after {
-  background-position: center top;
-}
-
-.hexBottom {
-  bottom: -45.9619px;
-  border-bottom: var(--border-thick);
-  border-left: var(--border-thick);
-}
-
-.hexBottom:after {
-  background-position: center bottom;
-}
-
-.hexagon:after {
-  content: "";
-  position: absolute;
-  top: 2.8868px;
-  left: 0;
-  width: 120.0000px;
-  height: 69.2820px;
-  z-index: 2;
-  background: inherit;
+.gravatar {
+    height: 120px;
 }
 </style>

@@ -59,6 +59,9 @@ module.exports = async (req, res) => {
         lastTurnTimestamp: undefined,
         winner: undefined,
         history: [],
+        chat: [],
+        log: [],
+        logsIndex: 0,
         initialBoard: board,
         board
     })

@@ -175,7 +175,7 @@ module.exports = async (req, res) => {
     }
 
     // Update Match History
-    newMatchStats.history.push({from, to, action, playerNumber})
+    newMatchStats.history.push({from: {x: from.x, y: from.y}, to: {x: to.x, y: to.y}, action, playerNumber})
 
     if(fuel === 0) { // if remaining fuel is 0, automatically end turn
         newMatchStats.playerTurn = newMatchStats.playerTurn === 0 ? 1 : 0
@@ -213,11 +213,19 @@ module.exports = async (req, res) => {
         if(type === "base") { // game ended
             newMatchStats.winner = playerNumber
             const players = db.collection("players")
+            let player0Doc = (await players.find({address:matchDoc.player0}).limit(1).toArray())[0]
+            let player1Doc = (await players.find({address:matchDoc.player1}).limit(1).toArray())[0]
+            let newPlayer0Stats = {...player0Doc}
+            newPlayer0Stats.matchHistory.push(ObjectId(req.query.matchId))
+            let newPlayer1Stats = {...player1Doc}
+            newPlayer1Stats.matchHistory.push(ObjectId(req.query.matchId))
             await Promise.all([
                 players.updateOne({address:newMatchStats.player0}, {
-                    $unset:{activeMatch:""}
+                    $set:newPlayer0Stats,
+                    $unset:{activeMatch:""},
                 }),
                 players.updateOne({address:newMatchStats.player1}, {
+                    $set:newPlayer1Stats,
                     $unset:{activeMatch:""}
                 })
             ])
@@ -236,7 +244,13 @@ module.exports = async (req, res) => {
     newMatchStats.board[from.y][from.x].lastAttackTurn = newMatchStats.turnNum
 
     // Update Match History
-    newMatchStats.history.push({from, to, action, playerNumber})
+    newMatchStats.history.push({from: {x: from.x, y: from.y}, to, action, playerNumber})
+
+    // Update game log
+    newMatchStats.log.push({index: matchDoc.logsIndex, playerNo: playerNumber, action: 'attack', fromPiece: newMatchStats.board[from.y][from.x], toPiece: newMatchStats.board[to.y][to.x]})
+
+    // Increase Logs Index
+    newMatchStats.logsIndex++
 
     if(fuel === 0) { // if remaining fuel is 0, automatically end turn
         newMatchStats.playerTurn = newMatchStats.playerTurn === 0 ? 1 : 0
@@ -280,7 +294,13 @@ module.exports = async (req, res) => {
     newMatchStats.board[from.y][from.x].lastRepairTurn = newMatchStats.turnNum
 
     // Update Match History
-    newMatchStats.history.push({from, to, action, playerNumber})
+    newMatchStats.history.push({from: {x: from.x, y: from.y}, to: {x: to.x, y: to.y}, action, playerNumber})
+
+    // Update game log
+    newMatchStats.log.push({index: matchDoc.logsIndex, playerNo: playerNumber, action: 'repair', fromPiece: newMatchStats.board[from.y][from.x], toPiece: newMatchStats.board[to.y][to.x]})
+
+    // Increase Logs Index
+    newMatchStats.logsIndex++
     
     if(fuel === 0) { // if remaining fuel is 0, automatically end turn
         newMatchStats.playerTurn = newMatchStats.playerTurn === 0 ? 1 : 0
