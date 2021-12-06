@@ -221,12 +221,23 @@ module.exports = async (req, res) => {
             newPlayer1Stats.matchHistory.push(ObjectId(req.query.matchId))
             await Promise.all([
                 players.updateOne({address:newMatchStats.player0}, {
-                    $set:newPlayer0Stats,
                     $unset:{activeMatch:""},
                 }),
                 players.updateOne({address:newMatchStats.player1}, {
-                    $set:newPlayer1Stats,
                     $unset:{activeMatch:""}
+                })
+            ])
+            
+            delete newPlayer0Stats.activeMatch
+            delete newPlayer1Stats.activeMatch
+        
+            await Promise.all([
+                players.updateOne({address:newMatchStats.player0}, {
+                    $set:newPlayer0Stats
+                }),
+                
+                players.updateOne({address:newMatchStats.player1}, {
+                    $set:newPlayer1Stats
                 })
             ])
         }

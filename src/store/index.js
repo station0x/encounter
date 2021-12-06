@@ -4,9 +4,7 @@ import axios from 'axios'
 import * as Realm from "realm-web"
 import Queue from 'promise-queue'
 
-const axiosQueue = new Queue({
-    concurrent: 1
-})
+const axiosQueue = new Queue(1)
 const realm = new Realm.App({ id: process.env.VUE_APP_REALM_APP_ID });
 const credentials = Realm.Credentials.anonymous();
 
@@ -127,8 +125,6 @@ export default new Vuex.Store({
         },
         enqueue(_, axiosPromise) {
             axiosQueue.add(() => axiosPromise)
-            // axiosQueue.on("resolve", data => console.log(data))
-            // axiosQueue.on("reject", error => console.error(error))
         }
     },
     plugins: [
