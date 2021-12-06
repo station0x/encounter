@@ -2,8 +2,9 @@
     <div class="section onboarding">
         <center>
             <img
-            src="/logo.png"
-            alt="Station0x Encounter Logo"
+                src="/logo.png"
+                alt="Station0x Encounter Logo"
+                class="mainlogo"
             />
             <div class="onboarding-wrapper">
                 <div v-if="!invitationLink">
