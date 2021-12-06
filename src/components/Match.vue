@@ -29,7 +29,7 @@
             <div class="end-wrapper" v-if="$store.state.matchState.playerIs === $store.state.matchState.winner">
                 <center>
                     <img class="result-vector" :src="victory"/>
-                    <b-button class="primary-btn" @click="continueBtn">Continue</b-button>
+                    <b-button class="primary-btn" @click="continueBtn" :loading="loading">Continue</b-button>
                 </center>
             </div>
             <div class="end-wrapper" v-if="($store.state.matchState.playerIs === 0 ? 1 : 0) === $store.state.matchState.winner">

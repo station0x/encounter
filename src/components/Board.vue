@@ -62,13 +62,13 @@
 				<div v-if="spaceshipStats.type !== 'carrier' && spaceshipStats.type !== 'base'" class="ability attack">
 					<img class="ability-icon" :src="attackIcon"/>
 					<div class="ability-text" style="color: #FF4949">Attack {{spaceshipStats.attack}}</div>
-					<span class="attack-ability">{{spaceshipStats.moveCost}}</span>
+					<span class="attack-ability">{{spaceshipStats.attackCost}}</span>
 					<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
 				</div>
 				<div v-if="spaceshipStats.type === 'carrier' && spaceshipStats.type !== 'base'" class="ability repair">
 					<img class="ability-icon" :src="repairIcon"/>
 					<div class="ability-text" style="color: #348227">Repair 25%</div>
-					<span class="attack-ability">{{spaceshipStats.moveCost}}</span>
+					<span class="attack-ability">{{spaceshipStats.repairCost}}</span>
 					<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
 				</div>
 			</div>
