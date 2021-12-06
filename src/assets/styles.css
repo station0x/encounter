@@ -12,6 +12,10 @@
 body {
     background-color: black !important;
 }
+.main-logo {
+    width: 450px;
+    margin-bottom: 50px;
+}
 .onboarding {
     background-image: url('/bg.png');
     background-color: black;

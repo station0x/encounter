@@ -2,11 +2,29 @@
 	<div class="main-wrapper">
 		<div class="left">
 			<EnemyCard :playerAddress="enemyAddress" :fuel="enemyFuel"/>
+			<div class="chat-wrapper">
+				<div id="logs">
+					<div v-for="(msg, key) in sortedLogsAndChats" :key="key">
+						<div class="chat-message">
+							{{ formatMsg(msg) }}
+						</div>
+					</div>
+					
+				</div>
+				<div v-hotkey="keymap" class="chat-input">
+					<b-field dark>
+						<b-input @focus="chatMessage = ''" v-model="chatMessage" dark placeholder="Please be nice in chat!" custom-class="chat-textarea" size="is-small"></b-input>
+						<p class="control">
+							<b-button :loading="sendingMsg" class="chat-btn" @click="sendMessage" label="Send" />
+						</p>
+					</b-field>
+				</div>
+			</div>
 		</div>
 		<div class="middle">
 			<div id="hex-grid" :class="{rotate: playerIs === 1}">
 				<div class="row" v-for="(row, y) in ourState" :key="y">
-					<div @mouseover="hovered = {x,y}" @mouseleave="hovered = undefined" @click="select(col, x, y)" class="col" v-for="(col, x) in row" :key="x">
+					<div @mouseover="hovered = {x,y}" @click="select(col, x, y)" class="col" v-for="(col, x) in row" :key="x">
 						<img :class="hexClasses(x,y)" src="hex.png" height="80px"/>
 						<img :class="pieceClasses(col.owner, x, y)" :src="col.img"/>
 						<img v-if="isLegalMove(x,y)" class="move-circle" src="circle.png"/>
@@ -34,14 +52,25 @@
 					show-value>
 					<h1 class="progressbar-text">HP:  {{spaceshipStats.hp}} / {{ spaceshipStats.maxHp}}</h1>
 				</b-progress>
-				<h1 style="color: white; font-size: 17px; text-align: left; margin: 20px;font-family: 'ClashDisplay-Variable';">Abilities</h1>
-				<div class="ability move">
+				<h1 v-if="spaceshipStats.type !== 'base'" style="color: white; font-size: 17px; text-align: left; margin: 0px 20px 10px 20px;font-family: 'ClashDisplay-Variable';">Abilities</h1>
+				<div v-if="spaceshipStats.type !== 'base'" class="ability move">
 					<img class="ability-icon" :src="moveIcon"/>
-					<div class="ability-text">Move</div>
-					<img class="energy-icon" src="/energy.svg" width="23px"/>
-            		<span class="energy">2</span>
+					<div class="ability-text" style="color: #EFC97F">Move</div>
+					<span class="energy-ability">{{spaceshipStats.moveCost}}</span>
+					<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
 				</div>
-				{{ spaceshipStats }}
+				<div v-if="spaceshipStats.type !== 'carrier' && spaceshipStats.type !== 'base'" class="ability attack">
+					<img class="ability-icon" :src="attackIcon"/>
+					<div class="ability-text" style="color: #FF4949">Attack {{spaceshipStats.attack}}</div>
+					<span class="attack-ability">{{spaceshipStats.moveCost}}</span>
+					<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
+				</div>
+				<div v-if="spaceshipStats.type === 'carrier' && spaceshipStats.type !== 'base'" class="ability repair">
+					<img class="ability-icon" :src="repairIcon"/>
+					<div class="ability-text" style="color: #348227">Repair 25%</div>
+					<span class="attack-ability">{{spaceshipStats.moveCost}}</span>
+					<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
+				</div>
 			</div>
 			<PlayerCard @endTurn="endTurn" @surrender="surrender" :playerAddress="$store.state.address" :fuel="myFuel"/>
 		</div>
@@ -55,14 +84,18 @@ import axios from 'axios'
 import CONSTANTS from "../../constants.json"
 import PlayerCard from "@/components/PlayerCard.vue"
 import EnemyCard from "@/components/EnemyCard.vue"
+import arraySort from 'array-sort'
 
 export default {
   name: 'Board',
-  props:['state','playerIs', 'playerTurn', 'fuel0', 'fuel1', 'turnNum'],
+  props:['state','playerIs', 'playerTurn', 'fuel0', 'fuel1', 'turnNum', 'chat', 'log'],
   data() {
 	return {
 		selected: undefined,
 		hovered: undefined,
+		chatMessage: 'Please be nice in chat!',
+		sendingMsg: false,
+		logsAndChat: [],
 		turnSfx: require('../assets/sfx/turn.mp3'),
 		shotSfx: require('../assets/sfx/shot.mp3'),
 		repairSfx: require('../assets/sfx/repair.mp3'),
@@ -139,13 +172,25 @@ export default {
 			  })
 		  })
 	  },
-	  spaceshipStats() {
+	sortedLogsAndChats() {
+		return arraySort(this.logsAndChat, 'index')
+	},
+	keymap () {
+		return {
+			'enter': this.sendMessage
+		}
+	},
+	spaceshipStats() {
 		  if(this.hovered === undefined){
 			  return {}
 		  }
 		  const piece = this.ourState[this.hovered.y][this.hovered.x]
 		  if(!piece.type) return {}
 		  piece.maxHp = CONSTANTS.spaceshipsAttributes[piece.type].hp
+		  piece.attack = CONSTANTS.spaceshipsAttributes[piece.type].attack
+		  piece.moveCost = CONSTANTS.spaceshipsAttributes[piece.type].moveFuelCost
+		  if(piece.type === 'carrier') piece.repairCost = CONSTANTS.spaceshipsAttributes[piece.type].repairFuelCost
+		  else piece.attackCost = CONSTANTS.spaceshipsAttributes[piece.type].attackFuelCost
 		  piece.hpPercentage = Math.floor(piece.hp / piece.maxHp * 100)
 		  piece.hpColor = 'is-success'
 		  if(piece.hpPercentage < 50) piece.hpColor = 'is-danger'
@@ -306,6 +351,56 @@ export default {
 				}
 			}))
 		},
+		formatMsg(msgObj) {
+			let suffix = ''
+			if(msgObj.msg) {
+				if(msgObj.playerNo === this.playerIs) {
+					suffix = 'You: '
+				} else {
+					suffix = 'Enemy: '
+				}
+				return suffix + msgObj.msg
+			} else if(msgObj.action) {
+				if(msgObj.playerNo === this.playerIs) {
+					suffix = ''
+				} else {
+					suffix = ''
+				}
+				return suffix + this.formatAction(msgObj)
+			}
+		},
+		formatAction(actionObj) {
+			let message = ''
+			if(actionObj.playerNo === this.playerNo) {
+				if(actionObj.action === 'attack') {
+					if(actionObj.toPiece.type) {
+						message = 'Your ' + this.capitalize(actionObj.fromPiece.type) + ' attacked enemy\'s ' + this.capitalize(actionObj.toPiece.type) + ' and its HP is ' + actionObj.toPiece.hp
+					} else if(!actionObj.toPiece.type && actionObj.fromPiece.type){
+						message = 'Your '+ this.capitalize(actionObj.fromPiece.type) + 'destroyed enemy\'s unit'
+					}
+				} else if(actionObj.action === 'repair') {
+					message = 'Your ' + this.capitalize(actionObj.fromPiece.type) + ' repaired your ' + this.capitalize(actionObj.toPiece.type) + ' and its HP is ' + actionObj.toPiece.hp
+				}
+			} else {
+				if(actionObj.action === 'attack') {
+					if(actionObj.toPiece.type) {
+						message = 'Your ' + this.capitalize(actionObj.fromPiece.type) + ' was attacked by enemy\'s ' + this.capitalize(actionObj.toPiece.type) + ' and its HP is ' + actionObj.toPiece.hp
+					} else if(!actionObj.toPiece.type && actionObj.fromPiece.type) {
+						message = 'Your '+ this.capitalize(actionObj.fromPiece.type) + ' was destroyed'
+					}
+				} else if(actionObj.action === 'repair') {
+					message = 'Your ' + this.capitalize(actionObj.fromPiece.type) + ' was repaired by your enemy\'s ' + this.capitalize(actionObj.toPiece.type) + ' and its HP is ' + actionObj.toPiece.hp
+				}
+			}
+			return message
+		},
+		capitalize(str) {
+			if(str) {
+				const lower = str.toLowerCase()
+				return str.charAt(0).toUpperCase() + lower.slice(1)
+			}
+			return str
+		},
 	    playSound(sfx) {
 			var audio = new Audio(sfx)
 			audio.play()
@@ -320,6 +415,25 @@ export default {
 				}
 			}))
     	},
+		async sendMessage() {
+			this.sendingMsg = true
+			try {
+				await axios.get('/api/sendMessage', {
+					params:{
+						signature:this.$store.state.signature,
+						matchId: this.$store.state.matchId,
+						message: this.chatMessage
+					}
+				}) 
+			} catch(err) {
+				console.log(err)
+			} finally {
+				this.sendingMsg = false
+				this.chatMessage = 'Please be nice in chat!'
+				var container = this.$el.querySelector("#logs")
+				container.scrollTop = container.scrollHeight;
+			}
+		},
 	  isLegalMove(x,y) {
 		  return this.legalMoves.filter(move => move.x === x && move.y === y).length > 0
 	  },
@@ -380,12 +494,12 @@ export default {
 						newState[y][x].hp = newHp
 						const fuelCost = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].repairFuelCost
 						this.$store.commit('setMyFuel', this.myFuel - fuelCost)
+						newState[this.selected.y][this.selected.x].lastRepairTurn = this.turnNum
+						this.$store.commit('setBoard', newState)
 						if(this.myFuel - fuelCost === 0) {
 							this.$store.commit('endTurn')
 							this.playSound(this.turnSfx)
 						}
-						newState[y][x].lastRepairTurn = this.turnNum
-						this.$store.commit('setBoard', newState)
 						this.$store.dispatch('enqueue', axios.get('/api/boardAction', {
 							params:{
 								signature:this.$store.state.signature,
@@ -419,12 +533,12 @@ export default {
 				}
 				const fuelCost = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].attackFuelCost
 				this.$store.commit('setMyFuel', this.myFuel - fuelCost)
+				newState[this.selected.y][this.selected.x].lastAttackTurn = this.turnNum
+				this.$store.commit('setBoard', newState)
 				if(this.myFuel - fuelCost === 0) {
 					this.$store.commit('endTurn')
 					this.playSound(this.turnSfx)
 				}
-				newState[y][x].lastAttackTurn = this.turnNum
-				this.$store.commit('setBoard', newState)
 				this.$store.dispatch('enqueue', axios.get('/api/boardAction', {
 					params:{
 						signature:this.$store.state.signature,
@@ -503,23 +617,48 @@ export default {
 				  }
 			  }
 		  }
-			const toastConfig = {
-				duration: 10000,
-				position: 'is-bottom'
-			}
-			attacks.forEach(v => {
-				this.playSound(this.shotSfx)
-				this.$buefy.toast.open({message:`Your ${v} was attacked`, type: 'is-danger', ...toastConfig})
-			})
-			destroys.forEach(v => {
-				this.playSound(this.shotSfx)
-				this.$buefy.toast.open({message:`Your ${v} was destroyed`, type: 'is-danger', ...toastConfig})
-			})
-			repairs.forEach(v => {
-				this.playSound(this.repairSfx)
-				this.$buefy.toast.open({message: `Your enemy's ${v} was repaired`, type: 'is-info' , ...toastConfig})
-			})
-	  }
+
+		// const toastConfig = {
+		// 	duration: 10000,
+		// 	position: 'is-bottom'
+		// }
+		// console.log(newState.history.length)
+		// console.log(newState.history[newState.history.length - 1].action)
+		// if(newState.history[newState.history.length].action === 'endTurn') {
+		// 	this.playSound(this.turnSfx)
+		// }
+		attacks.forEach(v => {
+			this.playSound(this.shotSfx)
+			// this.$buefy.toast.open({message:`Your ${v} was attacked`, type: 'is-danger', ...toastConfig})
+		})
+		destroys.forEach(v => {
+			this.playSound(this.shotSfx)
+			// this.$buefy.toast.open({message:`Your ${v} was destroyed`, type: 'is-danger', ...toastConfig})
+		})
+		repairs.forEach(v => {
+			this.playSound(this.repairSfx)
+			// this.$buefy.toast.open({message: `Your enemy's ${v} was repaired`, type: 'is-info' , ...toastConfig})
+		})	
+	},
+	chat: function (newChat, oldChat) {
+		if(newChat.length !== oldChat.length) {
+			this.logsAndChat.push(newChat[newChat.length-1])
+		}
+	},
+	log: function (newLogs, oldLogs) {
+		if(newLogs.length !== oldLogs.length) {
+			this.logsAndChat.push(newLogs[newLogs.length-1])
+		}
+	}
+  },
+  created() {
+		for(let i=0; i<this.$store.state.matchState.chat.length; i++) {
+			this.logsAndChat.push(this.$store.state.matchState.chat[i])
+		}
+		for(let i=0; i<this.$store.state.matchState.log.length; i++) {
+			this.logsAndChat.push(this.$store.state.matchState.log[i])
+		}
+		
   }
 }
 </script>
@@ -533,7 +672,7 @@ h1 {
 }
 #hex-grid {
 	margin-left: -50px !important;
-	margin-top: 40px !important;
+	margin-top: 30px !important;
     width: fit-content;
     margin: 0 auto;
 	min-width: 110%;
@@ -543,22 +682,23 @@ h1 {
 }
 .row:nth-child(even) {
 	transform:translateX(calc(52.5px * var(--scale)));
-	margin-top: calc(-37.5px * var(--scale));
-	margin-bottom: calc(-37.5px * var(--scale));
+	margin-top: calc(-36.4px * var(--scale));
+	margin-bottom: calc(-36.4px * var(--scale));
 }
 .col {
 	display: inline;
 	position: relative;
+	cursor: pointer;
 }
 .hex-parcel {
-	filter:invert();
-	opacity: 0.1;
+	/* filter:invert(); */
+	opacity: 0.65;
 	height: calc(120px * var(--scale));
 	cursor: pointer;
 }
 .col:hover .hex-parcel {
+	filter:invert();
 	opacity: 1;
-	
 }
 .spaceship-stats {
 	margin: 0 auto;
@@ -575,7 +715,7 @@ h1 {
 	margin: 10px 20px 0px 20px;
 }
 .hp-progress {
-	margin: 15px 20px 10px 20px;
+	margin: 10px 20px 5px 20px;
 }
 .progressbar-text {
 	color: black; 
@@ -589,10 +729,16 @@ h1 {
 	margin: 0 auto;
 	height: 42px;
 	padding: 5px;
-
+	margin-bottom: 13px;
 }
 .move {
 	border: 0.5px solid #EFC97F;
+}
+.attack {
+	border: 0.5px solid #FF4949;
+}
+.repair {
+	border: 0.5px solid #348227;
 }
 .ability-icon {
 	width: 20px;
@@ -600,14 +746,38 @@ h1 {
 }
 .ability-text {
 	font-family: 'ClashDisplay-Variable';
-	margin-top: -32px !important;
+    margin-top: -18px;
     font-size: 16px;
-    color: #EFC97F;
-    margin-left: 35px;
+    margin-left: 10px;
+    display: inline-block;
+    line-height: 42px;
+    vertical-align: middle;
 }
-.energy-icon {
-	margin-top: -10px;
+.energy-ability {
+	font-family: 'ClashDisplay-Variable';
+	line-height: 42px;
+    vertical-align: middle;
+    display: inline-block;
+    margin-top: -18px;
+    font-size: 20px;
+    margin-left: 35%;
+	color: #EFC97F;
+}
+.attack-ability {
+	font-family: 'ClashDisplay-Variable';
+	line-height: 42px;
+    vertical-align: middle;
+    display: inline-block;
+    margin-top: -18px;
+    font-size: 20px;
+    margin-left: 20%;
+	color: #EFC97F;
+}
+.energy-icon-ability {
+	margin-bottom: 5px;
 	margin-right: -50px;
+	height: 17px;
+	display: inline-block;
 }
 /* .col .tooltip {
     visibility: hidden;
@@ -653,7 +823,8 @@ h1 {
 	opacity: 0.6 !important;
 }
 .selected {
-	opacity:1
+	opacity: 1;
+	filter: invert();
 }
 .rotate {
   -webkit-transform: scaleY(-1);
@@ -699,5 +870,69 @@ h1 {
 .right {
 	order: 3;
 	border-left: 1px solid #303030;
+}
+.chat-wrapper {
+	height: 52%;
+    width: 100%;
+    bottom: 0;
+    position: absolute;
+	padding: 20px;
+}
+.chat-input {
+	height: 55px;
+	width: 100%;
+	bottom: 0;
+	position: absolute;
+	left: 0;
+}
+.chat-btn {
+	background: black !important;
+	border-radius: 0px !important;
+    border-top: 1px solid #303030 !important;
+	border-right: 1px solid #303030 !important;
+	border-bottom: 1px solid #303030 !important;
+	border-left: none !important;
+	height: 55px !important;
+	padding: 14px;
+	color: white !important;
+	font-size: 14px !important;
+	font-weight: 500;
+	right: 0 !important;
+}
+.chat-btn:hover {
+	border: 1px solid white !important;
+}
+.chat-textarea {
+	background: black;
+}
+input.input.is-small.chat-textarea {
+    background: black;
+    border-top: 1px solid #303030;
+	border-left: 1px solid #303030;
+	border-bottom: 1px solid #303030;
+	border-right: none;
+	font-size: 15px;
+	height: 55px;
+	padding: 14px;
+	color: white;
+}
+input.input.is-small.chat-textarea:focus {
+	box-shadow: none;
+}
+input[placeholder], [placeholder], *[placeholder] {
+    color: white;
+}
+.control.is-small.is-clearfix {
+	width: 16.8vw;
+}
+#logs {
+    height: 90%;
+    padding-bottom: 10px;
+	overflow: scroll;
+}
+.chat-message {
+	background: black;
+	padding: 3px 0px;
+	color: rgba(255,255,255,0.5);
 }
 </style>

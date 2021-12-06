@@ -1,9 +1,10 @@
 <template>
     <div class="player-card" :style="cardProps">
         <center>
-            <div class="hexagon" :style="cssProps">
-                <div class="hexTop"></div>
-                <div class="hexBottom"></div>
+            <div class="hex" :style="cssProps">
+                <div class="hex-background">
+                    <img class="gravatar" :src="gravatar">
+                </div>
             </div>
             <h1 class="you">You</h1>
             <h1 class="your-address">{{ formattedAddress }}</h1>
@@ -32,15 +33,11 @@ export default {
     },
     computed: {
         cssProps() {
-            let styles = {
-                '--bg-img': 'url(' + this.gravatar + ')'
-            }
+            let styles = {}
             if(this.$store.state.matchState.playerTurn === this.$store.state.matchState.playerIs) {
-                styles['--border'] = 'solid 5px #416bff'
-                styles['--border-thick'] = 'solid 7.0711px #416bff'
+                styles['--border'] = 'white'
             } else {
-                styles['--border'] = 'solid 5px black'
-                styles['--border-thick'] = 'solid 7.0711px black'
+                styles['--border'] = 'black'
             }
             return styles
         },
@@ -90,7 +87,7 @@ section.modal-card-body.is-flex {
     background: black !important;
 }
 .player-card {
-    height: 500px;
+    height: 53.7%;
     width: 100%;
     bottom: 0;
     position: absolute;
@@ -118,8 +115,8 @@ section.modal-card-body.is-flex {
     background: transparent;
     color: #FF4949;
     text-transform: capitalize;
-    font-size: 19px;
-    height: 80px;
+    font-size: 17px;
+    height: 60px;
     line-height: 80px;
     transition: 400ms ease-in-out;
     border: 1px solid #303030;
@@ -131,7 +128,7 @@ section.modal-card-body.is-flex {
 .you {
     font-size: 27px;
     color: #416BFF;
-    padding-top: 15px;
+    padding-top: -10px;
 }
 .your-address {
     color: white;
@@ -160,12 +157,12 @@ section.modal-card-body.is-flex {
     background: #416BFF !important;
     border: 1px solid #6787fa;
     color: white;
-    height: 54px;
-    width: 45%;
+    height: 45px;
+    width: 40%;
     margin: 0px;
     margin-left: 5px;
-    padding: 12px;
-    font-size: 19px;
+    padding: 9px;
+    font-size: 17px;
     font-weight: 500;
     transition: 250ms ease-in-out;
     display: inline-block;
@@ -174,76 +171,30 @@ section.modal-card-body.is-flex {
 .end-turn[disabled] {
     background: grey !important;
 }
-.hexagon {
-  position: relative;
-  width: 130px; 
-  height: 75.06px;
-  margin: 37.53px 0;
-  background-image: var(--bg-img);
-  background-size: auto 138.5641px;
-  background-position: center;
-  border-left: var(--border);
-  border-right: var(--border);
-  margin-top: 60px;
+.hex {
+    background: var(--border);
+    display: block;
+    margin: 20px auto;
+    position: relative;
+    width: 120px;
+    height: 130px;
+    clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+    -webkit-clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+    -moz-clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
 }
-.hexTop,
-.hexBottom {
-  position: absolute;
-  z-index: 1;
-  width: 91.92px;
-  height: 91.92px;
-  overflow: hidden;
-  -webkit-transform: scaleY(0.5774) rotate(-45deg);
-  -ms-transform: scaleY(0.5774) rotate(-45deg);
-  transform: scaleY(0.5774) rotate(-45deg);
-  background: inherit;
-  left: 14.04px;
+.hex-background {
+    display: block;
+    margin: 0 auto;
+    position: absolute;
+    top: 5px; /* equal to border thickness */
+    right: 5px;
+    width: 110px; /* container height - (border thickness * 2) */
+    height: 120px; /* container height - (border thickness * 2) */
+    clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+    -webkit-clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+    -moz-clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
 }
-
-/*counter transform the bg image on the caps*/
-.hexTop:after,
-.hexBottom:after {
-  content: "";
-  position: absolute;
-  width: 120.0000px;
-  height: 69.2820323027551px;
-  -webkit-transform:  rotate(45deg) scaleY(1.7321) translateY(-34.6410px);
-  -ms-transform:      rotate(45deg) scaleY(1.7321) translateY(-34.6410px);
-  transform:          rotate(45deg) scaleY(1.7321) translateY(-34.6410px);
-  -webkit-transform-origin: 0 0;
-  -ms-transform-origin: 0 0;
-  transform-origin: 0 0;
-  background: inherit;
-}
-
-.hexTop {
-  top: -45.9619px;
-  border-top: var(--border-thick);
-  border-right: var(--border-thick);
-}
-
-.hexTop:after {
-  background-position: center top;
-}
-
-.hexBottom {
-  bottom: -45.9619px;
-  border-bottom: var(--border-thick);
-  border-left: var(--border-thick);
-}
-
-.hexBottom:after {
-  background-position: center bottom;
-}
-
-.hexagon:after {
-  content: "";
-  position: absolute;
-  top: 2.8868px;
-  left: 0;
-  width: 120.0000px;
-  height: 69.2820px;
-  z-index: 2;
-  background: inherit;
+.gravatar {
+    height: 120px;
 }
 </style>

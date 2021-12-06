@@ -175,7 +175,7 @@ module.exports = async (req, res) => {
     }
 
     // Update Match History
-    newMatchStats.history.push({from, to, action, playerNumber})
+    newMatchStats.history.push({from: {x: from.x, y: from.y}, to: {x: to.x, y: to.y}, action, playerNumber})
 
     if(fuel === 0) { // if remaining fuel is 0, automatically end turn
         newMatchStats.playerTurn = newMatchStats.playerTurn === 0 ? 1 : 0
@@ -244,7 +244,13 @@ module.exports = async (req, res) => {
     newMatchStats.board[from.y][from.x].lastAttackTurn = newMatchStats.turnNum
 
     // Update Match History
-    newMatchStats.history.push({from, to, action, playerNumber})
+    newMatchStats.history.push({from: {x: from.x, y: from.y}, to, action, playerNumber})
+
+    // Update game log
+    newMatchStats.log.push({index: matchDoc.logsIndex, playerNo: playerNumber, action: 'attack', fromPiece: newMatchStats.board[from.y][from.x], toPiece: newMatchStats.board[to.y][to.x]})
+
+    // Increase Logs Index
+    newMatchStats.logsIndex++
 
     if(fuel === 0) { // if remaining fuel is 0, automatically end turn
         newMatchStats.playerTurn = newMatchStats.playerTurn === 0 ? 1 : 0
@@ -288,7 +294,13 @@ module.exports = async (req, res) => {
     newMatchStats.board[from.y][from.x].lastRepairTurn = newMatchStats.turnNum
 
     // Update Match History
-    newMatchStats.history.push({from, to, action, playerNumber})
+    newMatchStats.history.push({from: {x: from.x, y: from.y}, to: {x: to.x, y: to.y}, action, playerNumber})
+
+    // Update game log
+    newMatchStats.log.push({index: matchDoc.logsIndex, playerNo: playerNumber, action: 'repair', fromPiece: newMatchStats.board[from.y][from.x], toPiece: newMatchStats.board[to.y][to.x]})
+
+    // Increase Logs Index
+    newMatchStats.logsIndex++
     
     if(fuel === 0) { // if remaining fuel is 0, automatically end turn
         newMatchStats.playerTurn = newMatchStats.playerTurn === 0 ? 1 : 0
