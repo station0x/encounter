@@ -2,8 +2,9 @@
     <div class="section onboarding">
         <center>
             <img
-            src="/logo.png"
-            alt="Station0x Encounter Logo"
+                src="/logo.png"
+                alt="Station0x Encounter Logo"
+                class="mainlogo"
             />
             <div class="onboarding-wrapper">
                 <div v-if="!invitationLink">
@@ -25,7 +26,7 @@
                     <template v-slot:content>
                         Link Copied!
                     </template>
-                    <b-button v-if="invitationLink" v-clipboard:copy="'https://' + invitationLink" class="primary-btn">Copy Link</b-button>
+                    <b-button v-if="invitationLink" v-clipboard:copy="linkPrefix + invitationLink" class="primary-btn">Copy Link</b-button>
                 </b-tooltip>
                 <div @click="openGameGuideModal" class="clickable-text">Game Guide  <b-icon icon="alert-circle" size="is-small" style="margin-left: 5px"></b-icon></div>
                 <div class="info-text">This is a beta testing version use it on your own risk</div>
@@ -42,7 +43,8 @@ export default {
     data() {
         return {
             invitationLink: undefined,
-            matchLoader: false
+            matchLoader: false,
+            linkPrefix: ''
         }
     },
     methods: {
@@ -54,6 +56,7 @@ export default {
                         signature:this.$store.state.signature
                     }
                 })
+                this.linkPrefix = window.location.host.split(':')[0] === 'localhost' ? 'http://' : 'https://'
                 this.invitationLink = window.location.host + '/play/' + res.data.inviteLink
             } finally {
                 this.matchLoader = false

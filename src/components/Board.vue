@@ -2,24 +2,76 @@
 	<div class="main-wrapper">
 		<div class="left">
 			<EnemyCard :playerAddress="enemyAddress" :fuel="enemyFuel"/>
+			<div class="chat-wrapper">
+				<div id="logs">
+					<div v-for="(msg, key) in sortedLogsAndChats" :key="key">
+						<div class="chat-message">
+							{{ formatMsg(msg) }}
+						</div>
+					</div>
+					
+				</div>
+				<div v-hotkey="keymap" class="chat-input">
+					<b-field dark>
+						<b-input @focus="chatMessage = ''" v-model="chatMessage" dark placeholder="Please be nice in chat!" custom-class="chat-textarea" size="is-small"></b-input>
+						<p class="control">
+							<b-button :loading="sendingMsg" class="chat-btn" @click="sendMessage" label="Send" />
+						</p>
+					</b-field>
+				</div>
+			</div>
 		</div>
 		<div class="middle">
 			<div id="hex-grid" :class="{rotate: playerIs === 1}">
 				<div class="row" v-for="(row, y) in ourState" :key="y">
-					<div @click="select(col, x, y)" class="col" v-for="(col, x) in row" :key="x">
+					<div @mouseover="hovered = {x,y}" @click="select(col, x, y)" class="col" v-for="(col, x) in row" :key="x">
 						<img :class="hexClasses(x,y)" src="hex.png" height="80px"/>
 						<img :class="pieceClasses(col.owner, x, y)" :src="col.img"/>
 						<img v-if="isLegalMove(x,y)" class="move-circle" src="circle.png"/>
-						<div v-if="col.type" :class="{tooltip:true, rotate: playerIs === 1}">
+						<!-- <div v-if="col.type" class="tooltip">
+							<div class="spaceship-type">{{ col.type }}</div>
 							<span class="attribute" v-for="(value, key) in getSpaceshipAttributes(col)" :key="key">
 							{{key}}: {{value}}
 							</span>
-						</div>
+						</div> -->
 					</div>
 				</div>
 			</div>
 		</div>
 		<div class="right">
+			<div v-if="spaceshipStats.type" class="spaceship-stats">
+				<center>
+					<img class="spaceship-img" :src="spaceshipStats.img"/>
+					<h1 class="spaceship-type" :style="{color: spaceshipStats.owner === this.playerIs ? '#416BFF' : '#C72929'}">{{spaceshipStats.type}}</h1>
+				</center>
+				<b-progress 
+					class="hp-progress"
+					:type="spaceshipStats.hpColor" 
+					:value="spaceshipStats.hp"
+					:max="spaceshipStats.maxHp"
+					show-value>
+					<h1 class="progressbar-text">HP:  {{spaceshipStats.hp}} / {{ spaceshipStats.maxHp}}</h1>
+				</b-progress>
+				<h1 v-if="spaceshipStats.type !== 'base'" style="color: white; font-size: 17px; text-align: left; margin: 0px 20px 10px 20px;font-family: 'ClashDisplay-Variable';">Abilities</h1>
+				<div v-if="spaceshipStats.type !== 'base'" class="ability move">
+					<img class="ability-icon" :src="moveIcon"/>
+					<div class="ability-text" style="color: #EFC97F">Move</div>
+					<span class="energy-ability">{{spaceshipStats.moveCost}}</span>
+					<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
+				</div>
+				<div v-if="spaceshipStats.type !== 'carrier' && spaceshipStats.type !== 'base'" class="ability attack">
+					<img class="ability-icon" :src="attackIcon"/>
+					<div class="ability-text" style="color: #FF4949">Attack {{spaceshipStats.attack}}</div>
+					<span class="attack-ability">{{spaceshipStats.moveCost}}</span>
+					<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
+				</div>
+				<div v-if="spaceshipStats.type === 'carrier' && spaceshipStats.type !== 'base'" class="ability repair">
+					<img class="ability-icon" :src="repairIcon"/>
+					<div class="ability-text" style="color: #348227">Repair 25%</div>
+					<span class="attack-ability">{{spaceshipStats.moveCost}}</span>
+					<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
+				</div>
+			</div>
 			<PlayerCard @endTurn="endTurn" @surrender="surrender" :playerAddress="$store.state.address" :fuel="myFuel"/>
 		</div>
 	</div>
@@ -32,13 +84,18 @@ import axios from 'axios'
 import CONSTANTS from "../../constants.json"
 import PlayerCard from "@/components/PlayerCard.vue"
 import EnemyCard from "@/components/EnemyCard.vue"
+import arraySort from 'array-sort'
 
 export default {
   name: 'Board',
-  props:['state','playerIs', 'playerTurn', 'fuel0', 'fuel1', 'turnNum'],
+  props:['state','playerIs', 'playerTurn', 'fuel0', 'fuel1', 'turnNum', 'chat', 'log'],
   data() {
 	return {
-		selected:undefined,
+		selected: undefined,
+		hovered: undefined,
+		chatMessage: 'Please be nice in chat!',
+		sendingMsg: false,
+		logsAndChat: [],
 		turnSfx: require('../assets/sfx/turn.mp3'),
 		shotSfx: require('../assets/sfx/shot.mp3'),
 		repairSfx: require('../assets/sfx/repair.mp3'),
@@ -57,7 +114,10 @@ export default {
 			destoyer: require('../assets/red/destroyer.png'),
 			carrier: require('../assets/red/carrier.png'),
 			base: require('../assets/red/base.png')
-		}
+		},
+		moveIcon: require('../assets/img/moveIcon.svg'),
+		attackIcon: require('../assets/img/attackIcon.svg'),
+		repairIcon: require('../assets/img/repairIcon.svg')
 	}
   },
   components: {
@@ -111,6 +171,32 @@ export default {
 				return col
 			  })
 		  })
+	  },
+	sortedLogsAndChats() {
+		return arraySort(this.logsAndChat, 'index')
+	},
+	keymap () {
+		return {
+			'enter': this.sendMessage
+		}
+	},
+	spaceshipStats() {
+		  if(this.hovered === undefined){
+			  return {}
+		  }
+		  const piece = this.ourState[this.hovered.y][this.hovered.x]
+		  if(!piece.type) return {}
+		  piece.maxHp = CONSTANTS.spaceshipsAttributes[piece.type].hp
+		  piece.attack = CONSTANTS.spaceshipsAttributes[piece.type].attack
+		  piece.moveCost = CONSTANTS.spaceshipsAttributes[piece.type].moveFuelCost
+		  if(piece.type === 'carrier') piece.repairCost = CONSTANTS.spaceshipsAttributes[piece.type].repairFuelCost
+		  else piece.attackCost = CONSTANTS.spaceshipsAttributes[piece.type].attackFuelCost
+		  piece.hpPercentage = Math.floor(piece.hp / piece.maxHp * 100)
+		  piece.hpColor = 'is-success'
+		  if(piece.hpPercentage < 50) piece.hpColor = 'is-danger'
+		  else if(piece.hpPercentage < 100) piece.hpColor = 'is-warning'
+
+		  return piece
 	  },
 	  enemyAddress() {
 		return this.$store.state.matchState.playerIs === 0 ? this.$store.state.matchState.player1 : this.$store.state.matchState.player0
@@ -265,6 +351,56 @@ export default {
 				}
 			}))
 		},
+		formatMsg(msgObj) {
+			let suffix = ''
+			if(msgObj.msg) {
+				if(msgObj.playerNo === this.playerIs) {
+					suffix = 'You: '
+				} else {
+					suffix = 'Enemy: '
+				}
+				return suffix + msgObj.msg
+			} else if(msgObj.action) {
+				if(msgObj.playerNo === this.playerIs) {
+					suffix = ''
+				} else {
+					suffix = ''
+				}
+				return suffix + this.formatAction(msgObj)
+			}
+		},
+		formatAction(actionObj) {
+			let message = ''
+			if(actionObj.playerNo === this.playerNo) {
+				if(actionObj.action === 'attack') {
+					if(actionObj.toPiece.type) {
+						message = 'Your ' + this.capitalize(actionObj.fromPiece.type) + ' attacked enemy\'s ' + this.capitalize(actionObj.toPiece.type) + ' and its HP is ' + actionObj.toPiece.hp
+					} else if(!actionObj.toPiece.type && actionObj.fromPiece.type){
+						message = 'Your '+ this.capitalize(actionObj.fromPiece.type) + 'destroyed enemy\'s unit'
+					}
+				} else if(actionObj.action === 'repair') {
+					message = 'Your ' + this.capitalize(actionObj.fromPiece.type) + ' repaired your ' + this.capitalize(actionObj.toPiece.type) + ' and its HP is ' + actionObj.toPiece.hp
+				}
+			} else {
+				if(actionObj.action === 'attack') {
+					if(actionObj.toPiece.type) {
+						message = 'Your ' + this.capitalize(actionObj.fromPiece.type) + ' was attacked by enemy\'s ' + this.capitalize(actionObj.toPiece.type) + ' and its HP is ' + actionObj.toPiece.hp
+					} else if(!actionObj.toPiece.type && actionObj.fromPiece.type) {
+						message = 'Your '+ this.capitalize(actionObj.fromPiece.type) + ' was destroyed'
+					}
+				} else if(actionObj.action === 'repair') {
+					message = 'Your ' + this.capitalize(actionObj.fromPiece.type) + ' was repaired by your enemy\'s ' + this.capitalize(actionObj.toPiece.type) + ' and its HP is ' + actionObj.toPiece.hp
+				}
+			}
+			return message
+		},
+		capitalize(str) {
+			if(str) {
+				const lower = str.toLowerCase()
+				return str.charAt(0).toUpperCase() + lower.slice(1)
+			}
+			return str
+		},
 	    playSound(sfx) {
 			var audio = new Audio(sfx)
 			audio.play()
@@ -279,6 +415,25 @@ export default {
 				}
 			}))
     	},
+		async sendMessage() {
+			this.sendingMsg = true
+			try {
+				await axios.get('/api/sendMessage', {
+					params:{
+						signature:this.$store.state.signature,
+						matchId: this.$store.state.matchId,
+						message: this.chatMessage
+					}
+				}) 
+			} catch(err) {
+				console.log(err)
+			} finally {
+				this.sendingMsg = false
+				this.chatMessage = 'Please be nice in chat!'
+				var container = this.$el.querySelector("#logs")
+				container.scrollTop = container.scrollHeight;
+			}
+		},
 	  isLegalMove(x,y) {
 		  return this.legalMoves.filter(move => move.x === x && move.y === y).length > 0
 	  },
@@ -339,12 +494,12 @@ export default {
 						newState[y][x].hp = newHp
 						const fuelCost = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].repairFuelCost
 						this.$store.commit('setMyFuel', this.myFuel - fuelCost)
+						newState[this.selected.y][this.selected.x].lastRepairTurn = this.turnNum
+						this.$store.commit('setBoard', newState)
 						if(this.myFuel - fuelCost === 0) {
 							this.$store.commit('endTurn')
 							this.playSound(this.turnSfx)
 						}
-						newState[y][x].lastRepairTurn = this.turnNum
-						this.$store.commit('setBoard', newState)
 						this.$store.dispatch('enqueue', axios.get('/api/boardAction', {
 							params:{
 								signature:this.$store.state.signature,
@@ -378,12 +533,12 @@ export default {
 				}
 				const fuelCost = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].attackFuelCost
 				this.$store.commit('setMyFuel', this.myFuel - fuelCost)
+				newState[this.selected.y][this.selected.x].lastAttackTurn = this.turnNum
+				this.$store.commit('setBoard', newState)
 				if(this.myFuel - fuelCost === 0) {
 					this.$store.commit('endTurn')
 					this.playSound(this.turnSfx)
 				}
-				newState[y][x].lastAttackTurn = this.turnNum
-				this.$store.commit('setBoard', newState)
 				this.$store.dispatch('enqueue', axios.get('/api/boardAction', {
 					params:{
 						signature:this.$store.state.signature,
@@ -462,23 +617,48 @@ export default {
 				  }
 			  }
 		  }
-			const toastConfig = {
-				duration: 10000,
-				position: 'is-bottom'
-			}
-			attacks.forEach(v => {
-				this.playSound(this.shotSfx)
-				this.$buefy.toast.open({message:`Your ${v} was attacked`, type: 'is-danger', ...toastConfig})
-			})
-			destroys.forEach(v => {
-				this.playSound(this.shotSfx)
-				this.$buefy.toast.open({message:`Your ${v} was destroyed`, type: 'is-danger', ...toastConfig})
-			})
-			repairs.forEach(v => {
-				this.playSound(this.repairSfx)
-				this.$buefy.toast.open({message: `Your enemy's ${v} was repaired`, type: 'is-info' , ...toastConfig})
-			})
-	  }
+
+		// const toastConfig = {
+		// 	duration: 10000,
+		// 	position: 'is-bottom'
+		// }
+		// console.log(newState.history.length)
+		// console.log(newState.history[newState.history.length - 1].action)
+		// if(newState.history[newState.history.length].action === 'endTurn') {
+		// 	this.playSound(this.turnSfx)
+		// }
+		attacks.forEach(v => {
+			this.playSound(this.shotSfx)
+			// this.$buefy.toast.open({message:`Your ${v} was attacked`, type: 'is-danger', ...toastConfig})
+		})
+		destroys.forEach(v => {
+			this.playSound(this.shotSfx)
+			// this.$buefy.toast.open({message:`Your ${v} was destroyed`, type: 'is-danger', ...toastConfig})
+		})
+		repairs.forEach(v => {
+			this.playSound(this.repairSfx)
+			// this.$buefy.toast.open({message: `Your enemy's ${v} was repaired`, type: 'is-info' , ...toastConfig})
+		})	
+	},
+	chat: function (newChat, oldChat) {
+		if(newChat.length !== oldChat.length) {
+			this.logsAndChat.push(newChat[newChat.length-1])
+		}
+	},
+	log: function (newLogs, oldLogs) {
+		if(newLogs.length !== oldLogs.length) {
+			this.logsAndChat.push(newLogs[newLogs.length-1])
+		}
+	}
+  },
+  created() {
+		for(let i=0; i<this.$store.state.matchState.chat.length; i++) {
+			this.logsAndChat.push(this.$store.state.matchState.chat[i])
+		}
+		for(let i=0; i<this.$store.state.matchState.log.length; i++) {
+			this.logsAndChat.push(this.$store.state.matchState.log[i])
+		}
+		
   }
 }
 </script>
@@ -491,8 +671,8 @@ h1 {
 	margin: 0;
 }
 #hex-grid {
-	margin-left: -63px !important;
-	margin-top: 40px !important;
+	margin-left: -50px !important;
+	margin-top: 30px !important;
     width: fit-content;
     margin: 0 auto;
 	min-width: 110%;
@@ -502,36 +682,126 @@ h1 {
 }
 .row:nth-child(even) {
 	transform:translateX(calc(52.5px * var(--scale)));
-	margin-top: calc(-37.5px * var(--scale));
-	margin-bottom: calc(-37.5px * var(--scale));
+	margin-top: calc(-36.4px * var(--scale));
+	margin-bottom: calc(-36.4px * var(--scale));
 }
 .col {
 	display: inline;
 	position: relative;
+	cursor: pointer;
 }
 .hex-parcel {
-	filter:invert();
-	opacity: 0.1;
+	/* filter:invert(); */
+	opacity: 0.65;
 	height: calc(120px * var(--scale));
 	cursor: pointer;
 }
 .col:hover .hex-parcel {
+	filter:invert();
 	opacity: 1;
-	
 }
-.col .tooltip {
-  visibility: hidden;
-  width: 120px;
-  background-color: black;
-  color: #fff;
-  text-align: center;
-  padding: 5px 0;
-  position: absolute;
-  z-index: 1;
-  top: 15px;
-  left: -25px;
+.spaceship-stats {
+	margin: 0 auto;
+	padding: 10px;
 }
-
+.spaceship-type {
+	color: #416BFF;
+	font-family: 'ClashDisplay-Variable';
+	font-size: 21px;
+	text-transform: capitalize;
+}
+.spaceship-img {
+	width: 120px;
+	margin: 10px 20px 0px 20px;
+}
+.hp-progress {
+	margin: 10px 20px 5px 20px;
+}
+.progressbar-text {
+	color: black; 
+	font-size: 12px; 
+	font-weight: 500;
+}
+.ability {
+	box-sizing: border-box;
+	border-radius: 4px;
+	width: 67%;
+	margin: 0 auto;
+	height: 42px;
+	padding: 5px;
+	margin-bottom: 13px;
+}
+.move {
+	border: 0.5px solid #EFC97F;
+}
+.attack {
+	border: 0.5px solid #FF4949;
+}
+.repair {
+	border: 0.5px solid #348227;
+}
+.ability-icon {
+	width: 20px;
+	margin: 5.5px;
+}
+.ability-text {
+	font-family: 'ClashDisplay-Variable';
+    margin-top: -18px;
+    font-size: 16px;
+    margin-left: 10px;
+    display: inline-block;
+    line-height: 42px;
+    vertical-align: middle;
+}
+.energy-ability {
+	font-family: 'ClashDisplay-Variable';
+	line-height: 42px;
+    vertical-align: middle;
+    display: inline-block;
+    margin-top: -18px;
+    font-size: 20px;
+    margin-left: 35%;
+	color: #EFC97F;
+}
+.attack-ability {
+	font-family: 'ClashDisplay-Variable';
+	line-height: 42px;
+    vertical-align: middle;
+    display: inline-block;
+    margin-top: -18px;
+    font-size: 20px;
+    margin-left: 20%;
+	color: #EFC97F;
+}
+.energy-icon-ability {
+	margin-bottom: 5px;
+	margin-right: -50px;
+	height: 17px;
+	display: inline-block;
+}
+/* .col .tooltip {
+    visibility: hidden;
+    width: 270px;
+    background-color: black !important;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    position: absolute;
+    left: -80px;
+    border-radius: 5px;
+    border: 1px solid white;
+	opacity: 1;
+    height: 300px;
+    padding: 20px;
+	z-index: 10;
+}
+.bottomTooltip {
+	bottom: 125px;
+}
+.topTooltip {
+	bottom: 0px;
+	transform: translateY(150px);
+} */
 /* Show the tooltip text when you mouse over the tooltip container */
 .col:hover .tooltip {
   visibility: visible;
@@ -553,7 +823,8 @@ h1 {
 	opacity: 0.6 !important;
 }
 .selected {
-	opacity:1
+	opacity: 1;
+	filter: invert();
 }
 .rotate {
   -webkit-transform: scaleY(-1);
@@ -599,5 +870,69 @@ h1 {
 .right {
 	order: 3;
 	border-left: 1px solid #303030;
+}
+.chat-wrapper {
+	height: 52%;
+    width: 100%;
+    bottom: 0;
+    position: absolute;
+	padding: 20px;
+}
+.chat-input {
+	height: 55px;
+	width: 100%;
+	bottom: 0;
+	position: absolute;
+	left: 0;
+}
+.chat-btn {
+	background: black !important;
+	border-radius: 0px !important;
+    border-top: 1px solid #303030 !important;
+	border-right: 1px solid #303030 !important;
+	border-bottom: 1px solid #303030 !important;
+	border-left: none !important;
+	height: 55px !important;
+	padding: 14px;
+	color: white !important;
+	font-size: 14px !important;
+	font-weight: 500;
+	right: 0 !important;
+}
+.chat-btn:hover {
+	border: 1px solid white !important;
+}
+.chat-textarea {
+	background: black;
+}
+input.input.is-small.chat-textarea {
+    background: black;
+    border-top: 1px solid #303030;
+	border-left: 1px solid #303030;
+	border-bottom: 1px solid #303030;
+	border-right: none;
+	font-size: 15px;
+	height: 55px;
+	padding: 14px;
+	color: white;
+}
+input.input.is-small.chat-textarea:focus {
+	box-shadow: none;
+}
+input[placeholder], [placeholder], *[placeholder] {
+    color: white;
+}
+.control.is-small.is-clearfix {
+	width: 16.8vw;
+}
+#logs {
+    height: 90%;
+    padding-bottom: 10px;
+	overflow: scroll;
+}
+.chat-message {
+	background: black;
+	padding: 3px 0px;
+	color: rgba(255,255,255,0.5);
 }
 </style>

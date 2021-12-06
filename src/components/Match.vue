@@ -4,7 +4,7 @@
             <center>
                 <div class="wrapper">
                     <div class="paragraph para-1">The year is 2{{getRandomInt(100,999)}}</div>
-                    <div class="paragraph para-2">Location: Vorc industrial region</div>
+                    <div class="paragraph para-2">Location: Skvorc industrial region</div>
                     <div class="paragraph para-3">Juperian fleet #{{getRandomInt(100,999)}} is securing nearby Plutonium miners</div>
                     <div class="paragraph para-4">Unidentified hostiles are approaching at high speed</div>
                     <div class="skip-btn" @click="onboarding=false">Skip</div>
@@ -14,9 +14,8 @@
         <div class="match-wrapper">
             <img class="logoIcon" :src="this.logo"/>
             <div @click="openGameGuideModal" class="clickable-text in-game-btn">Game Guide  <b-icon icon="alert-circle" size="is-small" style="margin-left: 5px"></b-icon></div>
-            <b-button v-if="soundisOn" @click="soundOff" class="sound-btn" icon-right="volume-high"></b-button>
-            <b-button v-else-if="!soundisOn" @click="soundOn" class="sound-btn" icon-right="volume-off"></b-button>
-            <center>
+            <!-- <b-button v-if="soundisOn" @click="soundOff" class="sound-btn" icon-right="volume-high"></b-button>
+            <b-button v-else-if="!soundisOn" @click="soundOn" class="sound-btn" icon-right="volume-off"></b-button> -->
                 <Board
                     :state="$store.state.matchState.state"
                     :playerIs="$store.state.matchState.playerIs"
@@ -24,8 +23,9 @@
                     :fuel0="$store.state.matchState.fuel0"    
                     :fuel1="$store.state.matchState.fuel1"    
                     :turnNum="$store.state.matchState.turnNum"
+                    :chat="$store.state.matchState.chat"
+                    :log="$store.state.matchState.log"
                 />
-            </center>
             <div class="end-wrapper" v-if="$store.state.matchState.playerIs === $store.state.matchState.winner">
                 <center>
                     <img class="result-vector" :src="victory"/>
@@ -50,10 +50,10 @@ export default {
     data() {
         return {
             onboarding: true,
-            logo: require('../assets/img/logoIcon.svg'),
+            logo: require('../assets/img/widelogo.png'),
             victory: require('../assets/img/victory.png'),
             defeat: require('../assets/img/defeat.png'),
-            audio: new Howl({src: [require('../assets/sfx/soundtrack.mp3')], loop: true}),
+            // audio: new Howl({src: [require('../assets/sfx/soundtrack.mp3')], loop: true}),
             soundisOn: undefined,
             loading: false
         }
@@ -76,21 +76,21 @@ export default {
                 component: GameGuide
             })
         },
-        soundOn() {
-            this.audio.play()
-            this.soundisOn = true
-        },
-        soundOff() {
-            this.audio.pause()
-            this.soundisOn = false
-        }
+        // soundOn() {
+        //     this.audio.play()
+        //     this.soundisOn = true
+        // },
+        // soundOff() {
+        //     this.audio.pause()
+        //     this.soundisOn = false
+        // }
     },
     created () {
         setTimeout(()=> this.onboarding = false , 22000)
-        this.soundOn()
+        // this.soundOn()
     },
     beforeDestroy() {
-        this.soundOff()
+        // this.soundOff()
     }
 }
 </script>
@@ -113,7 +113,7 @@ export default {
 }
 .in-game-btn {
     position: absolute;
-    top: 0.6vh;
+    top: 2px;
     right: 8vw;
     color: white;
 }
@@ -162,11 +162,12 @@ export default {
   position: absolute;
   top: 3vh;
   left: 3vw;
-  width: 220px;
+  width: 200px;
+  margin-top: 0px;
 }
 .match-wrapper {
-    padding: 11.5vh 3vw 11.5vh 3vw;
-    max-width: 2100px;
+    padding: 10vh 3vw 0 3vw;
+    max-width: 1680px;
     margin: 0 auto;
 }
 .onboarding-animation {
