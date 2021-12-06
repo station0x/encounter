@@ -32,8 +32,6 @@ module.exports = async (req, res) => {
     // Increase Logs Index
     newMatchStats.logsIndex++
 
-    // console.log(newMatchStats.chat)
-
     await matches.updateOne({_id:matchDoc._id}, {
         $set:newMatchStats
     })
