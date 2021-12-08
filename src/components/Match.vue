@@ -13,7 +13,6 @@
         </div>
         <div class="match-wrapper">
             <img class="logoIcon" :src="this.logo"/>
-            <div @click="openGameGuideModal" class="clickable-text in-game-btn">Game Guide  <b-icon icon="alert-circle" size="is-small" style="margin-left: 5px"></b-icon></div>
             <!-- <b-button v-if="soundisOn" @click="soundOff" class="sound-btn" icon-right="volume-high"></b-button>
             <b-button v-else-if="!soundisOn" @click="soundOn" class="sound-btn" icon-right="volume-off"></b-button> -->
                 <Board
@@ -25,6 +24,7 @@
                     :turnNum="$store.state.matchState.turnNum"
                     :chat="$store.state.matchState.chat"
                     :log="$store.state.matchState.log"
+                    :lastTurnTimestamp="$store.state.matchState.lastTurnTimestamp"
                 />
             <div class="end-wrapper" v-if="$store.state.matchState.playerIs === $store.state.matchState.winner">
                 <center>
@@ -43,8 +43,6 @@
 </template>
 
 <script>
-import GameGuide from '@/components/GameGuide.vue'
-import { Howl } from 'howler'
 import Board from '@/components/Board.vue'
 export default {
     data() {
@@ -70,11 +68,6 @@ export default {
             min = Math.ceil(min);
             max = Math.floor(max);
             return Math.floor(Math.random() * (max - min + 1)) + min;
-        },
-        openGameGuideModal() {
-            this.$buefy.modal.open({
-                component: GameGuide
-            })
         },
         // soundOn() {
         //     this.audio.play()
@@ -167,7 +160,6 @@ export default {
 }
 .match-wrapper {
     padding: 10vh 3vw 0 3vw;
-    max-width: 1680px;
     margin: 0 auto;
 }
 .onboarding-animation {

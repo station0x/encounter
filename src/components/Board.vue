@@ -1,7 +1,7 @@
 <template>
 	<div class="main-wrapper">
 		<div class="left">
-			<EnemyCard :playerAddress="enemyAddress" :fuel="enemyFuel"/>
+			<EnemyCard @endEnemyTurn="endEnemyTurn" :playerAddress="enemyAddress" :fuel="enemyFuel" :lastTurnTimestamp="lastTurnTimestamp" :isEnemyTurn="!isMyTurn"/>
 			<div class="chat-wrapper">
 				<div id="logs">
 					<div v-for="(msg, key) in sortedLogsAndChats" :key="key">
@@ -11,11 +11,12 @@
 					</div>
 					
 				</div>
-				<div v-hotkey="keymap" class="chat-input">
-					<b-field dark>
-						<b-input @focus="chatMessage = ''" v-model="chatMessage" dark placeholder="Please be nice in chat!" custom-class="chat-textarea" size="is-small"></b-input>
+				<div class="chat-input">
+					<b-field>
+						<!-- <b-input @focus="chatMessage = ''" v-model="chatMessage" :custom-class="{'chat-textarea': true, 'chat-placeholder-color': chatMessage === 'Please be nice in chat!'}" size="is-small" expanded></b-input> -->
+						<b-input v-on:keyup.native.enter="sendMessage" v-model="chatMessage" custom-class="chat-textarea" size="is-small" expanded></b-input>
 						<p class="control">
-							<b-button :loading="sendingMsg" class="chat-btn" @click="sendMessage" label="Send" />
+							<b-button class="chat-btn" @click="sendMessage" label="Send"></b-button>
 						</p>
 					</b-field>
 				</div>
@@ -72,7 +73,7 @@
 					<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
 				</div>
 			</div>
-			<PlayerCard @endTurn="endTurn" @surrender="surrender" :playerAddress="$store.state.address" :fuel="myFuel"/>
+			<PlayerCard @endTurn="endTurn" @surrender="surrender" :playerAddress="$store.state.address" :fuel="myFuel" :lastTurnTimestamp="lastTurnTimestamp" :isMyTurn="isMyTurn"/>
 		</div>
 	</div>
 	<!-- <b-button v-if="isMyTurn" @click="endTurn">End Turn</b-button>
@@ -88,14 +89,13 @@ import arraySort from 'array-sort'
 
 export default {
   name: 'Board',
-  props:['state','playerIs', 'playerTurn', 'fuel0', 'fuel1', 'turnNum', 'chat', 'log'],
+  props:['state','playerIs', 'playerTurn', 'fuel0', 'fuel1', 'turnNum', 'chat', 'log', 'lastTurnTimestamp'],
   data() {
 	return {
 		selected: undefined,
 		hovered: undefined,
-		chatMessage: 'Please be nice in chat!',
+		chatMessage: '',
 		sendingMsg: false,
-		logsAndChat: [],
 		turnSfx: require('../assets/sfx/turn.mp3'),
 		shotSfx: require('../assets/sfx/shot.mp3'),
 		repairSfx: require('../assets/sfx/repair.mp3'),
@@ -173,7 +173,7 @@ export default {
 		  })
 	  },
 	sortedLogsAndChats() {
-		return arraySort(this.logsAndChat, 'index')
+		return arraySort([...this.chat, ...this.log], 'index')
 	},
 	keymap () {
 		return {
@@ -371,25 +371,25 @@ export default {
 		},
 		formatAction(actionObj) {
 			let message = ''
-			if(actionObj.playerNo === this.playerNo) {
+			if(actionObj.playerNo === this.playerIs) {
 				if(actionObj.action === 'attack') {
 					if(actionObj.toPiece.type) {
-						message = 'Your ' + this.capitalize(actionObj.fromPiece.type) + ' attacked enemy\'s ' + this.capitalize(actionObj.toPiece.type) + ' and its HP is ' + actionObj.toPiece.hp
+						message = 'Your ' + this.capitalize(actionObj.fromPiece.type) + ' attacked the enemy\'s ' + this.capitalize(actionObj.toPiece.type)
 					} else if(!actionObj.toPiece.type && actionObj.fromPiece.type){
-						message = 'Your '+ this.capitalize(actionObj.fromPiece.type) + 'destroyed enemy\'s unit'
+						message = 'Your '+ this.capitalize(actionObj.fromPiece.type) + ' destroyed the enemy\'s unit'
 					}
 				} else if(actionObj.action === 'repair') {
-					message = 'Your ' + this.capitalize(actionObj.fromPiece.type) + ' repaired your ' + this.capitalize(actionObj.toPiece.type) + ' and its HP is ' + actionObj.toPiece.hp
+					message = 'Your ' + this.capitalize(actionObj.fromPiece.type) + ' repaired your ' + this.capitalize(actionObj.toPiece.type)
 				}
 			} else {
 				if(actionObj.action === 'attack') {
 					if(actionObj.toPiece.type) {
-						message = 'Your ' + this.capitalize(actionObj.fromPiece.type) + ' was attacked by enemy\'s ' + this.capitalize(actionObj.toPiece.type) + ' and its HP is ' + actionObj.toPiece.hp
+						message = 'Your ' + this.capitalize(actionObj.toPiece.type) + ' was attacked by the enemy\'s ' + this.capitalize(actionObj.fromPiece.type)
 					} else if(!actionObj.toPiece.type && actionObj.fromPiece.type) {
-						message = 'Your '+ this.capitalize(actionObj.fromPiece.type) + ' was destroyed'
+						message = 'Your unit was destroyed by the enemy\'s'  + this.capitalize(actionObj.fromPiece.type)
 					}
 				} else if(actionObj.action === 'repair') {
-					message = 'Your ' + this.capitalize(actionObj.fromPiece.type) + ' was repaired by your enemy\'s ' + this.capitalize(actionObj.toPiece.type) + ' and its HP is ' + actionObj.toPiece.hp
+					message = 'Your enemy\'s ' + this.capitalize(actionObj.toPiece.type) + ' was repaired by their ' + this.capitalize(actionObj.fromPiece.type)
 				}
 			}
 			return message
@@ -406,7 +406,6 @@ export default {
 			audio.play()
 		},
 	    endTurn() {
-			this.playSound(this.turnSfx)
             this.$store.commit('endTurn')
 			this.$store.dispatch('enqueue', axios.get('/api/endTurn', {
 				params:{
@@ -415,23 +414,28 @@ export default {
 				}
 			}))
     	},
+	    endEnemyTurn() {
+            this.$store.commit('endTurn')
+			this.$store.dispatch('enqueue', axios.get('/api/endEnemyTurn', {
+				params:{
+					signature:this.$store.state.signature,
+					matchId: this.$store.state.matchId
+				}
+			}))
+    	},
 		async sendMessage() {
-			this.sendingMsg = true
-			try {
-				await axios.get('/api/sendMessage', {
+			if(this.chatMessage.length > 0) {
+				this.$store.commit('sendMessage', this.chatMessage)
+				var container = this.$el.querySelector("#logs")
+				container.scrollTop = container.scrollHeight
+				axios.get('/api/sendMessage', {
 					params:{
 						signature:this.$store.state.signature,
 						matchId: this.$store.state.matchId,
 						message: this.chatMessage
 					}
-				}) 
-			} catch(err) {
-				console.log(err)
-			} finally {
-				this.sendingMsg = false
-				this.chatMessage = 'Please be nice in chat!'
-				var container = this.$el.querySelector("#logs")
-				container.scrollTop = container.scrollHeight;
+				})
+				this.chatMessage = ""
 			}
 		},
 	  isLegalMove(x,y) {
@@ -498,7 +502,6 @@ export default {
 						this.$store.commit('setBoard', newState)
 						if(this.myFuel - fuelCost === 0) {
 							this.$store.commit('endTurn')
-							this.playSound(this.turnSfx)
 						}
 						this.$store.dispatch('enqueue', axios.get('/api/boardAction', {
 							params:{
@@ -537,7 +540,6 @@ export default {
 				this.$store.commit('setBoard', newState)
 				if(this.myFuel - fuelCost === 0) {
 					this.$store.commit('endTurn')
-					this.playSound(this.turnSfx)
 				}
 				this.$store.dispatch('enqueue', axios.get('/api/boardAction', {
 					params:{
@@ -559,7 +561,6 @@ export default {
 				this.$store.commit('setMyFuel', this.myFuel - fuelCost)
 				if(this.myFuel - fuelCost === 0) {
 					this.$store.commit('endTurn')
-					this.playSound(this.turnSfx)
 				}
 				this.$store.commit('setBoard', newState)
 				this.$store.dispatch('enqueue', axios.get('/api/boardAction', {
@@ -596,8 +597,11 @@ export default {
 	  }
   },
   watch: {
+	  sortedLogsAndChats () {
+		var container = this.$el.querySelector("#logs")
+		container.scrollTop = container.scrollHeight;
+	  },
 	  "$store.state.matchState" (newState, oldState) {
-		if(oldState.playerTurn !== newState.playerTurn) this.selected = undefined
 		  const attacks = []
 		  const destroys = []
 		  const repairs = []
@@ -617,65 +621,37 @@ export default {
 				  }
 			  }
 		  }
-
-		// const toastConfig = {
-		// 	duration: 10000,
-		// 	position: 'is-bottom'
-		// }
-		// console.log(newState.history.length)
-		// console.log(newState.history[newState.history.length - 1].action)
-		// if(newState.history[newState.history.length].action === 'endTurn') {
-		// 	this.playSound(this.turnSfx)
-		// }
 		attacks.forEach(v => {
 			this.playSound(this.shotSfx)
-			// this.$buefy.toast.open({message:`Your ${v} was attacked`, type: 'is-danger', ...toastConfig})
 		})
 		destroys.forEach(v => {
 			this.playSound(this.shotSfx)
-			// this.$buefy.toast.open({message:`Your ${v} was destroyed`, type: 'is-danger', ...toastConfig})
 		})
 		repairs.forEach(v => {
 			this.playSound(this.repairSfx)
-			// this.$buefy.toast.open({message: `Your enemy's ${v} was repaired`, type: 'is-info' , ...toastConfig})
-		})	
-	},
-	chat: function (newChat, oldChat) {
-		if(newChat.length !== oldChat.length) {
-			this.logsAndChat.push(newChat[newChat.length-1])
-		}
-	},
-	log: function (newLogs, oldLogs) {
-		if(newLogs.length !== oldLogs.length) {
-			this.logsAndChat.push(newLogs[newLogs.length-1])
+		})
+
+		if(oldState.playerTurn !== newState.playerTurn) {
+			this.selected = undefined
+			this.playSound(this.turnSfx)
 		}
 	}
-  },
-  created() {
-		for(let i=0; i<this.$store.state.matchState.chat.length; i++) {
-			this.logsAndChat.push(this.$store.state.matchState.chat[i])
-		}
-		for(let i=0; i<this.$store.state.matchState.log.length; i++) {
-			this.logsAndChat.push(this.$store.state.matchState.log[i])
-		}
-		
   }
 }
 </script>
 
 <style>
 :root {
-	--scale: 0.9;
+	--scale: 0.87;
 }
 h1 {
 	margin: 0;
 }
 #hex-grid {
-	margin-left: -50px !important;
+	margin-left: 0px !important;
 	margin-top: 30px !important;
     width: fit-content;
     margin: 0 auto;
-	min-width: 110%;
 }
 .row {
 	display: block;
@@ -856,9 +832,9 @@ h1 {
 	position: relative;
 }
 .middle {
-	flex-grow: 0;
+	flex-grow: 1;
    	flex-shrink: 0;
-  	flex-basis: 50%;
+	/* min-width: 890px; */
 }
 .left {
 	order: 1;
@@ -923,7 +899,7 @@ input[placeholder], [placeholder], *[placeholder] {
     color: white;
 }
 .control.is-small.is-clearfix {
-	width: 16.8vw;
+	width: calc(100% - 60px);
 }
 #logs {
     height: 90%;
@@ -934,5 +910,15 @@ input[placeholder], [placeholder], *[placeholder] {
 	background: black;
 	padding: 3px 0px;
 	color: rgba(255,255,255,0.5);
+}
+.chat-placeholder-color {
+	color: rgba(255,255,255,0.4) !important;
+}
+img {
+    -khtml-user-select: none;
+    -o-user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 </style>

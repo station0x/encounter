@@ -2,7 +2,7 @@
 // Import the dependency.
 const clientPromise = require('../api-utils/mongodb-client');
 const getAddress = require('../api-utils/getAddress');
-const { ObjectId, Timestamp } = require('mongodb');
+const { ObjectId } = require('mongodb');
 const CONSTANTS = require('../constants.json');
 
 function isOccupied(board, x, y) {
@@ -135,6 +135,7 @@ function isLegalRepair(board, selectedX, selectedY, x, y) {
     return legalRepairs(board, selectedX, selectedY).filter(move => move.x === x && move.y === y).length > 0
 }
 module.exports = async (req, res) => {
+    console.log(req.query)
    const client = await clientPromise;
    const db = client.db()
    const address = getAddress(req.query.signature)
@@ -151,8 +152,10 @@ module.exports = async (req, res) => {
    if(matchDoc.player1 === address) playerNumber = 1
    if(playerNumber !== 0 && playerNumber !== 1) throw new Error("You are not a player in this match")
    if(matchDoc.playerTurn !== playerNumber) throw new Error("Not your turn")
+   if(Date.now() - matchDoc.lastTurnTimestamp > CONSTANTS.turnTimeout * 1000) throw new Error("Turn timeout ended")
    if(!isOccupied(board, from.x, from.y)) throw new Error("Source is not occupied")
    if(!isOurPiece(board, playerNumber, from.x, from.y)) throw new Error("Not your piece")
+
    let fuel = playerNumber === 0? matchDoc.fuel0: matchDoc.fuel1
    const fromAttributes = CONSTANTS.spaceshipsAttributes[board[from.y][from.x].type]
 
@@ -183,6 +186,8 @@ module.exports = async (req, res) => {
         newMatchStats.history.push({from: {}, to: {}, action: 'endTurn', playerNumber})
         // Increment Turn Number
         newMatchStats.turnNum = newMatchStats.turnNum + 1
+        // Update last turn timestamp
+        newMatchStats.lastTurnTimestamp = Date.now()
         if(playerNumber === 0) {
             newMatchStats.fuel1 = Math.min(newMatchStats.fuel1 + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
         } else if(playerNumber === 1) {
@@ -269,6 +274,8 @@ module.exports = async (req, res) => {
         newMatchStats.history.push({from: {}, to: {}, action: 'endTurn', playerNumber})
         // Increment Turn Number
         newMatchStats.turnNum = newMatchStats.turnNum + 1
+        // Update last turn timestamp
+        newMatchStats.lastTurnTimestamp = Date.now()
         if(playerNumber === 0) {
             newMatchStats.fuel1 = Math.min(newMatchStats.fuel1 + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
         } else if(playerNumber === 1) {
@@ -319,6 +326,8 @@ module.exports = async (req, res) => {
         newMatchStats.history.push({from: {}, to: {}, action: 'endTurn', playerNumber})
         // Increment Turn Number
         newMatchStats.turnNum = newMatchStats.turnNum + 1
+        // Update last turn timestamp
+        newMatchStats.lastTurnTimestamp = Date.now()
         if(playerNumber === 0) {
             newMatchStats.fuel1 = Math.min(newMatchStats.fuel1 + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
         } else if(playerNumber === 1) {

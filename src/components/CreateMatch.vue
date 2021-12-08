@@ -4,7 +4,7 @@
             <img
                 src="/logo.png"
                 alt="Station0x Encounter Logo"
-                class="mainlogo"
+                class="main-logo"
             />
             <div class="onboarding-wrapper">
                 <div v-if="!invitationLink">

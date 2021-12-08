@@ -12,8 +12,7 @@
             <span class="energy">{{fuel}}</span>
 
             <div class="btn-group">
-                <!-- <div class="turn-timer">Your Turn: <strong style="color: #F88C09; margin-left: 10px">{{ turnTimout }}</strong></div> -->
-                <b-button @click="endTurn" :disabled="this.$store.state.matchState.playerTurn !== this.$store.state.matchState.playerIs" class="end-turn" icon-right="swap-horizontal-bold" type="is-danger">End Turn</b-button>
+                <b-button @click="endTurn" :disabled="!isMyTurn" class="end-turn" icon-right="swap-horizontal-bold" type="is-danger">End Turn<strong v-if="isMyTurn" style="margin-left: 10px">{{ lastTurnTimestamp === undefined ? turnTimeout : countdown }}</strong></b-button>
             </div>
             
             <b-button @click="confirmSurrender" class="surrender">Surrender</b-button>
@@ -23,12 +22,15 @@
 </template>
 
 <script>
+import CONSTANTS from '../../constants'
 export default {
-    props:['playerAddress', 'fuel'],
+    props:['playerAddress', 'fuel', 'lastTurnTimestamp', 'isMyTurn'],
     data () {
         return {
             gravatar: null,
-            turnTimout: 30
+            date: Date.now(),
+            dateInterval: undefined,
+            turnTimeout: CONSTANTS.turnTimeout
         }
     },
     computed: {
@@ -52,6 +54,9 @@ export default {
         },
         formattedAddress() {
             return this.playerAddress.slice(0, 5) + '...' + this.playerAddress.slice(-5)
+        },
+        countdown () {
+            return Math.max(Math.floor((this.lastTurnTimestamp + (this.turnTimeout * 1000) - this.date) / 1000), 0)
         }
     },
     methods: {
@@ -72,9 +77,27 @@ export default {
             this.$emit('surrender')
         }
     },
-    mounted: function() {
+    watch: {
+        countdown(newCountdown) {
+            if(newCountdown === 0 && this.isMyTurn) this.endTurn()
+        }
+    },
+    mounted () {
         this.gravatar = this.$refs.gravatar.url
     },
+    created () {
+        const self = this
+        this.dateInterval = setInterval(function () {
+            self.date = Date.now()
+        }, 1000)
+
+        if(this.countdown === 0 && this.isMyTurn) {
+            this.endTurn()
+        }
+    },
+    beforeDestroy () {
+        clearInterval(this.dateInterval)
+    }
 }
 </script>
 
@@ -139,29 +162,14 @@ section.modal-card-body.is-flex {
     width: 100%;
     margin-top: 20px;
 }
-.turn-timer {
-    background: rgba(248, 140, 9, 0.1);
-    color: #F88C09;
-    height: 54px;
-    width: 45%;
-    margin: 0px;
-    margin-right: 5px;
-    padding: 12px;
-    font-size: 19px;
-    font-weight: 500;
-    transition: 250ms ease-in-out;
-    display: inline-block;
-    border-radius: 5px;
-}
 .end-turn {
     background: #416BFF !important;
     border: 1px solid #6787fa;
     color: white;
     height: 45px;
-    width: 40%;
     margin: 0px;
     margin-left: 5px;
-    padding: 9px;
+    padding: 9px 20px;
     font-size: 17px;
     font-weight: 500;
     transition: 250ms ease-in-out;
