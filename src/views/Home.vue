@@ -1,7 +1,7 @@
 <template>
   <div>
       <div class="loader-wrapper" v-if="loading">
-        <b-loading :is-full-page="false" v-model="loading" :can-cancel="false"></b-loading>
+        <Loader v-model="loading"/>
       </div>
       <div v-if="!loading">
         <div class="logout-btn" @click="logout">Logout</div>
@@ -16,6 +16,8 @@
 import CreateMatch from '@/components/CreateMatch.vue'
 import Match from '@/components/Match.vue'
 import GameGuide from '@/components/GameGuide.vue'
+import Loader from '@/components/Loader.vue'
+
 export default {
   name: 'Home',
   data() {
@@ -24,7 +26,8 @@ export default {
   },
   components: {
     CreateMatch,
-    Match
+    Match,
+    Loader
   },
   methods: {
     logout() {
@@ -38,7 +41,7 @@ export default {
   },
   computed: {
     loading () {
-      return !this.$store.state.loaded;
+      return !this.$store.state.loaded
     }
   },
   created() {
