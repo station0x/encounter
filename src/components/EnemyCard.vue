@@ -10,17 +10,22 @@
             <h1 class="your-address">{{ formattedAddress }}</h1>
             <img class="energy-icon" src="/energy.svg" width="23px"/>
             <span class="energy">{{fuel}}</span>
+            <div :disabled="!isEnemyTurn" class="turn-timer">Ends in: <strong style="color: #F88C09; margin-left: 10px">{{ lastTurnTimestamp === undefined ? turnTimeout : countdown }}</strong></div>
         </center>
         <v-gravatar style="display: none" ref="gravatar" :email="playerAddress" alt="Nobody" :size="530"/>
     </div>
 </template>
 
 <script>
+import CONSTANTS from '../../constants'
 export default {
-    props:['playerAddress', 'fuel'],
+    props:['playerAddress', 'fuel', 'isEnemyTurn', 'lastTurnTimestamp'],
     data () {
         return {
-            gravatar: null
+            gravatar: null,
+            date: Date.now(),
+            dateInterval: undefined,
+            turnTimeout: CONSTANTS.turnTimeout
         }
     },
     computed: {
@@ -44,14 +49,43 @@ export default {
         },
         formattedAddress() {
             return this.playerAddress.slice(0, 5) + '...' + this.playerAddress.slice(-5)
+        },
+        countdown () {
+            return Math.max(Math.floor((this.lastTurnTimestamp + (this.turnTimeout * 1000) - this.date) / 1000), 0)
         }
+    },
+    methods: {
+        endEnemyTurn() {
+            this.$emit('endEnemyTurn')
+        },
     },
     mounted: function() {
         this.gravatar = this.$refs.gravatar.url
     },
+    watch: {
+        countdown(newCountdown) {
+            if(newCountdown === 0 && this.isEnemyTurn) {
+                setTimeout(() => {
+                    if(this.countdown === 0 && this.isEnemyTurn) this.endEnemyTurn()
+                }, 5000)
+            }
+        }
+    },
+    created () {
+        const self = this
+        this.dateInterval = setInterval(function () {
+            self.date = Date.now()
+        }, 1000)
+
+        if(this.countdown === 0  && this.isEnemyTurn) {
+            this.endEnemyTurn()
+        }
+    },
+    beforeDestroy () {
+        clearInterval(this.dateInterval)
+    }
 }
 </script>
-
 
 <style scoped>
 .player-card {
@@ -127,5 +161,21 @@ export default {
 }
 .gravatar {
     height: 120px;
+}
+.turn-timer {
+background: rgba(248, 140, 9, 0.1);
+    color: #F88C09;
+    height: 45px;
+    margin: 0px;
+    margin-right: 5px;
+    padding: 11px 17px;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 5px;
+    transition: 500ms ease-in-out;
+    max-width: fit-content;
+}
+.turn-timer[disabled] {
+    opacity: 0;
 }
 </style>

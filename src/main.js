@@ -8,9 +8,7 @@ import Link from './views/Link.vue'
 import 'buefy/dist/buefy.css'
 import VueClipboard from 'vue-clipboard2'
 import Gravatar from 'vue-gravatar'
-import VueHotkey from 'v-hotkey'
 
-Vue.use(VueHotkey)
 Vue.component('v-gravatar', Gravatar)
 Vue.use(VueClipboard)
 Vue.use(VueRouter)
