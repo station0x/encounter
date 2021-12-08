@@ -3,7 +3,7 @@ const CONSTANTS = require('../constants.json')
 // Import the dependency.
 const clientPromise = require('../api-utils/mongodb-client');
 const getAddress = require('../api-utils/getAddress');
-const { ObjectId, Timestamp } = require('mongodb');
+const { ObjectId  } = require('mongodb');
 
 const LINK_EXPIRY_DURATION = 60 * 60 * 1000 // 1 hour
 
@@ -26,7 +26,7 @@ module.exports = async (req, res) => {
       playerDoc = {
         address,
         matchHistory:[],
-        lastSeenTimestamp: new Timestamp(),
+        lastSeenTimestamp: Date.now(),
         inviteLink
      }
 
@@ -56,7 +56,7 @@ module.exports = async (req, res) => {
         fuel1: CONSTANTS.initFuel,
         turnNum: 1,
         playerTurn: Math.floor(Math.random() * 2),
-        lastTurnTimestamp: undefined,
+        lastTurnTimestamp: Date.now(),
         winner: undefined,
         history: [],
         chat: [],

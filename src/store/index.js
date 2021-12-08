@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import axios from 'axios'
 import * as Realm from "realm-web"
 import Queue from 'promise-queue'
+import CONSTANTS from '../../constants'
 
 const axiosQueue = new Queue(1)
 const realm = new Realm.App({ id: process.env.VUE_APP_REALM_APP_ID });
@@ -47,6 +48,8 @@ export default new Vuex.Store({
         endTurn(state) {
             const matchState = {...state.matchState}
             matchState.playerTurn = matchState.playerTurn === 0 ? 1 : 0;
+            matchState['fuel' + matchState.playerTurn] = Math.min(matchState['fuel' + matchState.playerTurn] + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
+            matchState.lastTurnTimestamp = undefined
             state.matchState = matchState;
         },
         setMyFuel(state, newFuel) {
@@ -65,6 +68,11 @@ export default new Vuex.Store({
         },
         load (state) {
             state.loaded = true
+        },
+        sendMessage(state, msg) {
+            const matchState = {...state.matchState}
+            matchState.chat.push({msg, index: matchState.logsIndex + 1, playerNo: matchState.playerIs, timestamp: Date.now()})
+            state.matchState = matchState
         }
     },
     actions: {
@@ -107,6 +115,7 @@ export default new Vuex.Store({
         stopPolling({state, commit}) {
             clearInterval(state.intervalId)
             commit('setIntervalId')
+            commit('setActiveMatchId')
         },
         async startRealm({state, commit, dispatch}) {
             await realm.logIn(credentials);
@@ -119,8 +128,8 @@ export default new Vuex.Store({
             const watcher = matches.watch({ids:[Realm.BSON.ObjectId(state.matchId)]})
             for await (const change of watcher) {
                 const { fullDocument: matchDoc } = change
-                if(axiosQueue.getQueueLength() === 0 && axiosQueue.getPendingLength() === 0) commit("setMatchState", matchDoc)
-                if(matchDoc.winner === 0 || matchDoc.winner === 1) break;
+                if(matchDoc.winner === 0 || matchDoc.winner === 1 || !state.signature) break;
+                if(axiosQueue.getQueueLength() === 0 && axiosQueue.getPendingLength() <= 1) commit("setMatchState", matchDoc)
             }
         },
         enqueue(_, axiosPromise) {
