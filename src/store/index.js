@@ -133,7 +133,9 @@ export default new Vuex.Store({
             }
         },
         enqueue(_, axiosPromise) {
-            axiosQueue.add(() => {console.log('queue');return axiosPromise})
+            axiosQueue.add(() => {
+                return axiosPromise()
+            })
         }
     },
     plugins: [
