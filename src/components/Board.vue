@@ -344,7 +344,7 @@ export default {
 	  	surrender() {
 			const winner = this.playerIs === 0 ? 1 : 0
 			this.$store.commit('setWinner', winner)
-			this.$store.dispatch('enqueue', axios.get('/api/surrender', {
+			this.$store.dispatch('enqueue', () => axios.get('/api/surrender', {
 				params:{
 					signature:this.$store.state.signature,
 					matchId: this.$store.state.matchId
@@ -407,7 +407,7 @@ export default {
 		},
 	    endTurn() {
             this.$store.commit('endTurn')
-			this.$store.dispatch('enqueue', axios.get('/api/endTurn', {
+			this.$store.dispatch('enqueue', () => axios.get('/api/endTurn', {
 				params:{
 					signature:this.$store.state.signature,
 					matchId: this.$store.state.matchId
@@ -503,12 +503,13 @@ export default {
 						if(this.myFuel - fuelCost === 0) {
 							this.$store.commit('endTurn')
 						}
-						this.$store.dispatch('enqueue', axios.get('/api/boardAction', {
+						const from = {...this.selected}
+						this.$store.dispatch('enqueue', () => axios.get('/api/boardAction', {
 							params:{
 								signature:this.$store.state.signature,
 								matchId: this.$store.state.matchId,
 								action: 'repair',
-								from: this.selected,
+								from,
 								to: {x,y}
 							}
 						}))
@@ -541,12 +542,13 @@ export default {
 				if(this.myFuel - fuelCost === 0) {
 					this.$store.commit('endTurn')
 				}
-				this.$store.dispatch('enqueue', axios.get('/api/boardAction', {
+				const from = {...this.selected}
+				this.$store.dispatch('enqueue', () => axios.get('/api/boardAction', {
 					params:{
 						signature:this.$store.state.signature,
 						matchId: this.$store.state.matchId,
 						action: 'attack',
-						from: this.selected,
+						from,
 						to: {x,y}
 					}
 				}))
@@ -563,12 +565,13 @@ export default {
 					this.$store.commit('endTurn')
 				}
 				this.$store.commit('setBoard', newState)
-				this.$store.dispatch('enqueue', axios.get('/api/boardAction', {
+				const from = {...this.selected}
+				this.$store.dispatch('enqueue', () => axios.get('/api/boardAction', {
 					params:{
 						signature:this.$store.state.signature,
 						matchId: this.$store.state.matchId,
 						action: 'move',
-						from: this.selected,
+						from,
 						to: {x,y}
 					}
 				}))
