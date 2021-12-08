@@ -386,7 +386,7 @@ export default {
 					if(actionObj.toPiece.type) {
 						message = 'Your ' + this.capitalize(actionObj.toPiece.type) + ' was attacked by the enemy\'s ' + this.capitalize(actionObj.fromPiece.type)
 					} else if(!actionObj.toPiece.type && actionObj.fromPiece.type) {
-						message = 'Your unit was destroyed by the enemy\'s'  + this.capitalize(actionObj.fromPiece.type)
+						message = 'Your unit was destroyed by the enemy\'s '  + this.capitalize(actionObj.fromPiece.type)
 					}
 				} else if(actionObj.action === 'repair') {
 					message = 'Your enemy\'s ' + this.capitalize(actionObj.toPiece.type) + ' was repaired by their ' + this.capitalize(actionObj.fromPiece.type)
@@ -605,39 +605,49 @@ export default {
 		container.scrollTop = container.scrollHeight;
 	  },
 	  "$store.state.matchState" (newState, oldState) {
-		  const attacks = []
-		  const destroys = []
-		  const repairs = []
-		  for (let y = 0; y < oldState.state.length; y++) {
-			  const row = oldState.state[y];
-			  for (let x = 0; x < row.length; x++) {
-				  const oldPiece = row[x];
-				  const newPiece = newState.state[y][x];
-				  if(oldPiece.type) {
-					if(oldPiece.owner === this.playerIs && !newPiece.type) {
-						destroys.push(oldPiece.type)
-					} else if(oldPiece.owner === this.playerIs && newPiece.hp < oldPiece.hp) {
-						attacks.push(oldPiece.type)
-					} else if(oldPiece.owner !== this.playerIs && newPiece.hp > oldPiece.hp) {
-						repairs.push(oldPiece.type)
-					}
+		  console.log(newState.log)
+		  if(newState.log.length !== oldState.log.length) {
+			  for(let i = oldState.log.length - 1; i < newState.log.length - 1; i++) {
+				  if(newState.log[i].action === 'attack') {
+					  this.playSound(this.shotSfx)
+				  } else if(newState.log[i].action === 'repaire') {
+					  this.playSound(this.repairSfx)
 				  }
 			  }
 		  }
-		attacks.forEach(v => {
-			this.playSound(this.shotSfx)
-		})
-		destroys.forEach(v => {
-			this.playSound(this.shotSfx)
-		})
-		repairs.forEach(v => {
-			this.playSound(this.repairSfx)
-		})
+		//   const attacks = []
+		//   const destroys = []
+		//   const repairs = []
+		//   for (let y = 0; y < oldState.state.length; y++) {
+		// 	  const row = oldState.state[y];
+		// 	  for (let x = 0; x < row.length; x++) {
+		// 		  const oldPiece = row[x];
+		// 		  const newPiece = newState.state[y][x];
+		// 		  if(oldPiece.type) {
+		// 			if(oldPiece.owner === this.playerIs && !newPiece.type) {
+		// 				destroys.push(oldPiece.type)
+		// 			} else if(oldPiece.owner === this.playerIs && newPiece.hp < oldPiece.hp) {
+		// 				attacks.push(oldPiece.type)
+		// 			} else if(oldPiece.owner !== this.playerIs && newPiece.hp > oldPiece.hp) {
+		// 				repairs.push(oldPiece.type)
+		// 			}
+		// 		  }
+		// 	  }
+		//   }
+		// attacks.forEach(v => {
+		// 	this.playSound(this.shotSfx)
+		// })
+		// destroys.forEach(v => {
+		// 	this.playSound(this.shotSfx)
+		// })
+		// repairs.forEach(v => {
+		// 	this.playSound(this.repairSfx)
+		// })
 
-		if(oldState.playerTurn !== newState.playerTurn) {
-			this.selected = undefined
-			this.playSound(this.turnSfx)
-		}
+		// if(oldState.playerTurn !== newState.playerTurn) {
+		// 	this.selected = undefined
+		// 	this.playSound(this.turnSfx)
+		// }
 	}
   }
 }

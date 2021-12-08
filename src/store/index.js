@@ -134,7 +134,7 @@ export default new Vuex.Store({
         },
         enqueue(_, axiosPromise) {
             axiosQueue.add(() => {
-                return axiosPromise()
+                return axiosPromise
             })
         }
     },
