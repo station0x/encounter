@@ -2,7 +2,7 @@
 // Import the dependency.
 const clientPromise = require('../api-utils/mongodb-client');
 const getAddress = require('../api-utils/getAddress');
-const { ObjectId, Timestamp } = require('mongodb');
+const { ObjectId } = require('mongodb');
 
 const LINK_EXPIRY_DURATION = 60 * 60 * 1000 // 1 hour
 
@@ -18,7 +18,7 @@ module.exports = async (req, res) => {
       await players.insertOne({
          address,
          matchHistory:[],
-         lastSeenTimestamp: new Timestamp(),
+         lastSeenTimestamp: Date.now(),
          inviteLink
       })
    } else {

@@ -33,6 +33,9 @@ module.exports = async (req, res) => {
     // Increment Turn Number
     newMatchStats.turnNum = newMatchStats.turnNum + 1
 
+    // Update last turn timestamp
+    newMatchStats.lastTurnTimestamp = Date.now()
+
     await matches.updateOne({_id:matchDoc._id}, {
         $set:newMatchStats
     })

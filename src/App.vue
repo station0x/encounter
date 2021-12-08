@@ -26,5 +26,8 @@ body, html {
 	background-color: black;
 	margin: 0px;
 	min-height: 100vh;
+	max-width: 1680px;
+	min-width: 1680px;
+	margin: 0 auto;
 }
 </style>
