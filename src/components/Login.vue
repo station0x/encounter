@@ -12,7 +12,7 @@
                 <div class="divider"></div>
                 
                 <b-button class="primary-btn" @click="connectMetamask">Connect Metamask</b-button>
-                <b-button class="secondary-btn" @click="connectAsGuest">Play as a guest</b-button>
+                <b-button disabled class="secondary-btn" @click="connectAsGuest">Play as a guest</b-button>
 
                 <div @click="openGameGuideModal" class="clickable-text">Game Guide  <b-icon icon="alert-circle" size="is-small" style="margin-left: 5px"></b-icon></div>
                 <div class="info-text">This game is in alpha version and may contain bugs</div>
@@ -38,6 +38,7 @@ export default {
             await provider.send("eth_requestAccounts", []);
             const accounts = await provider.listAccounts()
             const signature = await signer.signMessage("Station Labs Login")
+            console.log(signature)
             this.$store.dispatch('connect', {signature, address: await signer.getAddress()})
         },
         async connectAsGuest() {
@@ -89,5 +90,13 @@ export default {
     color: black;
     background: #F88C09;
     border: #F88C09;
+}
+button.button.secondary-btn[disabled] {
+    color: rgba(0,0,0,0.3);
+}
+.secondary-btn:hover[disabled] {
+    color: black;
+    background: #dbdbdb;
+    border: #dbdbdb;
 }
 </style>

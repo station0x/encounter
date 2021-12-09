@@ -6,8 +6,9 @@
       <div v-if="!loading">
         <div class="logout-btn" @click="logout">Logout</div>
         <div v-if="$store.state.matchState" @click="openGameGuideModal" class="upper-btn in-game-btn">Game Guide  <b-icon icon="alert-circle" size="is-small" style="margin-left: 5px"></b-icon></div>
-        <CreateMatch v-if="!$store.state.matchState"/>
-        <Match v-else/>
+        <GetAccess v-if="!$store.state.registered"/>
+        <CreateMatch v-if="$store.state.registered && !$store.state.matchState"/>
+        <Match v-else-if="$store.state.registered && $store.state.matchState"/>
       </div>
 	</div>
 </template>
@@ -16,7 +17,9 @@
 import CreateMatch from '@/components/CreateMatch.vue'
 import Match from '@/components/Match.vue'
 import GameGuide from '@/components/GameGuide.vue'
+import GetAccess from '@/components/GetAccess.vue'
 import Loader from '@/components/Loader.vue'
+import axios from 'axios'
 
 export default {
   name: 'Home',
@@ -27,7 +30,8 @@ export default {
   components: {
     CreateMatch,
     Match,
-    Loader
+    Loader,
+    GetAccess
   },
   methods: {
     logout() {
@@ -37,6 +41,23 @@ export default {
         this.$buefy.modal.open({
             component: GameGuide
         })
+    },
+    async checkAddressAccess() {
+      try {
+        let res = await axios.get("/api/checkPlayerAccess", {
+            params: {
+              signature: this.$store.state.signature,
+              key: this.accessKey
+            }
+          })
+          if(res.data.response.success) {
+            this.$store.commit('registerAddress', true)
+          } else {
+            this.$store.commit('registerAddress', false)
+          }
+        } catch(err) {
+          this.$store.commit('registerAddress', false)
+        }
     }
   },
   computed: {
@@ -45,6 +66,7 @@ export default {
     }
   },
   created() {
+    this.checkAddressAccess()
     if(this.$store.state.matchState && (this.$store.state.matchState.winner === 0 || this.$store.state.matchState.winner === 1) && !this.$store.state.interval) {
       this.$store.dispatch("startPolling")
     }
