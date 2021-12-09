@@ -18,7 +18,8 @@ export default new Vuex.Store({
         intervalId: undefined,
         matchId: undefined,
         matchState: undefined,
-        loaded: false
+        loaded: false,
+        registered: false
     },
     getters: {},
     mutations: {
@@ -73,6 +74,10 @@ export default new Vuex.Store({
             const matchState = {...state.matchState}
             matchState.chat.push({msg, index: matchState.logsIndex + 1, playerNo: matchState.playerIs, timestamp: Date.now()})
             state.matchState = matchState
+        },
+        registerAddress(state, bool) {
+            if(bool) state.registered = true
+            else state.registered = false
         }
     },
     actions: {
@@ -134,7 +139,7 @@ export default new Vuex.Store({
         },
         enqueue(_, axiosPromise) {
             axiosQueue.add(() => {
-                return axiosPromise
+                return axiosPromise()
             })
         }
     },

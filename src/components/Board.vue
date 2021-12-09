@@ -403,9 +403,13 @@ export default {
 		},
 	    playSound(sfx) {
 			var audio = new Audio(sfx)
-			audio.play()
+			try {
+				audio.play()
+			} catch(e) { console.log(e) }
+			console.log('worked')
 		},
 	    endTurn() {
+			this.playSound(this.turnSfx) 
             this.$store.commit('endTurn')
 			this.$store.dispatch('enqueue', () => axios.get('/api/endTurn', {
 				params:{
@@ -501,6 +505,7 @@ export default {
 						newState[this.selected.y][this.selected.x].lastRepairTurn = this.turnNum
 						this.$store.commit('setBoard', newState)
 						if(this.myFuel - fuelCost === 0) {
+							// this.playSound(this.turnSfx)
 							this.$store.commit('endTurn')
 						}
 						const from = {...this.selected}
@@ -540,6 +545,7 @@ export default {
 				newState[this.selected.y][this.selected.x].lastAttackTurn = this.turnNum
 				this.$store.commit('setBoard', newState)
 				if(this.myFuel - fuelCost === 0) {
+					// this.playSound(this.turnSfx)
 					this.$store.commit('endTurn')
 				}
 				const from = {...this.selected}
@@ -562,6 +568,7 @@ export default {
 				newState[this.selected.y][this.selected.x] = {}
 				this.$store.commit('setMyFuel', this.myFuel - fuelCost)
 				if(this.myFuel - fuelCost === 0) {
+					// this.playSound(this.turnSfx)
 					this.$store.commit('endTurn')
 				}
 				this.$store.commit('setBoard', newState)
@@ -605,16 +612,27 @@ export default {
 		container.scrollTop = container.scrollHeight;
 	  },
 	  "$store.state.matchState" (newState, oldState) {
-		  console.log(newState.log)
 		  if(newState.log.length !== oldState.log.length) {
-			  for(let i = oldState.log.length - 1; i < newState.log.length - 1; i++) {
-				  if(newState.log[i].action === 'attack') {
-					  this.playSound(this.shotSfx)
-				  } else if(newState.log[i].action === 'repaire') {
-					  this.playSound(this.repairSfx)
-				  }
-			  }
+			  console.log(newState.log[newState.log.length - 1].action)
+			  	if(newState.log[newState.log.length - 1].action === 'attack') {
+					this.playSound(this.shotSfx)
+				} else if(newState.log[newState.log.length - 1].action === 'repair') {
+					this.playSound(this.repairSfx)
+				}
+			//   for(let i = oldState.log.length - 1; i < newState.log.length - 1; i++) {
+			// 	  console.log(i, newState.log.length - 1)
+			// 	  console.log(newState.log[i].action)
+			// 	  if(newState.log[i].action === 'attack') {
+			// 		  this.playSound(this.shotSfx)
+			// 	  } else if(newState.log[i].action === 'repaire') {
+			// 		  this.playSound(this.repairSfx)
+			// 	  }
+			//   }
 		  }
+			if(oldState.playerTurn !== newState.playerTurn) {
+				this.selected = undefined
+				this.playSound(this.turnSfx)
+			}
 		//   const attacks = []
 		//   const destroys = []
 		//   const repairs = []
@@ -643,11 +661,6 @@ export default {
 		// repairs.forEach(v => {
 		// 	this.playSound(this.repairSfx)
 		// })
-
-		// if(oldState.playerTurn !== newState.playerTurn) {
-		// 	this.selected = undefined
-		// 	this.playSound(this.turnSfx)
-		// }
 	}
   }
 }
