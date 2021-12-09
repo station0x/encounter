@@ -28,9 +28,8 @@
                     </template>
                     <b-button v-if="invitationLink" v-clipboard:copy="linkPrefix + invitationLink" class="primary-btn">Copy Link</b-button>
                 </b-tooltip>
-                <div @click="openGameGuideModal" class="clickable-text">Game Guide  <b-icon icon="alert-circle" size="is-small" style="margin-left: 5px"></b-icon></div>
-                <div class="info-text">This is a beta testing version use it on your own risk</div>
-                
+                <div @click="openGameGuideModal" class="clickable-text" style="margin-top: 20 !important">Game Guide  <b-icon icon="alert-circle" size="is-small" style="margin-left: 5px; margin-top: -40px"></b-icon></div>
+                <div class="info-text">This game is in alpha version and may contain bugs</div>
             </div>
         </center>
     </div>

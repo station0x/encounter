@@ -18,7 +18,8 @@ export default new Vuex.Store({
         intervalId: undefined,
         matchId: undefined,
         matchState: undefined,
-        loaded: false
+        loaded: false,
+        registered: false
     },
     getters: {},
     mutations: {
@@ -73,6 +74,10 @@ export default new Vuex.Store({
             const matchState = {...state.matchState}
             matchState.chat.push({msg, index: matchState.logsIndex + 1, playerNo: matchState.playerIs, timestamp: Date.now()})
             state.matchState = matchState
+        },
+        registerAddress(state, bool) {
+            if(bool) state.registered = true
+            else state.registered = false
         }
     },
     actions: {
@@ -128,7 +133,10 @@ export default new Vuex.Store({
             const watcher = matches.watch({ids:[Realm.BSON.ObjectId(state.matchId)]})
             for await (const change of watcher) {
                 const { fullDocument: matchDoc } = change
-                if(matchDoc.winner === 0 || matchDoc.winner === 1 || !state.signature) break;
+                if(matchDoc.winner === 0 || matchDoc.winner === 1 || !state.signature) {
+                    commit("setMatchState", matchDoc)
+                    break
+                }
                 if(axiosQueue.getQueueLength() === 0 && axiosQueue.getPendingLength() <= 1) commit("setMatchState", matchDoc)
             }
         },

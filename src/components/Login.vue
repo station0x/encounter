@@ -15,8 +15,7 @@
                 <b-button class="secondary-btn" @click="connectAsGuest">Play as a guest</b-button>
 
                 <div @click="openGameGuideModal" class="clickable-text">Game Guide  <b-icon icon="alert-circle" size="is-small" style="margin-left: 5px"></b-icon></div>
-                <div class="info-text">This is a beta testing version use it on your own risk</div>
-                
+                <div class="info-text">This game is in alpha version and may contain bugs</div>
             </div>
         </center>
     </div>
@@ -39,21 +38,25 @@ export default {
             await provider.send("eth_requestAccounts", []);
             const accounts = await provider.listAccounts()
             const signature = await signer.signMessage("Station Labs Login")
+            this.reload()
             this.$store.dispatch('connect', {signature, address: await signer.getAddress()})
+            
         },
         async connectAsGuest() {
             const signer = ethers.Wallet.createRandom()
             const signature = await signer.signMessage("Station Labs Login")
+            this.reload()
             this.$store.dispatch('connect', {signature, address: await signer.getAddress()})
+            
         },
         openGameGuideModal() {
             this.$buefy.modal.open({
                 component: GameGuide
             })
+        },
+        reload(){   
+            this.$router.go(this.$router.currentRoute)
         }
-    },
-    computed: {
-
     }
 }
 </script>
@@ -90,5 +93,13 @@ export default {
     color: black;
     background: #F88C09;
     border: #F88C09;
+}
+button.button.secondary-btn[disabled] {
+    color: rgba(0,0,0,0.3);
+}
+.secondary-btn:hover[disabled] {
+    color: black;
+    background: #dbdbdb;
+    border: #dbdbdb;
 }
 </style>

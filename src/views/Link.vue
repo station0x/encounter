@@ -13,9 +13,8 @@
                 </div>
                 <div class="divider"></div>
                 <b-button class="primary-btn" :loading="matchLoader" @click="joinMatch">Join Match</b-button>
-                <div @click="openGameGuideModal" class="clickable-text">Game Guide  <b-icon icon="alert-circle" size="is-small" style="margin-left: 5px"></b-icon></div>
-                <div class="info-text">This is a beta testing version use it on your own risk</div>
-                
+                <div @click="openGameGuideModal" class="clickable-text">Game Guide <b-icon icon="alert-circle" size="is-small" style="margin-left: 5pxSend match link to challenge a friend"></b-icon></div>
+                <div class="info-text">This game is in alpha version and may contain bugs</div>
             </div>
         </center>
     </div>
@@ -74,5 +73,11 @@ export default {
 }
 .primary-btn:hover {
     background: #f39a2d;
+}
+.info-text {
+    color: #5B5B5B;
+    font-size: 17px;
+    font-weight: 400;
+    margin: 0px 20px 0px 20px;
 }
 </style>

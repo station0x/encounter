@@ -50,8 +50,6 @@ module.exports = async (req, res) => {
     const result = await matches.insertOne({
         player0: enemyDoc.address,
         player1: playerDoc.address,
-        player0Alias: '',
-        player1Alias: '',
         fuel0: CONSTANTS.initFuel,
         fuel1: CONSTANTS.initFuel,
         turnNum: 1,
