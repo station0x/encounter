@@ -6,9 +6,9 @@
       <div v-if="!loading">
         <div class="logout-btn" @click="logout">Logout</div>
         <div v-if="$store.state.matchState" @click="openGameGuideModal" class="upper-btn in-game-btn">Game Guide  <b-icon icon="alert-circle" size="is-small" style="margin-left: 5px"></b-icon></div>
-        <GetAccess v-if="!$store.state.registered"/>
+        <GetAccess v-if="!$store.state.registered && !$store.state.matchState"/>
         <CreateMatch v-if="$store.state.registered && !$store.state.matchState"/>
-        <Match v-else-if="$store.state.registered && $store.state.matchState"/>
+        <Match v-if="$store.state.matchState"/>
       </div>
 	</div>
 </template>
@@ -71,7 +71,6 @@ export default {
       this.$store.dispatch("startPolling")
     }
   }
-
 }
 </script>
 

@@ -133,7 +133,10 @@ export default new Vuex.Store({
             const watcher = matches.watch({ids:[Realm.BSON.ObjectId(state.matchId)]})
             for await (const change of watcher) {
                 const { fullDocument: matchDoc } = change
-                if(matchDoc.winner === 0 || matchDoc.winner === 1 || !state.signature) break;
+                if(matchDoc.winner === 0 || matchDoc.winner === 1 || !state.signature) {
+                    commit("setMatchState", matchDoc)
+                    break
+                }
                 if(axiosQueue.getQueueLength() === 0 && axiosQueue.getPendingLength() <= 1) commit("setMatchState", matchDoc)
             }
         },
