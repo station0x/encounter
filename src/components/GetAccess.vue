@@ -46,7 +46,7 @@ export default {
                 this.$store.commit('registerAddress', true)
                 this.$buefy.toast.open({
                     duration: 5000,
-                    message: `Great Job! get ready for the game`,
+                    message: `ACCESS GRANTED`,
                     position: 'is-bottom',
                     type: 'is-success'
                 })
