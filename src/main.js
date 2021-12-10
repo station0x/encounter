@@ -8,6 +8,7 @@ import Link from './views/Link.vue'
 import 'buefy/dist/buefy.css'
 import VueClipboard from 'vue-clipboard2'
 import Gravatar from 'vue-gravatar'
+import VueGtag from 'vue-gtag'
 
 Vue.component('v-gravatar', Gravatar)
 Vue.use(VueClipboard)
@@ -17,14 +18,21 @@ Vue.use(Buefy)
 Vue.config.productionTip = false
 
 const routes = [
-  { path: '/', component: Home },
-  { path: '/play/:link', component: Link }
+  { path: '/', component: Home, name: 'Home' },
+  { path: '/play/:link', component: Link, name: 'Join Game with Link' }
 ]
 
 const router = new VueRouter({
   routes,
   mode: 'history'
 })
+
+Vue.use(VueGtag, {
+  config: { id: "G-HL5M6DTYYF" },
+  appName: 'SZX Encounter',
+  pageTrackerScreenviewEnabled: true
+}, router)
+
 
 
 new Vue({
