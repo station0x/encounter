@@ -4,6 +4,7 @@ import Buefy from 'buefy'
 import store from './store'
 import VueRouter from 'vue-router'
 import Home from './views/Home.vue'
+import Admin from './views/Admin.vue'
 import Link from './views/Link.vue'
 import 'buefy/dist/buefy.css'
 import VueClipboard from 'vue-clipboard2'
@@ -19,7 +20,8 @@ Vue.config.productionTip = false
 
 const routes = [
   { path: '/', component: Home, name: 'Home' },
-  { path: '/play/:link', component: Link, name: 'Join Game with Link' }
+  { path: '/play/:link', component: Link, name: 'Join Game with Link' },
+  { path: '/admin', component: Admin, name: 'Admin' },
 ]
 
 const router = new VueRouter({
