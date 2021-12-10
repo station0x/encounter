@@ -33,7 +33,16 @@ module.exports = async (req, res) => {
       await accessKeys.updateOne({key}, {
         $set:{timesLeft: accessKey.timesLeft}
     })
+   } else if(playerDoc && !playerDoc.accessKey) {
+      await players.updateOne({address}, {
+         $set:{accessKey: key}
+      })
+      
+      accessKey.timesLeft -= 1
+      await accessKeys.updateOne({key}, {
+        $set:{timesLeft: accessKey.timesLeft}
+    })
+
    } else throw new Error('Address already registered')
    res.status(200).json({ sucess: true });
-
 }
