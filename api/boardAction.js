@@ -134,8 +134,20 @@ function isLegalAttack(board, selectedX, selectedY, x, y) {
 function isLegalRepair(board, selectedX, selectedY, x, y) {
     return legalRepairs(board, selectedX, selectedY).filter(move => move.x === x && move.y === y).length > 0
 }
+
+function CheckPlayerUnarmed(board, playerNo) {
+    for(let i = 0; i<board.length; i++) {
+        for(let j = 0; j<board[i].length; j++) {
+            const piece = board[i][j]
+            if(piece.type && piece.owner !== playerNo && piece.type !== 'base' && piece.type !== 'carrier') {
+                return false
+            }
+        }
+    }
+    return true
+}
+
 module.exports = async (req, res) => {
-    console.log(req.query)
    const client = await clientPromise;
    const db = client.db()
    const address = getAddress(req.query.signature)
@@ -245,6 +257,39 @@ module.exports = async (req, res) => {
                     $set:newPlayer1Stats
                 })
             ])
+        } else {
+            // if all enemy spaceships are destroyed except the base (end the game)
+            if(CheckPlayerUnarmed(newMatchStats.board, playerNumber)) {
+                newMatchStats.winner = playerNumber
+                const players = db.collection("players")
+                let player0Doc = (await players.find({address:matchDoc.player0}).limit(1).toArray())[0]
+                let player1Doc = (await players.find({address:matchDoc.player1}).limit(1).toArray())[0]
+                let newPlayer0Stats = {...player0Doc}
+                newPlayer0Stats.matchHistory.push(ObjectId(req.query.matchId))
+                let newPlayer1Stats = {...player1Doc}
+                newPlayer1Stats.matchHistory.push(ObjectId(req.query.matchId))
+                await Promise.all([
+                    players.updateOne({address:newMatchStats.player0}, {
+                        $unset:{activeMatch:""},
+                    }),
+                    players.updateOne({address:newMatchStats.player1}, {
+                        $unset:{activeMatch:""}
+                    })
+                ])
+                
+                delete newPlayer0Stats.activeMatch
+                delete newPlayer1Stats.activeMatch
+            
+                await Promise.all([
+                    players.updateOne({address:newMatchStats.player0}, {
+                        $set:newPlayer0Stats
+                    }),
+                    
+                    players.updateOne({address:newMatchStats.player1}, {
+                        $set:newPlayer1Stats
+                    })
+                ])
+            }
         }
     }
 
