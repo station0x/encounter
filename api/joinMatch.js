@@ -70,7 +70,7 @@ module.exports = async (req, res) => {
     })
 
     await players.updateOne({_id:enemyDoc._id}, {
-        $set:{activeMatch: id}
+        $set:{activeMatch: id, inviteLink: new ObjectId()}
     })
 
    res.status(200).json({ success:true });
