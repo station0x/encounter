@@ -125,7 +125,7 @@ export default new Vuex.Store({
         async startRealm({state, commit, dispatch}) {
             await realm.logIn(credentials);
             const mongodb = realm.currentUser.mongoClient("mongodb-atlas");
-            const matches = mongodb.db("encounter").collection("matches");
+            const matches = mongodb.db(process.env.VUE_APP_DB_NAME).collection("matches");
             const intialMatchDoc = await matches.findOne({_id:Realm.BSON.ObjectId(state.matchId)})
 
             commit("setMatchState", intialMatchDoc)
