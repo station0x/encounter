@@ -148,7 +148,6 @@ function CheckPlayerUnarmed(board, playerNo) {
 }
 
 module.exports = async (req, res) => {
-    console.log(req.query)
    const client = await clientPromise;
    const db = client.db()
    const address = getAddress(req.query.signature)
