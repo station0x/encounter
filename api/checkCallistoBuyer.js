@@ -7,7 +7,6 @@ module.exports = async (req, res) => {
     if(callistoBuyers[address] === true) {
         buyer = true
     }
-    console.log(address, callistoBuyers[address])
     res.status(200).json({ success: true, buyer });
 }
 
