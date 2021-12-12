@@ -163,7 +163,4 @@ export default {
     color: white;
     margin-top: 60px;
 }
-progress.progress.is-small.is-warning.is-squared {
-    
-}
 </style>
