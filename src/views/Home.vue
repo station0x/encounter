@@ -36,11 +36,12 @@ export default {
   methods: {
     logout() {
       this.$store.dispatch('disconnect')
+      this.$router.push({name: 'Login'})
     },
     openGameGuideModal() {
-        this.$buefy.modal.open({
-            component: GameGuide
-        })
+      this.$buefy.modal.open({
+        component: GameGuide
+      })
     },
     async checkAddressAccess() {
       try {
