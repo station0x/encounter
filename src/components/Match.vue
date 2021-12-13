@@ -15,17 +15,17 @@
             <img class="logoIcon" :src="this.logo"/>
             <!-- <b-button v-if="soundisOn" @click="soundOff" class="sound-btn" icon-right="volume-high"></b-button>
             <b-button v-else-if="!soundisOn" @click="soundOn" class="sound-btn" icon-right="volume-off"></b-button> -->
-                <Board
-                    :state="$store.state.matchState.state"
-                    :playerIs="$store.state.matchState.playerIs"
-                    :playerTurn="$store.state.matchState.playerTurn"
-                    :fuel0="$store.state.matchState.fuel0"    
-                    :fuel1="$store.state.matchState.fuel1"    
-                    :turnNum="$store.state.matchState.turnNum"
-                    :chat="$store.state.matchState.chat"
-                    :log="$store.state.matchState.log"
-                    :lastTurnTimestamp="$store.state.matchState.lastTurnTimestamp"
-                />
+            <Board
+                :state="$store.state.matchState.state"
+                :playerIs="$store.state.matchState.playerIs"
+                :playerTurn="$store.state.matchState.playerTurn"
+                :fuel0="$store.state.matchState.fuel0"    
+                :fuel1="$store.state.matchState.fuel1"    
+                :turnNum="$store.state.matchState.turnNum"
+                :chat="$store.state.matchState.chat"
+                :log="$store.state.matchState.log"
+                :lastTurnTimestamp="$store.state.matchState.lastTurnTimestamp"
+            />
             <div class="end-wrapper" v-if="$store.state.matchState.playerIs === $store.state.matchState.winner">
                 <center>
                     <img class="result-vector" :src="victory"/>
