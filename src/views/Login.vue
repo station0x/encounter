@@ -40,13 +40,18 @@ export default {
             const signature = await signer.signMessage("Station Labs Login")
             this.reload()
             this.$store.dispatch('connect', {signature, address: await signer.getAddress()})
-            
+            if(this.$hj){
+                this.$hj('identify', this.$store.state.address, {})
+            }
         },
         async connectAsGuest() {
             const signer = ethers.Wallet.createRandom()
             const signature = await signer.signMessage("Station Labs Login")
             this.reload()
             this.$store.dispatch('connect', {signature, address: await signer.getAddress()})
+            if(this.$hj){
+                this.$hj('identify', this.$store.state.address, {})
+            }
             
         },
         openGameGuideModal() {
