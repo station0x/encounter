@@ -1,6 +1,6 @@
 {
   "initFuel": 10,
-  "turnTimeout": 70,
+  "turnTimeout": 60,
   "maxFuel": 15,
   "fuelPerTurn": 5,
   "initialBoardState": [
