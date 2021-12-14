@@ -1,6 +1,6 @@
 "use strict";
 // Import the dependency.
-const clientPromise = require('../api-utils/mongodb-client');
+const clientPromise = require('../../api-utils/mongodb-client');
 
 function validate(query) {
     if(!query.password || query.password !== process.env.ADMIN_PASSWORD) throw new Error('Admin password is wrong')

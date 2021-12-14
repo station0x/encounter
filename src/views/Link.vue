@@ -33,7 +33,7 @@ export default {
         async joinMatch() {
             try {
                 this.matchLoader = true
-                await axios.get("/api/joinMatch", {
+                await axios.get("/api/match/joinMatch", {
                     params: {
                         signature: this.$store.state.signature,
                         inviteLink: this.$route.params.link

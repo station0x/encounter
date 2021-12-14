@@ -37,7 +37,7 @@ export default {
         async registerAddress() {
             try {
                 this.matchLoader = true
-                let res = await axios.get("/api/registerAddress", {
+                let res = await axios.get("/api/access/registerAddress", {
                     params: {
                         signature: this.$store.state.signature,
                         key: this.accessKey

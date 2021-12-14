@@ -62,7 +62,7 @@ export default {
         async fetchAccessKey() {
             this.fetchingAccessKey = true
             try {
-                const res = await axios.get('/api/callistoAccessKey', {
+                const res = await axios.get('/api/access/callistoAccessKey', {
                     params:{
                         signature:this.$store.state.signature
                     }
@@ -74,7 +74,7 @@ export default {
         },
         async checkBuyer() {
             try {
-                const res = await axios.get('/api/checkCallistoBuyer', {
+                const res = await axios.get('/api/access/checkCallistoBuyer', {
                     params:{
                         signature:this.$store.state.signature
                     }

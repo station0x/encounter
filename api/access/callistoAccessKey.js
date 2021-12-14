@@ -1,13 +1,39 @@
-const getAddress = require('../api-utils/getAddress');
+"use strict";
+// Import the dependency.
+const clientPromise = require('../../api-utils/mongodb-client')
+const getAddress = require('../../api-utils/getAddress')
+var crypto = require('crypto')
+var salt = 'getEncounterAccess'
 
+function makeKey(address) {
+    address += salt
+    let hash = crypto.createHash('md5').update(address).digest('hex')
+    return hash
+}
 
 module.exports = async (req, res) => {
     const address = getAddress(req.query.signature)
     let buyer = false
+    let key = ''
+    let timesLeft = 0
+    
     if(callistoBuyers[address] === true) {
+        key = makeKey()
+        timesLeft = 2
         buyer = true
     }
-    res.status(200).json({ success: true, buyer });
+
+    const client = await clientPromise
+    const db = client.db()
+    const keys = db.collection("access_keys")
+    const keyDoc = (await keys.find({key}).limit(1).toArray())[0]
+    if(!keyDoc) {
+        await keys.insertOne({
+            key,
+            timesLeft
+        })  
+    }
+    res.status(200).json({ success: true, buyer, key, timesLeft})
 }
 
 

@@ -5,8 +5,13 @@
 			<div class="chat-wrapper">
 				<div id="logs">
 					<div v-for="(msg, key) in sortedLogsAndChats" :key="key">
-						<div class="chat-message">
-							{{ formatMsg(msg) }}
+						<div v-if="msg.msg" class="chat-message">
+							<span style="color: #416BFF" v-if="msg.playerNo === playerIs">You: </span>
+							<span style="color: #C72929" v-else>Enemy: </span>
+							{{msg.msg}}
+						</div>
+						<div v-else class="chat-message">
+							{{formatAction(msg)}}
 						</div>
 					</div>
 					
@@ -344,30 +349,12 @@ export default {
 	  	surrender() {
 			const winner = this.playerIs === 0 ? 1 : 0
 			this.$store.commit('setWinner', winner)
-			this.$store.dispatch('enqueue', () => axios.get('/api/surrender', {
+			this.$store.dispatch('enqueue', () => axios.get('/api/match/surrender', {
 				params:{
 					signature:this.$store.state.signature,
 					matchId: this.$store.state.matchId
 				}
 			}))
-		},
-		formatMsg(msgObj) {
-			let suffix = ''
-			if(msgObj.msg) {
-				if(msgObj.playerNo === this.playerIs) {
-					suffix = 'You: '
-				} else {
-					suffix = 'Enemy: '
-				}
-				return suffix + msgObj.msg
-			} else if(msgObj.action) {
-				if(msgObj.playerNo === this.playerIs) {
-					suffix = ''
-				} else {
-					suffix = ''
-				}
-				return suffix + this.formatAction(msgObj)
-			}
 		},
 		formatAction(actionObj) {
 			let message = ''
@@ -411,7 +398,7 @@ export default {
 	    endTurn() {
 			this.playSound(this.turnSfx) 
             this.$store.commit('endTurn')
-			this.$store.dispatch('enqueue', () => axios.get('/api/endTurn', {
+			this.$store.dispatch('enqueue', () => axios.get('/api/match/endTurn', {
 				params:{
 					signature:this.$store.state.signature,
 					matchId: this.$store.state.matchId
@@ -420,7 +407,7 @@ export default {
     	},
 	    endEnemyTurn() {
             this.$store.commit('endTurn')
-			this.$store.dispatch('enqueue', axios.get('/api/endEnemyTurn', {
+			this.$store.dispatch('enqueue', axios.get('/api/match/endEnemyTurn', {
 				params:{
 					signature:this.$store.state.signature,
 					matchId: this.$store.state.matchId
@@ -432,7 +419,7 @@ export default {
 				this.$store.commit('sendMessage', this.chatMessage)
 				var container = this.$el.querySelector("#logs")
 				container.scrollTop = container.scrollHeight
-				axios.get('/api/sendMessage', {
+				axios.get('/api/chat/sendMessage', {
 					params:{
 						signature:this.$store.state.signature,
 						matchId: this.$store.state.matchId,
@@ -509,7 +496,7 @@ export default {
 							this.$store.commit('endTurn')
 						}
 						const from = {...this.selected}
-						this.$store.dispatch('enqueue', () => axios.get('/api/boardAction', {
+						this.$store.dispatch('enqueue', () => axios.get('/api/match/boardAction', {
 							params:{
 								signature:this.$store.state.signature,
 								matchId: this.$store.state.matchId,
@@ -549,7 +536,7 @@ export default {
 					this.$store.commit('endTurn')
 				}
 				const from = {...this.selected}
-				this.$store.dispatch('enqueue', () => axios.get('/api/boardAction', {
+				this.$store.dispatch('enqueue', () => axios.get('/api/match/boardAction', {
 					params:{
 						signature:this.$store.state.signature,
 						matchId: this.$store.state.matchId,
@@ -573,7 +560,7 @@ export default {
 				}
 				this.$store.commit('setBoard', newState)
 				const from = {...this.selected}
-				this.$store.dispatch('enqueue', () => axios.get('/api/boardAction', {
+				this.$store.dispatch('enqueue', () => axios.get('/api/match/boardAction', {
 					params:{
 						signature:this.$store.state.signature,
 						matchId: this.$store.state.matchId,
