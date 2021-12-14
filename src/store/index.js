@@ -98,7 +98,7 @@ export default new Vuex.Store({
                 clearInterval(state.intervalId)
             }
             const intervalFunc = async function(){
-                const res = await axios.get('/api/getActiveMatchId', {
+                const res = await axios.get('/api/match/getActiveMatchId', {
                     params:{
                         signature: state.signature
                     }

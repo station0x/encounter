@@ -45,7 +45,7 @@ export default {
     },
     async checkAddressAccess() {
       try {
-        let res = await axios.get("/api/checkPlayerAccess", {
+        let res = await axios.get("/api/access/checkPlayerAccess", {
             params: {
               signature: this.$store.state.signature,
               key: this.accessKey

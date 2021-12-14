@@ -1,8 +1,8 @@
 "use strict";
-const CONSTANTS = require('../constants.json')
+const CONSTANTS = require('../../constants.json')
 // Import the dependency.
-const clientPromise = require('../api-utils/mongodb-client');
-const getAddress = require('../api-utils/getAddress');
+const clientPromise = require('../../api-utils/mongodb-client');
+const getAddress = require('../../api-utils/getAddress');
 const { ObjectId  } = require('mongodb');
 
 module.exports = async (req, res) => {
@@ -14,10 +14,9 @@ module.exports = async (req, res) => {
 
     const matchmakingDoc = (await matchmakingQueue.find({address}).limit(1).toArray())[0]
 
-    if(!matchmakingDoc) throw new Error("player not in queue")
+    let enqueued = false
 
-    // Dequeue enemy
-    await matchmakingQueue.deleteOne({address})
+    if(matchmakingDoc) enqueued = true
 
-   res.status(200).json({ success:true })
+   res.status(200).json({ success:true, enqueued })
 }

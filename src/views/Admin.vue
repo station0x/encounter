@@ -29,7 +29,7 @@ export default {
     methods:{
         async submit () {
             try {
-                const res = await axios.get('/api/createAccessKey', {
+                const res = await axios.get('/api/access/createAccessKey', {
                     params:{
                         password: this.password,
                         key: this.accessKey,

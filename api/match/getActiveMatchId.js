@@ -1,7 +1,7 @@
 "use strict";
 // Import the dependency.
-const clientPromise = require('../api-utils/mongodb-client');
-const getAddress = require('../api-utils/getAddress');
+const clientPromise = require('../../api-utils/mongodb-client');
+const getAddress = require('../../api-utils/getAddress');
 
 module.exports = async (req, res) => {
    const client = await clientPromise;

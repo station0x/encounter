@@ -1,9 +1,9 @@
 "use strict";
 // Import the dependency.
-const clientPromise = require('../api-utils/mongodb-client');
-const getAddress = require('../api-utils/getAddress');
+const clientPromise = require('../../api-utils/mongodb-client');
+const getAddress = require('../../api-utils/getAddress');
 const { ObjectId } = require('mongodb');
-const CONSTANTS = require('../constants.json');
+const CONSTANTS = require('../../constants.json');
 
 function isOccupied(board, x, y) {
     return board[y][x].type ? true : false
