@@ -8,9 +8,9 @@ module.exports = async (req, res) => {
     const db = client.db()
     const players = db.collection("players")
     const playerDoc = (await players.find({address}).limit(1).toArray())[0]
-    console.log(playerDoc)
 
     if(!playerDoc) throw new Error('No player with this address')
+    if(playerDoc.elo === undefined) playerDoc.elo = 1200
 
-    res.status(200).json({ sucess: true, playerDoc });
+    res.status(200).json({ success: true, playerDoc });
 }

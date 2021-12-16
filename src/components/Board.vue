@@ -77,7 +77,7 @@
 					</div>
 				</div>
 			</div>
-			<div @click="openGameGuideModal" class="clickable-text" style="margin-top:95px; text-align: center; color: #F98F09; width: fit-content; margin: 0 auto">Game Guide  <b-icon icon="alert-circle" size="is-small" style="margin-left: 5px; margin-top: -40px"></b-icon></div>
+			<div @click="openGameGuideModal" class="clickable-text" style="margin-top: 110px; text-align: center; color: #F98F09; width: fit-content; margin: 0 auto">Game Guide  <b-icon icon="alert-circle" size="is-small" style="margin-left: 5px; margin-top: -40px"></b-icon></div>
 		</div>
 		<div class="right">
 			<div v-if="spaceshipStats.type" class="spaceship-stats">

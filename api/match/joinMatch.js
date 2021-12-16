@@ -25,9 +25,11 @@ module.exports = async (req, res) => {
       inviteLink = new ObjectId();
       playerDoc = {
         address,
+        playerAlias: '',
         matchHistory:[],
         lastSeenTimestamp: Date.now(),
-        inviteLink
+        inviteLink,
+        elo: 1200
      }
 
       await players.insertOne(playerDoc)
