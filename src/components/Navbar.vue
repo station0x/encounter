@@ -8,22 +8,16 @@
         >
       </b-navbar-item>
     </template>
-    <!-- <template #start>
-        <b-navbar-item @click="$router.push({ path: '/' })">
-          Home
-        </b-navbar-item>
-        <b-navbar-item @click="$router.push({ path: '/about' })">
-          About
-        </b-navbar-item>
-        <b-navbar-item @click="$router.push({ path: '/team' })">
-          Team
-        </b-navbar-item>
-    </template> -->
 
     <template #end>
       <b-navbar-item v-if="isConnected" @click="$router.push({ name: 'Player Profile', params: { playerAddress: $store.state.address } })" target="_blank">
         <a class="button nav-btn">
           Profile
+        </a>
+      </b-navbar-item>
+        <b-navbar-item v-if="isConnected" @click="$router.push({ name: 'Leaderboard'})" target="_blank">
+        <a class="button nav-btn">
+          Leaderboard
         </a>
       </b-navbar-item>
       <center>
@@ -113,6 +107,11 @@ button.button.button.is-primary.is-medium.nav-cta.cta-btn {
 a.navbar-item:hover {
   color: rgba(255,255,255,0.7);
   background-color: transparent !important;
+}
+
+a.navbar-item {
+  margin-left: 0px !important;
+  padding-left: 0px !important;
 }
 
 .button {

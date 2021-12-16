@@ -11,8 +11,29 @@
                 </div>
             </div>
             <!-- <div v-if="playerInfo.playerAlias.length !== 0" class="name">Name</div> -->
-            <div class="name">Name</div>
-            <div class="address">{{ this.playerAddress }}</div>
+            <!-- <b-input v-if="playerAddress === $store.state.address"></b-input> -->
+            <!-- <b-field v-if="playerAddress === $store.state.address">
+                <b-input expanded custom-class="name-input" placeholder="Name"></b-input>
+                <p class="control">
+                    <b-button class="submit-btn">Save name</b-button>
+                </p>
+            </b-field> -->
+            <div class="name">{{playerInfo? playerInfo.playerAlias: ""}}</div>
+            <center>
+                <div style="width: fit-content">
+                    <b-taglist attached>
+                        <b-tag type="is-dark">Elo</b-tag>
+                        <b-tag v-if="playerInfo" type="is-info">{{ playerInfo.elo }}</b-tag>
+                    </b-taglist>
+                </div>
+            </center>
+            <div class="address">{{ playerAddress }}</div>
+            <b-field v-if="playerAddress === $store.state.address">
+                <b-input v-model="newName" custom-class="name-textarea" size="is-small" expanded></b-input>
+                <p class="control">
+                    <b-button :loading="loading" @click="submitName" class="submit-btn">Change Name</b-button>
+                </p>
+            </b-field>
         </div>
         <v-gravatar style="display: none" ref="gravatar" :email="playerAddress" alt="Nobody" :size="530"/>
     </div>
@@ -30,6 +51,8 @@ export default {
             playerAddress: undefined,
             playerInfo: undefined,
             gravatar: null,
+            newName: "",
+            loading: false
         }
     },
     components: {
@@ -42,9 +65,41 @@ export default {
 					address: this.playerAddress
 				}
             })
-            console.log(res)
             this.playerInfo = res.data.playerDoc
             this.fetchingProfileLoader = false
+        },
+        async submitName () {
+            if(this.newName.length > 0) {
+                this.loading = true;
+                try {
+                    const res = await axios.get('/api/player/changePlayerAlias', {
+                        params:{
+                            signature: this.$store.state.signature, 
+                            alias: this.newName
+                        }
+                    })
+                    const success = res.data.success
+                    if(success) {
+                        this.$buefy.toast.open({
+                            duration: 5000,
+                            message: `Name saved`,
+                            position: 'is-bottom',
+                            type: 'is-success'
+                        })
+                        this.newName = ""
+                        this.fetchProfile()
+                    } else {
+                        this.$buefy.toast.open({
+                            duration: 5000,
+                            message: res.data.error,
+                            position: 'is-bottom',
+                            type: 'is-danger'
+                        })
+                    }
+                } finally {
+                    this.loading = false
+                }
+            }
         }
     },
     created() {
@@ -62,7 +117,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .page-container {
     height: 100vh;
     padding-top: 170px;
@@ -136,5 +191,38 @@ export default {
     text-transform: capitalize;
     color: #FFFFFF;
     margin-bottom: 50px;
+}
+.submit-btn {
+  height: 50px !important;
+  width: 170px !important;
+  font-size: 15px !important;
+  background: #0E1739 !important;
+  color: white !important;
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' stroke='%23416BFF' stroke-width='2' stroke-dasharray='3%2c 56%2c 16' stroke-dashoffset='22' stroke-linecap='square'/%3e%3c/svg%3e") !important;
+  border: none !important;
+  border-radius: 0px !important;
+  font-family: 'ClashDisplay-Variable';
+  color: white;
+  transition: 200ms ease-in;
+}
+.name-textarea {
+	background: black;
+}
+input.input.is-small.name-textarea {
+    background: black;
+    border-top: 1px solid #416BFF;
+	border-left: 1px solid #416BFF;
+	border-bottom: 1px solid #416BFF;
+	border-right: none;
+	font-size: 15px;
+	height: 50px;
+	padding: 14px;
+	color: white;
+}
+input.input.is-small.name-textarea:focus {
+	box-shadow: none;
+}
+input[placeholder], [placeholder], *[placeholder] {
+    color: white;
 }
 </style>

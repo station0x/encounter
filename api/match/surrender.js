@@ -4,7 +4,9 @@ const clientPromise = require('../../api-utils/mongodb-client');
 const getAddress = require('../../api-utils/getAddress');
 const { ObjectId } = require('mongodb');
 const CONSTANTS = require('../../constants.json');
+var Elo = require( 'elo-js' );
 
+var elo = new Elo();
 
 module.exports = async (req, res) => {
     const client = await clientPromise;
@@ -28,8 +30,21 @@ module.exports = async (req, res) => {
 
     let newPlayer0Stats = {...player0Doc}
     newPlayer0Stats.matchHistory.push(ObjectId(req.query.matchId))
+
     let newPlayer1Stats = {...player1Doc}
     newPlayer1Stats.matchHistory.push(ObjectId(req.query.matchId))
+
+
+    newPlayer0Stats.elo = newPlayer0Stats.elo === undefined ? 1200 : newPlayer0Stats.elo
+    newPlayer1Stats.elo = newPlayer1Stats.elo === undefined ? 1200 : newPlayer1Stats.elo
+
+    if(newMatchStats.winner === 0) {
+        newPlayer0Stats.elo = elo.ifWins(newPlayer0Stats.elo, newPlayer1Stats.elo)
+        newPlayer1Stats.elo = elo.ifLoses(newPlayer1Stats.elo, newPlayer0Stats.elo)
+    } else {
+        newPlayer1Stats.elo = elo.ifWins(newPlayer1Stats.elo, newPlayer0Stats.elo)
+        newPlayer0Stats.elo = elo.ifLoses(newPlayer0Stats.elo, newPlayer1Stats.elo)
+    }
 
     
     await Promise.all([

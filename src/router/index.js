@@ -8,6 +8,7 @@ import Lobby from '@/views/Lobby'
 import Login from '@/views/Login'
 import PlayerProfile from '@/views/PlayerProfile'
 import RedeemAccessKey from '@/views/RedeemAccessKey'
+import Leaderboard from '@/views/Leaderboard'
 import NotFound from '@/views/NotFound.vue'
 
 Vue.use(VueRouter)
@@ -23,7 +24,8 @@ const routes = [
   { path: '/login', component: Login, name: 'Login', meta: { title: 'Login' } },
   { path: '/redeem-your-access-key', component: RedeemAccessKey, name: 'Redeem Access Key', meta: { requiresLogin: true, title: 'Redeem Access Key' } },
   { path: '/player/:playerAddress', component: PlayerProfile, name: 'Player Profile', meta: { title: 'Profile' } },
-  { path: '/not-found', component: NotFound, name: 'Not Found', props: true, meta: { title: 'Page Not Found' } }
+  { path: '/not-found', component: NotFound, name: 'Not Found', props: true, meta: { title: 'Page Not Found' } },
+  { path: '/leaderboard', component: Leaderboard, name: 'Leaderboard', meta: { title: 'Leaderboard' } }
 ]
 
 const router = new VueRouter({

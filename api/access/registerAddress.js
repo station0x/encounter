@@ -26,6 +26,7 @@ module.exports = async (req, res) => {
          matchHistory:[],
          lastSeenTimestamp: Date.now(),
          inviteLink,
+         elo: 1200,
          accessKey: key
       })
       
@@ -44,5 +45,5 @@ module.exports = async (req, res) => {
     })
 
    } else throw new Error('Address already registered')
-   res.status(200).json({ sucess: true });
+   res.status(200).json({ success: true });
 }
