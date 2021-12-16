@@ -21,27 +21,28 @@
     </template> -->
 
     <template #end>
-      <b-navbar-item @click="$router.push({ name: 'Player Profile', params: { playerAddress: $store.state.address } })" target="_blank">
+      <b-navbar-item v-if="isConnected" @click="$router.push({ name: 'Player Profile', params: { playerAddress: $store.state.address } })" target="_blank">
         <a class="button nav-btn">
           Profile
         </a>
       </b-navbar-item>
       <center>
-        <b-button v-if="!isConnected" type="is-primary" @click="connectWallet">Connect Wallet</b-button>
+        <b-button class="nav-btn" v-if="!isConnected" type="is-primary" @click="connectMetamask">Connect Wallet</b-button>
       </center>
       <center v-if="isConnected">
-        <a class="button nav-btn">
-          {{ fmtdWalletAddress }}
-        </a>
+
+        <b-tooltip label="Disconnect and Logout" position="is-bottom" type="is-dark">
+            <b-button @click="logout" class="button nav-btn" icon-right="logout">
+                {{ fmtdWalletAddress }}
+            </b-button>
+        </b-tooltip>
       </center>
-        <b-navbar-item @click="$router.push({ path: '/claim-eth-skins' })" target="_blank">
-        <div class="logout-btn" @click="logout">Logout</div>
-      </b-navbar-item>
     </template>
   </b-navbar>
 </template>
 
 <script>
+import { ethers } from 'ethers'
 export default {
   data () {
     return {
@@ -50,16 +51,25 @@ export default {
   },
     computed: {
       isConnected() {
-        return this.$store.state.address === undefined ? false : true
+        return this.$store.state.address === null ? false : true
       },
       fmtdWalletAddress() {
-        let address = this.$store.state.address;
-        return address.substring(0, 6) + '...' + address.substring(38, 42)
+          console.log(this.$store.state.address)
+        return this.$store.state.address === null ? '' : this.$store.state.address.substring(0, 6) + '...' + this.$store.state.address.substring(38, 42)
       }
     },
     methods: {
-        connectWallet() {
-            this.$store.dispatch('connect')
+        async connectMetamask() {
+            const provider = new ethers.providers.Web3Provider(window.ethereum, "any")
+            const signer = provider.getSigner()
+            await provider.send("eth_requestAccounts", []);
+            const accounts = await provider.listAccounts()
+            const signature = await signer.signMessage("Station Labs Login")
+            this.$router.go(this.$router.currentRoute)
+            this.$store.dispatch('connect', {signature, address: await signer.getAddress()})
+            if(this.$hj){
+                this.$hj('identify', this.$store.state.address, {})
+            }
         },
         logout() {
             this.$store.dispatch('disconnect')
@@ -125,6 +135,9 @@ a.navbar-burger.burger {
   margin: 0 0.5rem;
   text-align: center;
 }
+img.nav-logo {
+    max-height: 4rem !important;
+}
 .nav-btn {
   height: 50px !important;
   width: 170px !important;
@@ -136,5 +149,13 @@ a.navbar-burger.burger {
   border-radius: 0px !important;
   font-family: 'ClashDisplay-Variable';
   color: white;
+  transition: 200ms ease-in;
+}
+.nav-btn:hover {
+    background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' stroke='%23416BFF' stroke-width='2' stroke-dasharray='5%2c 45%2c 12' stroke-dashoffset='26' stroke-linecap='square'/%3e%3c/svg%3e") !important;
+}
+i.mdi.mdi-logout {
+    font-size: 20px;
+    margin-right: -5px;
 }
 </style>

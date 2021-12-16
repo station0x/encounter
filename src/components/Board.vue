@@ -2,19 +2,42 @@
 	<div class="main-wrapper">
 		<div class="left">
 			<EnemyCard @endEnemyTurn="endEnemyTurn" :playerAddress="enemyAddress" :fuel="enemyFuel" :lastTurnTimestamp="lastTurnTimestamp" :isEnemyTurn="!isMyTurn"/>
-			<div class="chat-wrapper">
-				<div id="logs">
-					<div v-for="(msg, key) in sortedLogsAndChats" :key="key">
-						<div v-if="msg.msg" class="chat-message">
-							<span style="color: #416BFF" v-if="msg.playerNo === playerIs">You: </span>
-							<span style="color: #C72929" v-else>Enemy: </span>
-							{{msg.msg}}
-						</div>
-						<div v-else class="chat-message">
-							{{formatAction(msg)}}
-						</div>
-					</div>
-					
+			<div class="chat-wrapper">					
+				<div class="logs-tabs">
+					<b-tabs v-model="tabsModel" @input="tabClicked" expanded class="logs-tabs">
+						<b-tab-item value="logs" class="logs-tabs">
+							<template #header>
+								<b-icon icon="information-outline"></b-icon>
+								<span> Game Log <b-tag v-if="newLogs !== 0" type="is-dark" rounded style="margin-left:6px"> {{ newLogs }} </b-tag> </span>
+							</template>
+							<div id="action-logs">
+								<div v-for="(msg, key) in sortedLogs" :key="key">
+									<div v-if="msg.playerNo === playerIs" class="chat-message" :style="{'color': (sortedLogs.length - 1) - key < newLogs ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.5)'}">
+										{{formatAction(msg)}}
+									</div>
+									<div v-else-if="msg.playerNo !== playerIs" class="chat-message" :style="{'color': (sortedLogs.length - 1) - key < newLogs ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.5)'}">
+										{{formatAction(msg)}}
+									</div>
+								</div>
+							</div>
+						</b-tab-item>
+						<b-tab-item value="chat" class="logs-tabs">
+							<template #header>
+								<b-icon icon="forum"></b-icon>
+								<span> Chat <b-tag v-if="newChats !== 0" type="is-link is-light" rounded style="margin-left:6px"> {{ newChats }} </b-tag> </span>
+							</template>
+							<div id="chat-logs">
+								<div v-for="(msg, key) in sortedChats" :key="key">
+									<div v-if="msg.msg" class="chat-message">
+										<span v-if="msg.playerNo === playerIs" :class="{'newEle-left': (sortedChats.length - 1) - key < newChats}" style="color: #416BFF">You: </span>
+										<span v-else :class="{'newEle-left': (sortedChats.length - 1) - key < newChats}" style="color: #C72929">Enemy: </span>
+																				
+										<span :class="{'newEle-right': (sortedChats.length - 1) - key < newChats}"> {{msg.msg}} </span>
+									</div>
+								</div>
+							</div>
+						</b-tab-item>
+					</b-tabs>
 				</div>
 				<div class="chat-input">
 					<b-field>
@@ -28,21 +51,33 @@
 			</div>
 		</div>
 		<div class="middle">
-			<div id="hex-grid" :class="{rotate: playerIs === 1}">
-				<div class="row" v-for="(row, y) in ourState" :key="y">
-					<div @mouseover="hovered = {x,y}" @click="select(col, x, y)" class="col" v-for="(col, x) in row" :key="x">
-						<img :class="hexClasses(x,y)" src="hex.png" height="80px"/>
-						<img :class="pieceClasses(col.owner, x, y)" :src="col.img"/>
-						<img v-if="isLegalMove(x,y)" class="move-circle" src="circle.png"/>
-						<!-- <div v-if="col.type" class="tooltip">
-							<div class="spaceship-type">{{ col.type }}</div>
-							<span class="attribute" v-for="(value, key) in getSpaceshipAttributes(col)" :key="key">
-							{{key}}: {{value}}
-							</span>
-						</div> -->
+			<div class="hex-grid-container">
+				<div id="hex-grid" :class="{rotate: playerIs === 1}">
+					<div class="row" v-for="(row, y) in ourState" :key="y">
+						<div @mouseover="hovered = {x,y}" @click="select(col, x, y)" :class="{
+							'col': true, 
+							'hoverable-movable': col.type !== 'base' && col.owner === playerIs && !isLegalRepair(x,y),
+							'hoverable-attackable': isLegalAttack(x,y),
+							'hoverable-repairabe': isLegalRepair(x,y),
+							'hoverable-approachable': isLegalMove(x,y)
+							}" v-for="(col, x) in row" :key="x">
+							<!-- <img v-if="selected !== undefined && ourState[selected.y][selected.x].type === 'carrier' && isLegalRepair(x,y)" :class="hexClasses(x,y)" src="green-hex.png" height="80px"/>
+							<img v-else-if="selected !== undefined && ourState[selected.y][selected.x].type !== 'carrier' && isLegalAttack(x,y)" :class="hexClasses(x,y)" src="red-hex.png" height="80px"/>
+							<img v-else :class="hexClasses(x,y)" src="hex.png" height="80px"/> -->
+							<img :class="hexClasses(x,y)" :src="hexImg(x,y)" height="80px"/> 
+							<img :class="pieceClasses(col.owner, x, y)" :src="col.img"/>
+							<img v-if="isLegalMove(x,y)" class="move-circle" src="circle.png"/>
+							<!-- <div v-if="col.type" class="tooltip">
+								<div class="spaceship-type">{{ col.type }}</div>
+								<span class="attribute" v-for="(value, key) in getSpaceshipAttributes(col)" :key="key">
+								{{key}}: {{value}}
+								</span>
+							</div> -->
+						</div>
 					</div>
 				</div>
 			</div>
+			<div @click="openGameGuideModal" class="clickable-text" style="margin-top:95px; text-align: center; color: #F98F09; width: fit-content; margin: 0 auto">Game Guide  <b-icon icon="alert-circle" size="is-small" style="margin-left: 5px; margin-top: -40px"></b-icon></div>
 		</div>
 		<div class="right">
 			<div v-if="spaceshipStats.type" class="spaceship-stats">
@@ -90,6 +125,7 @@ import axios from 'axios'
 import CONSTANTS from "../../constants.json"
 import PlayerCard from "@/components/PlayerCard.vue"
 import EnemyCard from "@/components/EnemyCard.vue"
+import GameGuide from '@/components/GameGuide.vue'
 import arraySort from 'array-sort'
 
 export default {
@@ -101,9 +137,13 @@ export default {
 		hovered: undefined,
 		chatMessage: '',
 		sendingMsg: false,
+		newLogs: 0,
+		newChats: 0,
+		tabsModel: 'logs',
 		turnSfx: require('../assets/sfx/turn.mp3'),
 		shotSfx: require('../assets/sfx/shot.mp3'),
 		repairSfx: require('../assets/sfx/repair.mp3'),
+		radioSfxes: [require('../assets/sfx/radio1.mp3'), require('../assets/sfx/radio2.mp3'), require('../assets/sfx/radio3.mp3')],
 		blue: {
 			fighter: require('../assets/blue/fighter.png'),
 			gunship: require('../assets/blue/gunship.png'),
@@ -177,8 +217,11 @@ export default {
 			  })
 		  })
 	  },
-	sortedLogsAndChats() {
-		return arraySort([...this.chat, ...this.log], 'index')
+	sortedLogs() {
+		return arraySort([...this.log], 'index')
+	},
+	sortedChats() {
+		return arraySort([...this.chat], 'index')
 	},
 	keymap () {
 		return {
@@ -356,6 +399,38 @@ export default {
 				}
 			}))
 		},
+		hexImg(x, y) {
+			if(this.selected) {
+				if(this.ourState[this.selected.y][this.selected.x].type === "carrier" && this.isLegalRepair(x, y)) {
+					return 'green-hex.png'
+				} else if(this.ourState[this.selected.y][this.selected.x].type !== "carrier" && this.isLegalAttack(x, y)) {
+					return 'red-hex.png'
+				} else {
+					return 'hex.png'
+				}
+			} else {
+				return 'hex.png'
+			}
+		},
+		tabClicked(index) {
+			if(index === 'logs') this.resetChats()
+			else if(index === 'chat') this.resetLogs()
+		},
+		resetChats(){
+			var container = this.$el.querySelector("#action-logs")
+			container.scrollTop = container.scrollHeight
+			this.newChats = 0
+		},
+		resetLogs() {
+			var container = this.$el.querySelector("#chat-logs")
+			container.scrollTop = container.scrollHeight
+			this.newLogs = 0
+		},
+		openGameGuideModal() {
+            this.$buefy.modal.open({
+                component: GameGuide
+            })
+        },
 		formatAction(actionObj) {
 			let message = ''
 			if(actionObj.playerNo === this.playerIs) {
@@ -393,7 +468,13 @@ export default {
 			try {
 				audio.play()
 			} catch(e) { console.log(e) }
-			console.log('worked')
+		},
+		playRandomRadioSfx() {
+			var randRadioSfx = this.radioSfxes[Math.floor(Math.random() * this.radioSfxes.length)]
+			var audio = new Audio(randRadioSfx)
+			try {
+				audio.play()
+			} catch(e) { console.log(e) }
 		},
 	    endTurn() {
 			this.playSound(this.turnSfx) 
@@ -416,9 +497,10 @@ export default {
     	},
 		async sendMessage() {
 			if(this.chatMessage.length > 0) {
-				this.$store.commit('sendMessage', this.chatMessage)
-				var container = this.$el.querySelector("#logs")
+				this.tabsModel = 'chat'
+				var container = this.$el.querySelector("#chat-logs")
 				container.scrollTop = container.scrollHeight
+				this.$store.commit('sendMessage', this.chatMessage)
 				axios.get('/api/chat/sendMessage', {
 					params:{
 						signature:this.$store.state.signature,
@@ -594,60 +676,30 @@ export default {
 	  }
   },
   watch: {
-	  sortedLogsAndChats () {
-		var container = this.$el.querySelector("#logs")
-		container.scrollTop = container.scrollHeight;
-	  },
+		sortedLogs (newLogs, oldLogs) {
+			var container = this.$el.querySelector("#action-logs")
+			container.scrollTop = container.scrollHeight
+			this.newLogs += newLogs.length - oldLogs.length
+		},
+		sortedChats (newChats, oldChats) {
+			var container = this.$el.querySelector("#chat-logs")
+			container.scrollTop = container.scrollHeight
+			this.newChats += newChats.length - oldChats.length
+			if(newChats.length > oldChats.length) this.playRandomRadioSfx()
+		},
 	  "$store.state.matchState" (newState, oldState) {
-		  if(newState.log.length !== oldState.log.length) {
-			  console.log(newState.log[newState.log.length - 1].action)
-			  	if(newState.log[newState.log.length - 1].action === 'attack') {
-					this.playSound(this.shotSfx)
-				} else if(newState.log[newState.log.length - 1].action === 'repair') {
-					this.playSound(this.repairSfx)
-				}
-			//   for(let i = oldState.log.length - 1; i < newState.log.length - 1; i++) {
-			// 	  console.log(i, newState.log.length - 1)
-			// 	  console.log(newState.log[i].action)
-			// 	  if(newState.log[i].action === 'attack') {
-			// 		  this.playSound(this.shotSfx)
-			// 	  } else if(newState.log[i].action === 'repaire') {
-			// 		  this.playSound(this.repairSfx)
-			// 	  }
-			//   }
-		  }
-			if(oldState.playerTurn !== newState.playerTurn) {
-				this.selected = undefined
-				this.playSound(this.turnSfx)
+		if(newState.log.length !== oldState.log.length) {
+			console.log(newState.log[newState.log.length - 1].action)
+			if(newState.log[newState.log.length - 1].action === 'attack') {
+				this.playSound(this.shotSfx)
+			} else if(newState.log[newState.log.length - 1].action === 'repair') {
+				this.playSound(this.repairSfx)
 			}
-		//   const attacks = []
-		//   const destroys = []
-		//   const repairs = []
-		//   for (let y = 0; y < oldState.state.length; y++) {
-		// 	  const row = oldState.state[y];
-		// 	  for (let x = 0; x < row.length; x++) {
-		// 		  const oldPiece = row[x];
-		// 		  const newPiece = newState.state[y][x];
-		// 		  if(oldPiece.type) {
-		// 			if(oldPiece.owner === this.playerIs && !newPiece.type) {
-		// 				destroys.push(oldPiece.type)
-		// 			} else if(oldPiece.owner === this.playerIs && newPiece.hp < oldPiece.hp) {
-		// 				attacks.push(oldPiece.type)
-		// 			} else if(oldPiece.owner !== this.playerIs && newPiece.hp > oldPiece.hp) {
-		// 				repairs.push(oldPiece.type)
-		// 			}
-		// 		  }
-		// 	  }
-		//   }
-		// attacks.forEach(v => {
-		// 	this.playSound(this.shotSfx)
-		// })
-		// destroys.forEach(v => {
-		// 	this.playSound(this.shotSfx)
-		// })
-		// repairs.forEach(v => {
-		// 	this.playSound(this.repairSfx)
-		// })
+		}
+		if(oldState.playerTurn !== newState.playerTurn) {
+			this.selected = undefined
+			this.playSound(this.turnSfx)
+		}
 	}
   }
 }
@@ -656,15 +708,18 @@ export default {
 <style>
 :root {
 	--scale: 0.87;
+	--parcel-height: 120px;
+	--parcelNumber: 9;
 }
 h1 {
 	margin: 0;
 }
 #hex-grid {
-	margin-left: 0px !important;
-	margin-top: 30px !important;
     width: fit-content;
-    margin: 0 auto;
+    margin: auto;
+}
+.hex-grid-container {
+	transform: translateX(calc(((var(--scale) * (var(--parcel-height) * var(--scale))) / 4) * (-1)))
 }
 .row {
 	display: block;
@@ -682,12 +737,25 @@ h1 {
 .hex-parcel {
 	/* filter:invert(); */
 	opacity: 0.65;
-	height: calc(120px * var(--scale));
+	height: calc(var(--parcel-height) * var(--scale));
 	cursor: pointer;
 }
-.col:hover .hex-parcel {
+.hoverable-movable:hover .hex-parcel {
 	filter:invert();
 	opacity: 1;
+}
+/* .hoverable-attackable {
+	filter:invert();
+	opacity: 1;
+}
+*/
+.hoverable-repairable {
+	filter:invert();
+	opacity: 1;
+}
+.hoverable-approachable {
+	filter: brightness(2);
+	opacity:1;
 }
 .spaceship-stats {
 	margin: 0 auto;
@@ -700,7 +768,7 @@ h1 {
 	text-transform: capitalize;
 }
 .spaceship-img {
-	width: 120px;
+	width: var(--parcel-height);
 	margin: 10px 20px 0px 20px;
 }
 .hp-progress {
@@ -805,11 +873,10 @@ h1 {
 
 .move-circle {
 	position: absolute;
-	opacity: 1 !important;
 	left: calc(30px * var(--scale));
 	bottom: calc(40px * var(--scale));
 	height: calc(45px * var(--scale));
-	opacity: 0.6 !important;
+	opacity: 0.3 !important;
 }
 .selected {
 	opacity: 1;
@@ -820,10 +887,10 @@ h1 {
   transform: scaleY(-1);
 }
 .isTargetable {
-	cursor:url(/crosshair.png), auto;
+	cursor:url(/attack-cursor.png), auto;
 }
 .isRepairable {
-	cursor:url(/crosshair.png), auto;
+	cursor:url(/repair-cursor.png), auto;
 }
 .attribute {
 	display: block;
@@ -847,14 +914,12 @@ h1 {
 .middle {
 	flex-grow: 1;
    	flex-shrink: 0;
-	/* min-width: 890px; */
+	order: 2;
+	padding: 40px 0;
 }
 .left {
 	order: 1;
 	border-right: 1px solid #303030;
-}
-.middle {
-	order: 2;
 }
 .right {
 	order: 3;
@@ -914,10 +979,22 @@ input[placeholder], [placeholder], *[placeholder] {
 .control.is-small.is-clearfix {
 	width: calc(100% - 60px);
 }
-#logs {
+#chat-logs {
     height: 90%;
     padding-bottom: 10px;
 	overflow: scroll;
+}
+#action-logs {
+    height: 90%;
+    padding-bottom: 10px;
+	overflow: scroll;
+}
+.logs-tabs {
+	height: 100%;
+	padding-bottom: 10px;
+}
+.b-tabs .tab-content {
+	height: 100% !important;
 }
 .chat-message {
 	background: black;
@@ -933,5 +1010,44 @@ img {
     -moz-user-select: none;
     -webkit-user-select: none;
     user-select: none;
+}
+.newEle-right {
+	background: rgba(249, 143, 9, .2);
+    padding: 5px;
+	border-top-right-radius: 5px;
+	border-bottom-right-radius: 5px;
+}
+.newEle-left {
+	background: rgba(249, 143, 9, .2);
+    padding: 5px;
+	border-top-left-radius: 5px;
+	border-bottom-left-radius: 5px;
+}
+/* tabs customization */
+.tabs ul {
+	border-bottom-color: #303030 !important;
+}
+.tabs a {
+	border-bottom-color: #303030 !important;
+}
+.tabs li.is-active a {
+    border-bottom-color: #416BFF !important;
+    color: #416BFF !important;
+}
+.tabs a:hover {
+    border-bottom-color: #474747 !important;
+    color: #474747 !important;
+}
+/* a#\32 3-label {
+	border-bottom-color: #303030 !important;
+}
+a#\32 1-label {
+	border-bottom-color: #303030 !important;
+} */
+a#\32 3-label:active {
+	border-bottom-color: #416BFF !important;
+}
+a#\32 1-label:active {
+	border-bottom-color: #416BFF !important;
 }
 </style>

@@ -4,7 +4,6 @@
         <Loader v-model="loading"/>
       </div>
       <div v-if="!loading">
-        <div v-if="$store.state.matchState" @click="openGameGuideModal" class="upper-btn in-game-btn">Game Guide  <b-icon icon="alert-circle" size="is-small" style="margin-left: 5px"></b-icon></div>
         <GetAccess v-if="!$store.state.registered && !$store.state.matchState"/>
         <CreateMatch v-if="$store.state.registered && !$store.state.matchState"/>
         <Match v-if="$store.state.matchState"/>
@@ -15,7 +14,6 @@
 <script>
 import CreateMatch from '@/components/CreateMatch.vue'
 import Match from '@/components/Match.vue'
-import GameGuide from '@/components/GameGuide.vue'
 import GetAccess from '@/components/GetAccess.vue'
 import Loader from '@/components/Loader.vue'
 import axios from 'axios'
@@ -33,15 +31,6 @@ export default {
     GetAccess
   },
   methods: {
-    logout() {
-      this.$store.dispatch('disconnect')
-      this.$router.push({name: 'Login'})
-    },
-    openGameGuideModal() {
-      this.$buefy.modal.open({
-        component: GameGuide
-      })
-    },
     async checkAddressAccess() {
       try {
         let res = await axios.get("/api/access/checkPlayerAccess", {
@@ -84,10 +73,6 @@ export default {
   top: 4.5vh;
   right: 10vw;
   text-transform: uppercase;
-}
-.logout-btn:hover {
-  opacity: 0.9;
-  border-bottom: 1px solid white;
 }
 .loading-wrapper {
   background: black;

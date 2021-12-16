@@ -150,7 +150,6 @@ export default {
     color: black;
 }
 .match-wrapper {
-    padding: 10vh 3vw 0 3vw;
     margin: 0 auto;
 }
 .onboarding-animation {
