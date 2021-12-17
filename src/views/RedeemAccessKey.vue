@@ -3,7 +3,6 @@
         <div class="loader-wrapper" v-if="checkingBuyer">
             <Loader v-model="checkingBuyer"/>
         </div>
-        <div class="logout-btn" @click="logout">Logout</div>
         <center>
             <img
                 src="/logo.png"
@@ -50,10 +49,6 @@ export default {
         Loader
     },
     methods: {
-        logout() {
-            this.$store.dispatch('disconnect')
-            this.$router.push({name: 'Login'})
-        },
         openGameGuideModal() {
             this.$buefy.modal.open({
                 component: GameGuide
@@ -62,7 +57,7 @@ export default {
         async fetchAccessKey() {
             this.fetchingAccessKey = true
             try {
-                const res = await axios.get('/api/callistoAccessKey', {
+                const res = await axios.get('/api/access/callistoAccessKey', {
                     params:{
                         signature:this.$store.state.signature
                     }
@@ -74,7 +69,7 @@ export default {
         },
         async checkBuyer() {
             try {
-                const res = await axios.get('/api/checkCallistoBuyer', {
+                const res = await axios.get('/api/access/checkCallistoBuyer', {
                     params:{
                         signature:this.$store.state.signature
                     }
@@ -127,20 +122,6 @@ export default {
     color: black;
     background: #F88C09;
     border: #F88C09;
-}
-.logout-btn {
-  font-family: 'ClashDisplay-Variable';
-  font-size: 19px;
-  color: white;
-  cursor: pointer;
-  position: absolute;
-  top: 4.5vh;
-  right: 3vw;
-  text-transform: uppercase;
-}
-.logout-btn:hover {
-  opacity: 0.9;
-  border-bottom: 1px solid white;
 }
 .clickable-text {
     margin: 30px 20px 0px 20px;

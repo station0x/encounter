@@ -98,7 +98,7 @@ export default new Vuex.Store({
                 clearInterval(state.intervalId)
             }
             const intervalFunc = async function(){
-                const res = await axios.get('/api/getActiveMatchId', {
+                const res = await axios.get('/api/match/getActiveMatchId', {
                     params:{
                         signature: state.signature
                     }
@@ -140,6 +140,12 @@ export default new Vuex.Store({
                 if(axiosQueue.getQueueLength() === 0 && axiosQueue.getPendingLength() <= 1) commit("setMatchState", matchDoc)
             }
         },
+        // async getPlayerMatches(_, playerAddress){
+        //     await realm.logIn(credentials);
+        //     const mongodb = realm.currentUser.mongoClient("mongodb-atlas");
+        //     const matches = mongodb.db(process.env.VUE_APP_DB_NAME).collection("matches");
+        //     const intialMatchDoc = await matches.findOne({_id:Realm.BSON.ObjectId(state.matchId)})
+        // },
         enqueue(_, axiosPromise) {
             axiosQueue.add(() => {
                 return axiosPromise()

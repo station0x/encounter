@@ -61,7 +61,7 @@ export default {
         async createMatch() {
             this.createMatchLoader = true
             try {
-                const res = await axios.get('/api/createMatch', {
+                const res = await axios.get('/api/match/createMatch', {
                     params:{
                         signature:this.$store.state.signature
                     }
@@ -81,7 +81,7 @@ export default {
             if(this.findingMatchLoader) {
                 try {
                     this.findingMatchLoader = false
-                    const res = await axios.get('/api/leaveMatchmaking', {
+                    const res = await axios.get('/api/matchmaker/leaveMatchmaking', {
                         params:{
                             signature:this.$store.state.signature
                         }
@@ -93,7 +93,7 @@ export default {
             } else {
                 this.findingMatchLoader = true
                 try {
-                    const res = await axios.get('/api/joinMatchmaking', {
+                    const res = await axios.get('/api/matchmaker/joinMatchmaking', {
                         params:{
                             signature:this.$store.state.signature
                         }
@@ -106,7 +106,7 @@ export default {
         },
         async checkMatchmaking() {
             try {
-                const res = await axios.get('/api/checkMatchmaking', {
+                const res = await axios.get('/api/matchmaker/checkMatchmaking', {
                     params:{
                         signature:this.$store.state.signature
                     }
