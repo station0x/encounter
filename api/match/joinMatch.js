@@ -50,6 +50,7 @@ module.exports = async (req, res) => {
         return col
     }))
     const result = await matches.insertOne({
+        type:"custom",
         player0: enemyDoc.address,
         player1: playerDoc.address,
         fuel0: CONSTANTS.initFuel,

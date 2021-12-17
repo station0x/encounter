@@ -45,7 +45,7 @@ export default {
   },
     computed: {
       isConnected() {
-        return this.$store.state.address === null ? false : true
+        return this.$store.state.address && this.$store.state.address.length > 0? true : false
       },
       fmtdWalletAddress() {
           console.log(this.$store.state.address)

@@ -1,9 +1,9 @@
 <template>
     <div>
-        <div class="loader-wrapper" v-if="sortedData.length === 0">
-            <Loader v-model="loading"/>
+        <div class="loader-wrapper" v-if="sortedData === false">
+            <Loader/>
         </div>
-    <b-table :data="sortedData" :columns="columns">
+    <b-table v-if="sortedData" :data="sortedData">
         <b-table-column field="rank" label="Rank" width="30" numeric v-slot="props">
             {{ props.index + 1 > 3 ? props.index + 1 : "" }}
             <img v-if="props.index + 1 === 1" src="/top1.png"/>
@@ -44,7 +44,7 @@ export default {
             if(this.data) {
                 return arraySort([...this.data], 'elo')
             } else {
-                return []
+                return false
             }
         }
     },
