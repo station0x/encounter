@@ -48,9 +48,18 @@ export default {
             }
         }
     },
+    methods: {
+        async fetchLeaderboard () {
+            try {
+                const res = await axios.get('/api/player/getLeaderboard')
+                this.data = res.data.leaderboard
+            } catch {
+                this.fetchLeaderboard()
+            }
+        }
+    },
     async created() {
-        const res = await axios.get('/api/player/getLeaderboard')
-        this.data = res.data.leaderboard
+        this.fetchLeaderboard()
     } 
 }
 </script>
