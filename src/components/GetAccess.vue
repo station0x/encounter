@@ -37,7 +37,7 @@ export default {
         async registerAddress() {
             try {
                 this.matchLoader = true
-                let res = await axios.get("/api/registerAddress", {
+                let res = await axios.get("/api/access/registerAddress", {
                     params: {
                         signature: this.$store.state.signature,
                         key: this.accessKey
@@ -95,9 +95,12 @@ export default {
     background: #f39a2d;
 }
 .info-text {
-    color: #5B5B5B;
-    font-size: 17px;
-    font-weight: 400;
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 15px;
+    line-height: 16px;
+    color: white;
     margin: 0px 20px 0px 20px;
 }
 .access-field {

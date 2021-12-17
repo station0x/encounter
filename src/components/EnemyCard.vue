@@ -7,7 +7,7 @@
                 </div>
             </div>
             <h1 class="you">Enemy</h1>
-            <h1 class="your-address">{{ formattedAddress }}</h1>
+            <h1 @click="$router.push({ name: 'Player Profile', params: { playerAddress: playerAddress } })"  class="your-address">{{ formattedAddress }}</h1>
             <img class="energy-icon" src="/energy.svg" width="23px"/>
             <span class="energy">{{fuel}}</span>
             <div :disabled="!isEnemyTurn" class="turn-timer">Ends in: <strong style="color: #F88C09; margin-left: 10px">{{ lastTurnTimestamp === undefined ? turnTimeout : countdown }}</strong></div>
@@ -135,6 +135,10 @@ export default {
 .your-address {
     color: white;
     margin-bottom: 20px;
+    cursor: pointer;
+}
+.your-address:hover {
+    text-decoration: underline;
 }
 .hex {
     background: var(--border);

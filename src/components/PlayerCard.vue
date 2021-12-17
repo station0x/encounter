@@ -7,7 +7,7 @@
                 </div>
             </div>
             <h1 class="you">You</h1>
-            <h1 class="your-address">{{ formattedAddress }}</h1>
+            <h1 @click="$router.push({ name: 'Player Profile', params: { playerAddress: playerAddress } })" class="your-address">{{ formattedAddress }}</h1>
             <img class="energy-icon" src="/energy.svg" width="23px"/>
             <span class="energy">{{fuel}}</span>
 
@@ -155,7 +155,11 @@ section.modal-card-body.is-flex {
 }
 .your-address {
     color: white;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+.your-address:hover {
+    text-decoration: underline;
 }
 .btn-group {
     display: inline-block;

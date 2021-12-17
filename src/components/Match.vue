@@ -12,7 +12,6 @@
             </center>
         </div>
         <div class="match-wrapper">
-            <img class="logoIcon" :src="this.logo"/>
             <!-- <b-button v-if="soundisOn" @click="soundOff" class="sound-btn" icon-right="volume-high"></b-button>
             <b-button v-else-if="!soundisOn" @click="soundOn" class="sound-btn" icon-right="volume-off"></b-button> -->
             <Board
@@ -150,16 +149,7 @@ export default {
     background: white;
     color: black;
 }
-.logoIcon {
-  cursor: pointer;
-  position: absolute;
-  top: 3vh;
-  left: 3vw;
-  width: 200px;
-  margin-top: 0px;
-}
 .match-wrapper {
-    padding: 10vh 3vw 0 3vw;
     margin: 0 auto;
 }
 .onboarding-animation {

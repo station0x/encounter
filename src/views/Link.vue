@@ -33,7 +33,7 @@ export default {
         async joinMatch() {
             try {
                 this.matchLoader = true
-                await axios.get("/api/joinMatch", {
+                await axios.get("/api/match/joinMatch", {
                     params: {
                         signature: this.$store.state.signature,
                         inviteLink: this.$route.params.link
@@ -75,9 +75,12 @@ export default {
     background: #f39a2d;
 }
 .info-text {
-    color: #5B5B5B;
-    font-size: 17px;
-    font-weight: 400;
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 15px;
+    line-height: 16px;
+    color: white;
     margin: 0px 20px 0px 20px;
 }
 </style>
