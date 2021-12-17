@@ -6,8 +6,9 @@ const { ObjectId } = require('mongodb');
 
 module.exports = async (req, res) => {
     const address = getAddress(req.query.signature)
-    const alias = req.query.alias
-    if(!alias || alias.length === 0) throw new Error("No alias provided")
+    let alias = req.query.alias
+    if(!alias || alias.trim().length === 0) throw new Error("No alias provided")
+    alias = alias.trim()
    const client = await clientPromise;
    const db = client.db()
    const players = db.collection("players")
