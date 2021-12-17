@@ -11,7 +11,7 @@ module.exports = async (req, res) => {
    const players = db.collection("players")
    const playerDoc = (await players.find({address}).limit(1).toArray())[0];
    let response = {success: false}
-   if(playerDoc.accessKey !== undefined) {
+   if(playerDoc && playerDoc.accessKey !== undefined) {
       response = {
          success: true,
          address
