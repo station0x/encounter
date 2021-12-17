@@ -42,7 +42,7 @@ export default {
     computed: {
         sortedData() {
             if(this.data) {
-                return arraySort([...this.data], 'elo')
+                return arraySort([...this.data], 'elo', {reverse: true})
             } else {
                 return false
             }
