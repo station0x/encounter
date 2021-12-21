@@ -139,9 +139,7 @@ export default new Vuex.Store({
                     commit("setMatchState", matchDoc)
                     break
                 }
-                if(axiosQueue.getQueueLength() === 0 && axiosQueue.getPendingLength() <= 1) {
-                    debouncedMatchState(matchDoc)
-                }
+                debouncedMatchState(matchDoc)
             }
         },
         // async getPlayerMatches(_, playerAddress){
