@@ -4,6 +4,7 @@ import axios from 'axios'
 import * as Realm from "realm-web"
 import Queue from 'promise-queue'
 import CONSTANTS from '../../constants'
+import { debounce } from "debounce"
 
 const axiosQueue = new Queue(1)
 const realm = new Realm.App({ id: process.env.VUE_APP_REALM_APP_ID });
@@ -135,9 +136,10 @@ export default new Vuex.Store({
                 const { fullDocument: matchDoc } = change
                 if(matchDoc.winner === 0 || matchDoc.winner === 1 || !state.signature) {
                     commit("setMatchState", matchDoc)
+                    
                     break
                 }
-                if(axiosQueue.getQueueLength() === 0 && axiosQueue.getPendingLength() <= 1) commit("setMatchState", matchDoc)
+                if(axiosQueue.getQueueLength() === 0 && axiosQueue.getPendingLength() <= 1) debounce(()=>commit("setMatchState", matchDoc), 1000)
             }
         },
         // async getPlayerMatches(_, playerAddress){

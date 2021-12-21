@@ -48,7 +48,6 @@ export default {
         return this.$store.state.address && this.$store.state.address.length > 0? true : false
       },
       fmtdWalletAddress() {
-          console.log(this.$store.state.address)
         return this.$store.state.address === null ? '' : this.$store.state.address.substring(0, 6) + '...' + this.$store.state.address.substring(38, 42)
       }
     },

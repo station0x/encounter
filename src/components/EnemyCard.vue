@@ -6,7 +6,7 @@
                     <img class="gravatar" :src="gravatar">
                 </div>
             </div>
-            <h1 class="you">Enemy</h1>
+            <h1 class="you">{{ playerAlias }}</h1>
             <h1 @click="$router.push({ name: 'Player Profile', params: { playerAddress: playerAddress } })"  class="your-address">{{ formattedAddress }}</h1>
             <img class="energy-icon" src="/energy.svg" width="23px"/>
             <span class="energy">{{fuel}}</span>
@@ -19,7 +19,7 @@
 <script>
 import CONSTANTS from '../../constants'
 export default {
-    props:['playerAddress', 'fuel', 'isEnemyTurn', 'lastTurnTimestamp'],
+    props:['playerAddress', 'fuel', 'isEnemyTurn', 'lastTurnTimestamp', 'playerAlias'],
     data () {
         return {
             gravatar: null,

@@ -6,7 +6,7 @@
                     <img class="gravatar" :src="gravatar">
                 </div>
             </div>
-            <h1 class="you">You</h1>
+            <h1 class="you">{{ playerAlias }}</h1>
             <h1 @click="$router.push({ name: 'Player Profile', params: { playerAddress: playerAddress } })" class="your-address">{{ formattedAddress }}</h1>
             <img class="energy-icon" src="/energy.svg" width="23px"/>
             <span class="energy">{{fuel}}</span>
@@ -23,8 +23,9 @@
 
 <script>
 import CONSTANTS from '../../constants'
+import axios from 'axios'
 export default {
-    props:['playerAddress', 'fuel', 'lastTurnTimestamp', 'isMyTurn'],
+    props:['playerAddress', 'fuel', 'lastTurnTimestamp', 'isMyTurn', 'playerAlias'],
     data () {
         return {
             gravatar: null,
@@ -85,7 +86,7 @@ export default {
     mounted () {
         this.gravatar = this.$refs.gravatar.url
     },
-    created () {
+    async created () {
         const self = this
         this.dateInterval = setInterval(function () {
             self.date = Date.now()
@@ -102,7 +103,7 @@ export default {
 </script>
 
 
-<style scoped>
+<style scoped lang="scss">
 header.modal-card-head {
     background: black !important;
 }
