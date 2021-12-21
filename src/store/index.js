@@ -7,7 +7,7 @@ import CONSTANTS from '../../constants'
 import { debounce } from "debounce"
 
 const axiosQueue = new Queue(1)
-const debouncedMatchState = debounce((matchDoc, commit)=>{commit("setMatchState", matchDoc)}, 1200)
+const debouncedMatchState = debounce((matchDoc, commit)=>{commit("setMatchState", matchDoc)}, 1000)
 const realm = new Realm.App({ id: process.env.VUE_APP_REALM_APP_ID });
 const credentials = Realm.Credentials.anonymous();
 
