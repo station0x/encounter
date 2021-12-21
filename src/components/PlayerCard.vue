@@ -103,7 +103,7 @@ export default {
 </script>
 
 
-<style scoped lang="scss">
+<style scoped>
 header.modal-card-head {
     background: black !important;
 }
