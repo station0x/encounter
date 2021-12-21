@@ -140,7 +140,7 @@ export default new Vuex.Store({
                     break
                 }
                 if(axiosQueue.getQueueLength() === 0 && axiosQueue.getPendingLength() <= 1) {
-                    if(state.matchState.playerIs === state.matchState.playerTurn || axiosQueue.getQueueLength() > 0 || axiosQueue.getPendingLength() > 0) { // in case there's a pending end turn
+                    if(state.matchState.playerIs === matchDoc.playerTurn) { // in case there's a pending end turn
                         debouncedMatchState(matchDoc)
                     } else {
                         commit("setMatchState", matchDoc)
