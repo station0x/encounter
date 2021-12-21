@@ -1,0 +1,105 @@
+// Set your brand colors
+$purple: #8a4d76;
+$pink: #fa7c91;
+$brown: #757763;
+$beige-light: #d0d1cd;
+$beige-lighter: #eff0eb;
+$twitter: #4099ff;
+
+// Update Bulma's global variables
+$grey-dark: $brown;
+$grey-light: $beige-light;
+$primary: $purple;
+$primary-invert: findColorInvert($primary);
+$link: $pink;
+$twitter: $twitter;
+$twitter-invert: findColorInvert($twitter);
+
+// dark 
+$dark: rgb(10,10,10,0.8);
+$primary: rgb(255,255,255,0.92);
+$background: rgba(255,255,255,0.1);
+$beige-light: rgba(0,0,0,0.8);
+$beige-lighter: rgba(0,0,0,0.5);
+$primary-invert: $dark;
+$scheme-main: $dark;
+$border: $background;
+
+$grey: $primary;
+$grey-dark: $primary;
+$grey-darker: $primary;
+$grey-light: $primary;
+
+$text: $white-ter;
+$text-light: $white-bis;
+$text-strong: $white;
+
+$link: $white-bis;
+$link-hover: $white;
+
+$navbar-background-color: $dark;
+
+$button-background-color: transparent;
+$button-text-hover-background-color: $background;
+
+$menu-item-hover-background-color: $background;
+
+$divider-color: $white-bis;
+$divider-background-color: $white-ter;
+
+$table-background-color: transparent;
+$table-row-hover-background-color: $background;
+
+// Update some of Bulma's component variables
+$control-border-width: 2px;
+$input-border-color: transparent;
+$input-shadow: none;
+
+// Setup $colors to use as bulma classes (e.g. 'is-twitter')
+$colors: (
+  "white": (
+    $white,
+    $black
+  ),
+  "black": (
+    $black,
+    $white
+  ),
+  "light": (
+    $light,
+    $light-invert
+  ),
+  "dark": (
+    $dark,
+    $dark-invert
+  ),
+  "primary": (
+    $primary,
+    $primary-invert
+  ),
+  "info": (
+    $info,
+    $info-invert
+  ),
+  "success": (
+    $success,
+    $success-invert
+  ),
+  "warning": (
+    $warning,
+    $warning-invert
+  ),
+  "danger": (
+    $danger,
+    $danger-invert
+  ),
+  "twitter": (
+    $twitter,
+    $twitter-invert
+  )
+);
+
+// Links
+$link: $primary;
+$link-invert: $primary-invert;
+$link-focus-border: $primary;
