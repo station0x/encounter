@@ -136,10 +136,15 @@ export default new Vuex.Store({
                 const { fullDocument: matchDoc } = change
                 if(matchDoc.winner === 0 || matchDoc.winner === 1 || !state.signature) {
                     commit("setMatchState", matchDoc)
-                    
                     break
                 }
-                if(axiosQueue.getQueueLength() === 0 && axiosQueue.getPendingLength() <= 1) debounce(()=>commit("setMatchState", matchDoc), 1000)
+                if(axiosQueue.getQueueLength() === 0 && axiosQueue.getPendingLength() <= 1) {
+                    if(state.matchState.playerIs === state.matchState.playerTurn) {
+                        debounce(()=>commit("setMatchState", matchDoc), 2000)()
+                    } else {
+                        commit("setMatchState", matchDoc)
+                    }
+                }
             }
         },
         // async getPlayerMatches(_, playerAddress){
