@@ -132,7 +132,7 @@ export default new Vuex.Store({
             commit("setMatchState", intialMatchDoc)
             commit('load')
             const watcher = matches.watch({ids:[Realm.BSON.ObjectId(state.matchId)]})
-            const debouncedMatchState = debounce((matchDoc)=>commit("setMatchState", matchDoc), 2000)
+            const debouncedMatchState = debounce((matchDoc)=>{console.log("setMatch");commit("setMatchState", matchDoc)}, 2000)
             for await (const change of watcher) {
                 const { fullDocument: matchDoc } = change
                 if(matchDoc.winner === 0 || matchDoc.winner === 1 || !state.signature) {
