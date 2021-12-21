@@ -132,6 +132,7 @@ export default new Vuex.Store({
             commit("setMatchState", intialMatchDoc)
             commit('load')
             const watcher = matches.watch({ids:[Realm.BSON.ObjectId(state.matchId)]})
+            const debouncedMatchState = debounce((matchDoc)=>commit("setMatchState", matchDoc), 2000)
             for await (const change of watcher) {
                 const { fullDocument: matchDoc } = change
                 if(matchDoc.winner === 0 || matchDoc.winner === 1 || !state.signature) {
@@ -140,7 +141,7 @@ export default new Vuex.Store({
                 }
                 if(axiosQueue.getQueueLength() === 0 && axiosQueue.getPendingLength() <= 1) {
                     if(state.matchState.playerIs === state.matchState.playerTurn) {
-                        debounce(()=>commit("setMatchState", matchDoc), 2000)()
+                        debouncedMatchState(matchDoc)
                     } else {
                         commit("setMatchState", matchDoc)
                     }
