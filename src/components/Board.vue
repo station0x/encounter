@@ -903,9 +903,9 @@ h1 {
 .col-piece {
 	position: absolute;
 	opacity: 1 !important;
-	left: calc(18.75px * var(--scale));
-	bottom: calc(26.25px * var(--scale));
-	height: calc(67.5px * var(--scale));
+	left: calc(21.75px * var(--scale));
+	bottom: calc(32.25px * var(--scale));
+	height: calc(60.5px * var(--scale));
 }
 
 .move-circle {
