@@ -16,8 +16,8 @@ $twitter: $twitter;
 $twitter-invert: findColorInvert($twitter);
 
 // dark 
-$dark: rgb(10,10,10,0.8);
-$primary: rgb(255,255,255,0.92);
+$dark: rgba(10,10,10,0.8);
+$primary: rgba(255,255,255,0.92);
 $background: rgba(255,255,255,0.1);
 $beige-light: rgba(0,0,0,0.8);
 $beige-lighter: rgba(0,0,0,0.5);

@@ -72,7 +72,6 @@ export default {
 
 <style scoped>
 .primary-btn {
-    width: 280px !important;
     height: 60px;
     margin: 15px;
     padding: 15px;
@@ -115,14 +114,17 @@ button.button.secondary-btn[disabled] {
     border: #dbdbdb;
 }
 .art-wrap {
-    width: 950px;
+    max-width: 950px;
+    min-width: 300px;
     height: 650px;
+    margin-top: -80px;
     background-image: url('/art.png');
 }
 .art-wrap-overlay {
     height: 100%;
     width: 100%;
     background: radial-gradient(54.1% 54.1% at 50% 50%, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.7) 100%);
-    padding: 100px;
+    padding: 1em;
+    padding-top: 7em;
 }
 </style>

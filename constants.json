@@ -170,7 +170,7 @@
     },
     "fighter": {
       "attack": 25,
-      "hp": 60,
+      "hp": 65,
       "moveFuelCost": 2,
       "attackFuelCost": 3
     },

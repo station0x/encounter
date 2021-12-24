@@ -10,11 +10,6 @@
     </template>
 
     <template #end>
-      <b-navbar-item v-if="isConnected" @click="$router.push({ name: 'Player Profile', params: { playerAddress: $store.state.address } })" target="_blank">
-        <a class="button nav-btn">
-          Profile
-        </a>
-      </b-navbar-item>
         <b-navbar-item v-if="isConnected" @click="$router.push({ name: 'Leaderboard'})" target="_blank">
         <a class="button nav-btn">
           Leaderboard
@@ -23,14 +18,63 @@
       <center>
         <b-button class="nav-btn" v-if="!isConnected" type="is-primary" @click="connectMetamask">Connect Wallet</b-button>
       </center>
-      <center v-if="isConnected">
-
-        <b-tooltip label="Disconnect and Logout" position="is-bottom" type="is-dark">
-            <b-button @click="logout" class="button nav-btn" icon-right="logout">
-                {{ fmtdWalletAddress }}
-            </b-button>
-        </b-tooltip>
-      </center>
+        <!-- <b-navbar-dropdown :label="fmtdWalletAddress"	hoverable class="button nav-btn" >
+            <b-navbar-item>
+                Profile
+            </b-navbar-item> -->
+            <!-- <b-dropdown-item value="Profile">
+                <b-icon icon="settings"></b-icon>
+                Settings
+            </b-dropdown-item> -->
+            <!-- <hr class="dropdown-divider" aria-role="menuitem">
+            <b-dropdown-item value="settings">
+                <b-icon icon="settings"></b-icon>
+                Settings
+            </b-dropdown-item>
+            <b-dropdown-item @click="logout" value="logout" aria-role="menuitem">
+                <b-icon icon="logout"></b-icon>
+                Logout
+            </b-dropdown-item> -->
+        <!-- </b-navbar-dropdown> -->
+      <b-dropdown v-if="isConnected" :triggers="['hover']" position="is-bottom-left" aria-role="menu">
+        <template #trigger>
+          <b-button
+            class="nav-btn"
+            :label="fmtdWalletAddress"
+            icon-right="menu-down" />
+        </template>
+          <b-dropdown-item custom aria-role="menuitem">
+              <center> Logged as <b> {{ fmtdWalletAddress }}</b> </center>
+          </b-dropdown-item>
+          <hr class="dropdown-divider">
+          <b-dropdown-item has-link aria-role="menuitem">
+              <a href="https://google.com" target="_blank">
+                  <b-icon icon="link"></b-icon>
+                  Google (link)
+              </a>
+          </b-dropdown-item>
+          <b-dropdown-item value="home" aria-role="menuitem">
+              <b-icon icon="home"></b-icon>
+              Home
+          </b-dropdown-item>
+          <b-dropdown-item value="products" aria-role="menuitem">
+              <b-icon icon="cart"></b-icon>
+              Products
+          </b-dropdown-item>
+          <b-dropdown-item @click="openProfile" value="profile" aria-role="menuitem">
+              <b-icon icon="book-open"></b-icon>
+              Profile
+          </b-dropdown-item>
+          <hr class="dropdown-divider" aria-role="menuitem">
+          <b-dropdown-item value="settings">
+              <b-icon icon="settings"></b-icon>
+              Settings
+          </b-dropdown-item>
+          <b-dropdown-item @click="logout" value="logout" aria-role="menuitem">
+              <b-icon icon="logout"></b-icon>
+              Logout
+          </b-dropdown-item>
+        </b-dropdown>
     </template>
   </b-navbar>
 </template>
@@ -67,12 +111,16 @@ export default {
         logout() {
             this.$store.dispatch('disconnect')
             this.$router.push({name: 'Login'})
+        },
+        openProfile() {
+          let routeData = this.$router.resolve({ name: 'Player Profile', params: { playerAddress: this.$store.state.address } })
+          window.open(routeData.href, '_blank')
         }
     }
 }
 </script>
 
-<style>
+<style lang="scss">
 .logout-btn {
   font-family: 'ClashDisplay-Variable';
   font-size: 19px;
@@ -150,10 +198,11 @@ img.nav-logo {
   transition: 200ms ease-in;
 }
 .nav-btn:hover {
-    background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' stroke='%23416BFF' stroke-width='2' stroke-dasharray='5%2c 45%2c 12' stroke-dashoffset='26' stroke-linecap='square'/%3e%3c/svg%3e") !important;
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' stroke='%23416BFF' stroke-width='2' stroke-dasharray='5%2c 45%2c 12' stroke-dashoffset='26' stroke-linecap='square'/%3e%3c/svg%3e") !important;
 }
 i.mdi.mdi-logout {
-    font-size: 20px;
-    margin-right: -5px;
+  font-size: 20px;
+  margin-right: -5px;
 }
+$dropdown-divider-background-color: red;
 </style>
