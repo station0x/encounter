@@ -4,8 +4,10 @@ import axios from 'axios'
 import * as Realm from "realm-web"
 import Queue from 'promise-queue'
 import CONSTANTS from '../../constants'
+import { debounce } from "debounce"
 
 const axiosQueue = new Queue(1)
+const debouncedMatchState = debounce((matchDoc, commit)=>{commit("setMatchState", matchDoc)}, 1000)
 const realm = new Realm.App({ id: process.env.VUE_APP_REALM_APP_ID });
 const credentials = Realm.Credentials.anonymous();
 
@@ -137,7 +139,9 @@ export default new Vuex.Store({
                     commit("setMatchState", matchDoc)
                     break
                 }
-                if(axiosQueue.getQueueLength() === 0 && axiosQueue.getPendingLength() <= 1) commit("setMatchState", matchDoc)
+                if(axiosQueue.getQueueLength() === 0 && axiosQueue.getPendingLength() <= 1) {
+                    debouncedMatchState(matchDoc, commit)
+                }
             }
         },
         // async getPlayerMatches(_, playerAddress){
@@ -147,6 +151,7 @@ export default new Vuex.Store({
         //     const intialMatchDoc = await matches.findOne({_id:Realm.BSON.ObjectId(state.matchId)})
         // },
         enqueue(_, axiosPromise) {
+            debouncedMatchState.clear()
             axiosQueue.add(() => {
                 return axiosPromise()
             })
