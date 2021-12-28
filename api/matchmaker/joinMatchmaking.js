@@ -19,7 +19,12 @@ module.exports = async (req, res) => {
        const enemyAddress = (await matchmakingQueue.find().limit(1).toArray())[0].address
        let enemyDoc = (await players.find({address:enemyAddress}).limit(1).toArray())[0]
 
-       if(enemyDoc.activeMatch) throw new Error("enemy already in match")
+       if(enemyDoc.activeMatch) {
+        await matchmakingQueue.deleteOne({address: enemyAddress})
+        await matchmakingQueue.insertOne({address})
+        res.status(200).json({ success:true });
+        return
+       }
        if(playerDoc.address === enemyDoc.address) throw new Error("player can't play against himself")
 
         // Dequeue enemy
