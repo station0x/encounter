@@ -1,7 +1,10 @@
 <template>
 	<div class="main-wrapper">
+		<div class="loader-wrapper" v-if="boardLoading">
+			<Loader v-model="boardLoading"/>
+		</div>
 		<div class="left">
-			<EnemyCard @endEnemyTurn="endEnemyTurn" :playerAddress="enemyAddress" :fuel="enemyFuel" :lastTurnTimestamp="lastTurnTimestamp" :isEnemyTurn="!isMyTurn"/>
+			<EnemyCard @endEnemyTurn="endEnemyTurn" :playerAddress="enemyAddress" :fuel="enemyFuel" :lastTurnTimestamp="lastTurnTimestamp" :isEnemyTurn="!isMyTurn" :playerAlias="enemyAlias"/>
 			<div class="chat-wrapper">					
 				<div class="logs-tabs">
 					<b-tabs v-model="tabsModel" @input="tabClicked" expanded class="logs-tabs">
@@ -113,7 +116,7 @@
 					<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
 				</div>
 			</div>
-			<PlayerCard @endTurn="endTurn" @surrender="surrender" :playerAddress="$store.state.address" :fuel="myFuel" :lastTurnTimestamp="lastTurnTimestamp" :isMyTurn="isMyTurn"/>
+			<PlayerCard @endTurn="endTurn" @surrender="surrender" :playerAddress="$store.state.address" :fuel="myFuel" :lastTurnTimestamp="lastTurnTimestamp" :isMyTurn="isMyTurn" :playerAlias="playerAlias"/>
 		</div>
 	</div>
 	<!-- <b-button v-if="isMyTurn" @click="endTurn">End Turn</b-button>
@@ -126,6 +129,7 @@ import CONSTANTS from "../../constants.json"
 import PlayerCard from "@/components/PlayerCard.vue"
 import EnemyCard from "@/components/EnemyCard.vue"
 import GameGuide from '@/components/GameGuide.vue'
+import Loader from '@/components/Loader.vue'
 import arraySort from 'array-sort'
 
 export default {
@@ -140,6 +144,8 @@ export default {
 		newLogs: 0,
 		newChats: 0,
 		tabsModel: 'logs',
+		playerProfile: undefined,
+		enemyProfile: undefined,
 		turnSfx: require('../assets/sfx/turn.mp3'),
 		shotSfx: require('../assets/sfx/shot.mp3'),
 		repairSfx: require('../assets/sfx/repair.mp3'),
@@ -167,7 +173,8 @@ export default {
   },
   components: {
 		PlayerCard,
-		EnemyCard
+		EnemyCard,
+		Loader
   },
   computed:{
 	  ourState () {
@@ -227,6 +234,16 @@ export default {
 		return {
 			'enter': this.sendMessage
 		}
+	},
+	playerAlias() {
+		if(this.playerProfile !== undefined) {
+			return this.playerProfile.playerAlias.length !== 0 ? this.playerProfile.playerAlias : 'You'
+		} else return 'You'
+	},
+	enemyAlias() {
+		if(this.enemyProfile !== undefined) {
+			return this.enemyProfile.playerAlias.length !== 0 ? this.enemyProfile.playerAlias : 'Enemy'
+		} else return 'Enemy'
 	},
 	spaceshipStats() {
 		  if(this.hovered === undefined){
@@ -389,6 +406,14 @@ export default {
 	  }
   },
   methods: {
+	    async fetchProfile(address, isEnemy) {
+            const res = await axios.get('/api/player/fetchPlayerProfile', {
+                params:{
+                    address: address
+                }
+            })
+            isEnemy ? this.enemyProfile = res.data.playerDoc : this.playerProfile = res.data.playerDoc
+        },
 	  	surrender() {
 			const winner = this.playerIs === 0 ? 1 : 0
 			this.$store.commit('setWinner', winner)
@@ -701,6 +726,18 @@ export default {
 			this.playSound(this.turnSfx)
 		}
 	}
+  },
+  async created() {
+	  this.boardLoading = true
+
+	  try {
+		await Promise.all([
+			this.fetchProfile(this.$store.state.address, false),
+			this.fetchProfile(this.enemyAddress, true)
+		])
+	  } finally {
+		this.boardLoading = false
+	  }
   }
 }
 </script>
@@ -1022,6 +1059,11 @@ img {
     padding: 5px;
 	border-top-left-radius: 5px;
 	border-bottom-left-radius: 5px;
+}
+.loading-wrapper {
+  background: black;
+  height: 100vh;
+  width: 100vw;
 }
 /* tabs customization */
 .tabs ul {

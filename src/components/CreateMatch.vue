@@ -86,7 +86,6 @@ export default {
                             signature:this.$store.state.signature
                         }
                     })
-
                 } finally {
                     this.createMatchLoader = false
                 }
