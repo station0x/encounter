@@ -89,11 +89,11 @@ export default {
 
 <style scoped>
 .player-card {
-    padding-top: 5%;
-    height: 48%;
+    height: 46.4%;
+    /* height: 48%;
     width: 100%;
     top: 0;
-    position: absolute;
+    position: absolute; */
     border-bottom: 1px solid #303030;
     background: var(--card-background);
     transition: 1000ms ease-in-out;
@@ -107,25 +107,6 @@ export default {
     margin-bottom: -1px;
     margin-right: 5px;
     width: 25px;
-}
-.surrender {
-    display: flex;
-    align-items: center;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    border-radius: 0px;
-    background: transparent;
-    color: #FF4949;
-    text-transform: capitalize;
-    font-size: 19px;
-    height: 80px;
-    line-height: 80px;
-    transition: 400ms ease-in-out;
-}
-.surrender:hover {
-    background: #FF4949;
-    color: white;
 }
 .you {
     font-size: 27px;
@@ -178,6 +159,7 @@ background: rgba(248, 140, 9, 0.1);
     border-radius: 5px;
     transition: 500ms ease-in-out;
     max-width: fit-content;
+    margin-bottom: 30px;
 }
 .turn-timer[disabled] {
     opacity: 0;

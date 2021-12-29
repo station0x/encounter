@@ -1,10 +1,11 @@
 // Set your brand colors
-$purple: #8a4d76;
+$red: #C72929;
 $pink: #fa7c91;
 $brown: #757763;
 $beige-light: #d0d1cd;
 $beige-lighter: #eff0eb;
 $twitter: #4099ff;
+$gray: rgba(0,0,0,.3);
 
 // Update Bulma's global variables
 $grey-dark: $brown;
@@ -14,11 +15,12 @@ $primary-invert: findColorInvert($primary);
 $link: $pink;
 $twitter: $twitter;
 $twitter-invert: findColorInvert($twitter);
+$danger: $red;
 
 // dark 
-$dark: rgba(10,10,10,0.8);
+$dark: rgba(10,10,10,1);
 $primary: rgba(255,255,255,0.92);
-$background: rgba(255,255,255,0.1);
+$background: $dark;
 $beige-light: rgba(0,0,0,0.8);
 $beige-lighter: rgba(0,0,0,0.5);
 $primary-invert: $dark;
@@ -44,7 +46,7 @@ $button-text-hover-background-color: $background;
 
 $menu-item-hover-background-color: $background;
 
-$divider-color: $white-bis;
+$divider-color: $gray;
 $divider-background-color: $white-ter;
 
 $table-background-color: transparent;
