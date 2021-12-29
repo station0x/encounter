@@ -3,120 +3,127 @@
 		<div class="loader-wrapper" v-if="boardLoading">
 			<Loader v-model="boardLoading"/>
 		</div>
-		<div class="left">
-			<EnemyCard @endEnemyTurn="endEnemyTurn" :playerAddress="enemyAddress" :fuel="enemyFuel" :lastTurnTimestamp="lastTurnTimestamp" :isEnemyTurn="!isMyTurn" :playerAlias="enemyAlias"/>
-			<div class="chat-wrapper">					
-				<div class="logs-tabs">
-					<b-tabs v-model="tabsModel" @input="tabClicked" expanded class="logs-tabs">
-						<b-tab-item value="logs" class="logs-tabs">
-							<template #header>
-								<b-icon icon="information-outline"></b-icon>
-								<span> Game Log <b-tag v-if="newLogs !== 0" type="is-dark" rounded style="margin-left:6px"> {{ newLogs }} </b-tag> </span>
-							</template>
-							<div id="action-logs">
-								<div v-for="(msg, key) in sortedLogs" :key="key">
-									<div v-if="msg.playerNo === playerIs" class="chat-message" :style="{'color': (sortedLogs.length - 1) - key < newLogs ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.5)'}">
-										{{formatAction(msg)}}
-									</div>
-									<div v-else-if="msg.playerNo !== playerIs" class="chat-message" :style="{'color': (sortedLogs.length - 1) - key < newLogs ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.5)'}">
-										{{formatAction(msg)}}
-									</div>
-								</div>
-							</div>
-						</b-tab-item>
-						<b-tab-item value="chat" class="logs-tabs">
-							<template #header>
-								<b-icon icon="forum"></b-icon>
-								<span> Chat <b-tag v-if="newChats !== 0" type="is-link is-light" rounded style="margin-left:6px"> {{ newChats }} </b-tag> </span>
-							</template>
-							<div id="chat-logs">
-								<div v-for="(msg, key) in sortedChats" :key="key">
-									<div v-if="msg.msg" class="chat-message">
-										<span v-if="msg.playerNo === playerIs" :class="{'newEle-left': (sortedChats.length - 1) - key < newChats}" style="color: #416BFF">You: </span>
-										<span v-else :class="{'newEle-left': (sortedChats.length - 1) - key < newChats}" style="color: #C72929">Enemy: </span>
-																				
-										<span :class="{'newEle-right': (sortedChats.length - 1) - key < newChats}"> {{msg.msg}} </span>
+		<div v-else class="columns m-0" style="min-height: 865px">
+			<div class="column left p-0">
+				<EnemyCard @endEnemyTurn="endEnemyTurn" :playerAddress="enemyAddress" :fuel="enemyFuel" :lastTurnTimestamp="lastTurnTimestamp" :isEnemyTurn="!isMyTurn" :playerAlias="enemyAlias"/>
+				<div class="chat-wrapper">					
+					<div class="logs-tabs">
+						<b-tabs v-model="tabsModel" @input="tabClicked" expanded class="logs-tabs">
+							<b-tab-item value="logs" class="logs-tabs">
+								<template #header>
+									<b-icon icon="information-outline"></b-icon>
+									<span> Game Log <b-tag v-if="newLogs !== 0" type="is-dark" rounded style="margin-left:6px"> {{ newLogs }} </b-tag> </span>
+								</template>
+								<div id="action-logs">
+									<div v-for="(msg, key) in sortedLogs" :key="key">
+										<div v-if="msg.playerNo === playerIs" class="chat-message" :style="{'color': (sortedLogs.length - 1) - key < newLogs ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.5)'}">
+											{{formatAction(msg)}}
+										</div>
+										<div v-else-if="msg.playerNo !== playerIs" class="chat-message" :style="{'color': (sortedLogs.length - 1) - key < newLogs ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.5)'}">
+											{{formatAction(msg)}}
+										</div>
 									</div>
 								</div>
-							</div>
-						</b-tab-item>
-					</b-tabs>
-				</div>
-				<div class="chat-input">
-					<b-field>
-						<!-- <b-input @focus="chatMessage = ''" v-model="chatMessage" :custom-class="{'chat-textarea': true, 'chat-placeholder-color': chatMessage === 'Please be nice in chat!'}" size="is-small" expanded></b-input> -->
-						<b-input v-on:keyup.native.enter="sendMessage" v-model="chatMessage" custom-class="chat-textarea" size="is-small" expanded></b-input>
-						<p class="control">
-							<b-button class="chat-btn" @click="sendMessage" label="Send"></b-button>
-						</p>
-					</b-field>
-				</div>
-			</div>
-		</div>
-		<div class="middle">
-			<div class="hex-grid-container">
-				<div id="hex-grid" :class="{rotate: playerIs === 1}">
-					<div class="row" v-for="(row, y) in ourState" :key="y">
-						<div @mouseover="hovered = {x,y}" @click="select(col, x, y)" :class="{
-							'col': true, 
-							'hoverable-movable': col.type !== 'base' && col.owner === playerIs && !isLegalRepair(x,y),
-							'hoverable-attackable': isLegalAttack(x,y),
-							'hoverable-repairabe': isLegalRepair(x,y),
-							'hoverable-approachable': isLegalMove(x,y)
-							}" v-for="(col, x) in row" :key="x">
-							<!-- <img v-if="selected !== undefined && ourState[selected.y][selected.x].type === 'carrier' && isLegalRepair(x,y)" :class="hexClasses(x,y)" src="green-hex.png" height="80px"/>
-							<img v-else-if="selected !== undefined && ourState[selected.y][selected.x].type !== 'carrier' && isLegalAttack(x,y)" :class="hexClasses(x,y)" src="red-hex.png" height="80px"/>
-							<img v-else :class="hexClasses(x,y)" src="hex.png" height="80px"/> -->
-							<img :class="hexClasses(x,y)" :src="hexImg(x,y)" height="80px"/> 
-							<img :class="pieceClasses(col.owner, x, y)" :src="col.img"/>
-							<img v-if="isLegalMove(x,y)" class="move-circle" src="circle.png"/>
-							<!-- <div v-if="col.type" class="tooltip">
-								<div class="spaceship-type">{{ col.type }}</div>
-								<span class="attribute" v-for="(value, key) in getSpaceshipAttributes(col)" :key="key">
-								{{key}}: {{value}}
-								</span>
-							</div> -->
-						</div>
+							</b-tab-item>
+							<b-tab-item value="chat" class="logs-tabs">
+								<template #header>
+									<b-icon icon="forum"></b-icon>
+									<span> Chat <b-tag v-if="newChats !== 0" type="is-link is-light" rounded style="margin-left:6px"> {{ newChats }} </b-tag> </span>
+								</template>
+								<div id="chat-logs">
+									<div v-for="(msg, key) in sortedChats" :key="key">
+										<div v-if="msg.msg" class="chat-message">
+											<span v-if="msg.playerNo === playerIs" :class="{'newEle-left': (sortedChats.length - 1) - key < newChats}" style="color: #416BFF">You: </span>
+											<span v-else :class="{'newEle-left': (sortedChats.length - 1) - key < newChats}" style="color: #C72929">Enemy: </span>
+																					
+											<span :class="{'newEle-right': (sortedChats.length - 1) - key < newChats}"> {{msg.msg}} </span>
+										</div>
+									</div>
+								</div>
+							</b-tab-item>
+						</b-tabs>
+					</div>
+					<div class="chat-input">
+						<b-field>
+							<!-- <b-input @focus="chatMessage = ''" v-model="chatMessage" :custom-class="{'chat-textarea': true, 'chat-placeholder-color': chatMessage === 'Please be nice in chat!'}" size="is-small" expanded></b-input> -->
+							<b-input v-on:keyup.native.enter="sendMessage" v-model="chatMessage" custom-class="chat-textarea" size="is-small" expanded></b-input>
+							<p class="control">
+								<b-button class="chat-btn" @click="sendMessage" label="Send"></b-button>
+							</p>
+						</b-field>
 					</div>
 				</div>
 			</div>
-			<div @click="openGameGuideModal" class="clickable-text" style="margin-top: 110px; text-align: center; color: #F98F09; width: fit-content; margin: 0 auto">Game Guide  <b-icon icon="alert-circle" size="is-small" style="margin-left: 5px; margin-top: -40px"></b-icon></div>
-		</div>
-		<div class="right">
-			<div v-if="spaceshipStats.type" class="spaceship-stats">
-				<center>
-					<img class="spaceship-img" :src="spaceshipStats.img"/>
-					<h1 class="spaceship-type" :style="{color: spaceshipStats.owner === this.playerIs ? '#416BFF' : '#C72929'}">{{spaceshipStats.type}}</h1>
-				</center>
-				<b-progress 
-					class="hp-progress"
-					:type="spaceshipStats.hpColor" 
-					:value="spaceshipStats.hp"
-					:max="spaceshipStats.maxHp"
-					show-value>
-					<h1 class="progressbar-text">HP:  {{spaceshipStats.hp}} / {{ spaceshipStats.maxHp}}</h1>
-				</b-progress>
-				<h1 v-if="spaceshipStats.type !== 'base'" style="color: white; font-size: 17px; text-align: left; margin: 0px 20px 10px 20px;font-family: 'ClashDisplay-Variable';">Abilities</h1>
-				<div v-if="spaceshipStats.type !== 'base'" class="ability move">
-					<img class="ability-icon" :src="moveIcon"/>
-					<div class="ability-text" style="color: #EFC97F">Move</div>
-					<span class="energy-ability">{{spaceshipStats.moveCost}}</span>
-					<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
+			<div class="column is-narrow middle">
+				<div class="hex-grid-container">
+					<div id="hex-grid" :class="{rotate: playerIs === 1}">
+						<div class="row" v-for="(row, y) in ourState" :key="y">
+							<div @mouseover="hovered = {x,y}" @click="select(col, x, y)" :class="{
+								'col': true, 
+								'hoverable-movable': col.type !== 'base' && col.owner === playerIs && !isLegalRepair(x,y),
+								'hoverable-attackable': isLegalAttack(x,y),
+								'hoverable-repairabe': isLegalRepair(x,y),
+								'hoverable-approachable': isLegalMove(x,y)
+								}" v-for="(col, x) in row" :key="x">
+								<!-- <img v-if="selected !== undefined && ourState[selected.y][selected.x].type === 'carrier' && isLegalRepair(x,y)" :class="hexClasses(x,y)" src="green-hex.png" height="80px"/>
+								<img v-else-if="selected !== undefined && ourState[selected.y][selected.x].type !== 'carrier' && isLegalAttack(x,y)" :class="hexClasses(x,y)" src="red-hex.png" height="80px"/>
+								<img v-else :class="hexClasses(x,y)" src="hex.png" height="80px"/> -->
+								<img :class="hexClasses(x,y)" :src="hexImg(x,y)" height="80px"/> 
+								<img :class="pieceClasses(col.owner, x, y)" :src="col.img"/>
+								<img v-if="isLegalMove(x,y)" class="move-circle" src="circle.png"/>
+								<!-- <div v-if="col.type" class="tooltip">
+									<div class="spaceship-type">{{ col.type }}</div>
+									<span class="attribute" v-for="(value, key) in getSpaceshipAttributes(col)" :key="key">
+									{{key}}: {{value}}
+									</span>
+								</div> -->
+							</div>
+						</div>
+					</div>
 				</div>
-				<div v-if="spaceshipStats.type !== 'carrier' && spaceshipStats.type !== 'base'" class="ability attack">
-					<img class="ability-icon" :src="attackIcon"/>
-					<div class="ability-text" style="color: #FF4949">Attack {{spaceshipStats.attack}}</div>
-					<span class="attack-ability">{{spaceshipStats.attackCost}}</span>
-					<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
-				</div>
-				<div v-if="spaceshipStats.type === 'carrier' && spaceshipStats.type !== 'base'" class="ability repair">
-					<img class="ability-icon" :src="repairIcon"/>
-					<div class="ability-text" style="color: #348227">Repair 25%</div>
-					<span class="attack-ability">{{spaceshipStats.repairCost}}</span>
-					<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
-				</div>
+				<div @click="openGameGuideModal" class="clickable-text" style="margin-top: 110px; text-align: center; color: #F98F09; width: fit-content; margin: 0 auto">Game Guide  <b-icon icon="alert-circle" size="is-small" style="margin-left: 5px; margin-top: -40px"></b-icon></div>
 			</div>
-			<PlayerCard @endTurn="endTurn" @surrender="surrender" :playerAddress="$store.state.address" :fuel="myFuel" :lastTurnTimestamp="lastTurnTimestamp" :isMyTurn="isMyTurn" :playerAlias="playerAlias"/>
+			<div class="column right p-0">
+				<div class="spaceship-stats">
+					<center v-if="spaceshipStats.type === 'base'" style="margin-top: 25%">
+						<img class="spaceship-img" :src="spaceshipStats.img"/>
+						<h1 class="spaceship-type" :style="{color: spaceshipStats.owner === this.playerIs ? '#416BFF' : '#C72929'}">{{spaceshipStats.type}}</h1>
+					</center>
+					<center v-else>
+						<img class="spaceship-img" :src="spaceshipStats.img"/>
+						<h1 class="spaceship-type" :style="{color: spaceshipStats.owner === this.playerIs ? '#416BFF' : '#C72929'}">{{spaceshipStats.type}}</h1>
+					</center>
+					<b-progress 
+						v-if="spaceshipStats.type"
+						class="hp-progress"
+						:type="spaceshipStats.hpColor" 
+						:value="spaceshipStats.hp"
+						:max="spaceshipStats.maxHp"
+						show-value>
+						<h1 class="progressbar-text">HP:  {{spaceshipStats.hp}} / {{ spaceshipStats.maxHp}}</h1>
+					</b-progress>
+					<h1 v-if="spaceshipStats.type !== 'base'" style="color: white; font-size: 17px; text-align: left; margin: 0px 20px 10px 20px;font-family: 'ClashDisplay-Variable';">Abilities</h1>
+					<div v-if="spaceshipStats.type !== 'base'" class="ability move">
+						<img class="ability-icon" :src="moveIcon"/>
+						<div class="ability-text" style="color: #EFC97F">Move</div>
+						<span class="energy-ability">{{spaceshipStats.moveCost}}</span>
+						<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
+					</div>
+					<div v-if="spaceshipStats.type !== 'carrier' && spaceshipStats.type !== 'base'" class="ability attack">
+						<img class="ability-icon" :src="attackIcon"/>
+						<div class="ability-text" style="color: #FF4949">Attack {{spaceshipStats.attack}}</div>
+						<span class="attack-ability">{{spaceshipStats.attackCost}}</span>
+						<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
+					</div>
+					<div v-if="spaceshipStats.type === 'carrier' && spaceshipStats.type !== 'base'" class="ability repair">
+						<img class="ability-icon" :src="repairIcon"/>
+						<div class="ability-text" style="color: #348227">Repair 25%</div>
+						<span class="attack-ability">{{spaceshipStats.repairCost}}</span>
+						<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
+					</div>
+				</div>
+				<PlayerCard @endTurn="endTurn" @surrender="surrender" :playerAddress="$store.state.address" :fuel="myFuel" :lastTurnTimestamp="lastTurnTimestamp" :isMyTurn="isMyTurn" :playerAlias="playerAlias"/>
+			</div>
 		</div>
 	</div>
 	<!-- <b-button v-if="isMyTurn" @click="endTurn">End Turn</b-button>
@@ -246,11 +253,13 @@ export default {
 		} else return 'Enemy'
 	},
 	spaceshipStats() {
+		let piece
 		  if(this.hovered === undefined){
-			  return {}
+			  piece = this.ourState[8][4]
+		  } else {
+			  piece = this.ourState[this.hovered.y][this.hovered.x]
 		  }
-		  const piece = this.ourState[this.hovered.y][this.hovered.x]
-		  if(!piece.type) return {}
+		  if(!piece.type) piece = this.ourState[8][4]
 		  piece.maxHp = CONSTANTS.spaceshipsAttributes[piece.type].hp
 		  piece.attack = CONSTANTS.spaceshipsAttributes[piece.type].attack
 		  piece.moveCost = CONSTANTS.spaceshipsAttributes[piece.type].moveFuelCost
@@ -436,6 +445,9 @@ export default {
 			} else {
 				return 'hex.png'
 			}
+		},
+		responsify() {
+			console.log(window.innerWidth)
 		},
 		tabClicked(index) {
 			if(index === 'logs') this.resetChats()
@@ -728,43 +740,51 @@ export default {
 	}
   },
   async created() {
-	  this.boardLoading = true
-
-	  try {
+	this.boardLoading = true
+	try {
 		await Promise.all([
 			this.fetchProfile(this.$store.state.address, false),
 			this.fetchProfile(this.enemyAddress, true)
 		])
-	  } finally {
+	} finally {
 		this.boardLoading = false
-	  }
+	}
+	window.addEventListener("resize", this.responsify)
+  },
+  destroyed() {
+	window.removeEventListener("resize", this.responsify)
   }
 }
 </script>
 
 <style>
 :root {
-	--scale: 0.87;
+	--scale: 0.9;
+	--board-to-window-ratio: 0.575;
 	--parcel-height: 120px;
-	--parcelNumber: 9;
+	--parcel-number: 9;
+	--parcel-width: calc(0.85 * var(--parcel-height));
+	--parcel-pyramid-height: calc((var(--parcel-height) - 46px) / 2);
 }
 h1 {
 	margin: 0;
 }
 #hex-grid {
-    width: fit-content;
+    width: calc(var(--parcel-width) * var(--parcel-number));
     margin: auto;
 }
 .hex-grid-container {
-	transform: translateX(calc(((var(--scale) * (var(--parcel-height) * var(--scale))) / 4) * (-1)))
+	margin-top: 5.5vh;
+	transform: translate(calc(((var(--scale) * (var(--parcel-width))) / 2.2)));
+	width: calc(var(--parcel-width) * var(--parcel-number));
 }
 .row {
 	display: block;
 }
 .row:nth-child(even) {
-	transform:translateX(calc(52.5px * var(--scale)));
-	margin-top: calc(-36.4px * var(--scale));
-	margin-bottom: calc(-36.4px * var(--scale));
+	transform:translateX(calc((var(--parcel-width) / 2) * var(--scale) + 0.7px ));
+	margin-top: calc((var(--parcel-pyramid-height) * var(--scale) * -1) - 0.2px );
+	margin-bottom: calc((var(--parcel-pyramid-height) * var(--scale) * -1) - 0.4px );
 }
 .col {
 	display: inline;
@@ -795,8 +815,9 @@ h1 {
 	opacity:1;
 }
 .spaceship-stats {
-	margin: 0 auto;
+	/* margin: 0 auto; */
 	padding: 10px;
+	height: 46%;
 }
 .spaceship-type {
 	color: #416BFF;
@@ -902,7 +923,7 @@ h1 {
 }
 .col-piece {
 	position: absolute;
-	opacity: 1 !important;
+	opacity: 0.75 !important;
 	left: calc(21.75px * var(--scale));
 	bottom: calc(32.25px * var(--scale));
 	height: calc(60.5px * var(--scale));
@@ -934,47 +955,45 @@ h1 {
 }
 .main-wrapper {
 	border: 1px solid #303030;
-	height: 830px;
-	display: flex;
+	/* display: flex;
 	flex-direction: row;
 	flex-wrap: nowrap;
 	justify-content: space-between;
-	align-items: stretch;
+	align-items: stretch; */
 	/* padding-top: 7.5vh; */
 }
-.left, .right {
+/* .left, .right {
 	flex-grow: 0;
    	flex-shrink: 0;
 	flex-basis: 21.8%;
 	position: relative;
-}
+} */
 .middle {
-	flex-grow: 1;
+	/* flex-grow: 1;
    	flex-shrink: 0;
-	order: 2;
+	order: 2; */
 	padding: 40px 0;
 }
 .left {
-	order: 1;
+	/* order: 1; */
 	border-right: 1px solid #303030;
 }
 .right {
-	order: 3;
+	/* order: 3; */
 	border-left: 1px solid #303030;
 }
 .chat-wrapper {
-	height: 52%;
-    width: 100%;
+	height: 45%;
+    /* width: 100%;
     bottom: 0;
-    position: absolute;
-	padding: 20px;
+    position: absolute; */
 }
 .chat-input {
 	height: 55px;
-	width: 100%;
+	/* width: 100%;
 	bottom: 0;
-	position: absolute;
-	left: 0;
+	position: absolute; */
+	/* left: 0; */
 }
 .chat-btn {
 	background: black !important;
@@ -1028,7 +1047,7 @@ input[placeholder], [placeholder], *[placeholder] {
 }
 .logs-tabs {
 	height: 100%;
-	padding-bottom: 10px;
+	padding: 10px;
 }
 .b-tabs .tab-content {
 	height: 100% !important;

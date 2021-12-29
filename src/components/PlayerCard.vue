@@ -1,6 +1,6 @@
 <template>
     <div class="player-card" :style="cardProps">
-        <center>
+        <center class="container">
             <div class="hex" :style="cssProps">
                 <div class="hex-background">
                     <img class="gravatar" :src="gravatar">
@@ -111,10 +111,10 @@ section.modal-card-body.is-flex {
     background: black !important;
 }
 .player-card {
-    height: 53.7%;
-    width: 100%;
-    bottom: 0;
-    position: absolute;
+    /* height: 53.7%; */
+    /* width: 100%; */
+    /* bottom: 0;
+    position: absolute; */
     border-top: 1px solid #4d4d4d;
     background: var(--card-background);
     transition: 1000ms ease-in-out;
@@ -130,9 +130,7 @@ section.modal-card-body.is-flex {
     width: 25px;
 }
 .surrender {
-    display: flex;
-    align-items: center;
-    position: absolute;
+    margin-top: 2.2rem !important;
     bottom: 0;
     width: 100%;
     border-radius: 0px;
@@ -143,11 +141,15 @@ section.modal-card-body.is-flex {
     height: 60px;
     line-height: 80px;
     transition: 400ms ease-in-out;
-    border: 1px solid #303030;
+    border-top: 1px solid #303030;
+    border-bottom: none;
+    border-right: none;
+    border-left: none;
 }
 .surrender:hover {
     background: #FF4949;
     color: white;
+    border: 1px solid white;
 }
 .you {
     font-size: 27px;
@@ -209,5 +211,9 @@ section.modal-card-body.is-flex {
 }
 .gravatar {
     height: 120px;
+}
+.player-slot {
+    bottom: 101px;
+    position: absolute;
 }
 </style>
