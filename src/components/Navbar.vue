@@ -10,7 +10,7 @@
     </template>
 
     <template #end>
-        <b-navbar-item v-if="isConnected" @click="$router.push({ name: 'Leaderboard'})" target="_blank">
+        <b-navbar-item v-if="isConnected" @click="openLeaderboard">
         <a class="button nav-btn">
           Leaderboard
         </a>
@@ -47,25 +47,10 @@
               <center> Logged as <b> {{ fmtdWalletAddress }}</b> </center>
           </b-dropdown-item>
           <hr class="dropdown-divider">
-          <b-dropdown-item has-link aria-role="menuitem">
-              <a href="https://google.com" target="_blank">
-                  <b-icon icon="link"></b-icon>
-                  Google (link)
-              </a>
-          </b-dropdown-item>
-          <b-dropdown-item value="home" aria-role="menuitem">
-              <b-icon icon="home"></b-icon>
-              Home
-          </b-dropdown-item>
-          <b-dropdown-item value="products" aria-role="menuitem">
-              <b-icon icon="cart"></b-icon>
-              Products
-          </b-dropdown-item>
           <b-dropdown-item @click="openProfile" value="profile" aria-role="menuitem">
               <b-icon icon="book-open"></b-icon>
               Profile
           </b-dropdown-item>
-          <hr class="dropdown-divider" aria-role="menuitem">
           <b-dropdown-item value="settings">
               <b-icon icon="settings"></b-icon>
               Settings
@@ -114,6 +99,10 @@ export default {
         },
         openProfile() {
           let routeData = this.$router.resolve({ name: 'Player Profile', params: { playerAddress: this.$store.state.address } })
+          window.open(routeData.href, '_blank')
+        },
+        openLeaderboard() {
+          let routeData = this.$router.resolve({ name: 'Leaderboard' })
           window.open(routeData.href, '_blank')
         }
     }
@@ -204,5 +193,5 @@ i.mdi.mdi-logout {
   font-size: 20px;
   margin-right: -5px;
 }
-$dropdown-divider-background-color: red;
+$dropdown-item-hover-color: red;
 </style>

@@ -21,7 +21,7 @@ const routes = [
   { path: '/home', component: Lobby, name: 'Home', meta: { requiresLogin: true, title: 'Home' } },
   { path: '/play/:link', component: Link, name: 'Join Game with Link', meta: { requiresLogin: true, title: 'Join Game' } },
   { path: '/admin', component: Admin, name: 'Admin' },
-  { path: '/login', component: Login, name: 'Login', meta: { title: 'Login' } },
+  { path: '/login/:redirect?', component: Login, name: 'Login', meta: { title: 'Login' } },
   { path: '/redeem-your-access-key', component: RedeemAccessKey, name: 'Redeem Access Key', meta: { requiresLogin: true, title: 'Redeem Access Key' } },
   { path: '/player/:playerAddress', component: PlayerProfile, name: 'Player Profile', meta: { title: 'Profile' } },
   { path: '/not-found', component: NotFound, name: 'Not Found', props: true, meta: { title: 'Page Not Found' } },
@@ -34,7 +34,7 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  if (to.matched.some(record => record.meta.requiresLogin) && !store.state.address) next({ name: 'Login' })
+  if(to.matched.some(record => record.meta.requiresLogin) && !store.state.address) next({ name: 'Login', params: { redirect: to.name} }) 
   else if(to.name == 'Login' && store.state.address) next({ name: 'Home' })
   else next()
 })
