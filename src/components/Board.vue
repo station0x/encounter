@@ -3,7 +3,7 @@
 		<div class="loader-wrapper" v-if="boardLoading">
 			<Loader v-model="boardLoading"/>
 		</div>
-		<div v-else class="columns m-0" style="min-height: 865px">
+		<div v-else class="columns m-0" style="height: 865px">
 			<div class="column left p-0">
 				<EnemyCard @endEnemyTurn="endEnemyTurn" :playerAddress="enemyAddress" :fuel="enemyFuel" :lastTurnTimestamp="lastTurnTimestamp" :isEnemyTurn="!isMyTurn" :playerAlias="enemyAlias"/>
 				<div class="chat-wrapper">					
@@ -56,7 +56,7 @@
 			</div>
 			<div class="column is-narrow middle">
 				<div class="hex-grid-container">
-					<div id="hex-grid" :class="{rotate: playerIs === 1}">
+					<div id="hex-grid" :style="gridProps" :class="{rotate: playerIs === 1}">
 						<div class="row" v-for="(row, y) in ourState" :key="y">
 							<div @mouseover="hovered = {x,y}" @click="select(col, x, y)" :class="{
 								'col': true, 
@@ -64,12 +64,12 @@
 								'hoverable-attackable': isLegalAttack(x,y),
 								'hoverable-repairabe': isLegalRepair(x,y),
 								'hoverable-approachable': isLegalMove(x,y)
-								}" v-for="(col, x) in row" :key="x">
+								}" v-for="(col, x) in row" :key="x" :style="gridProps">
 								<!-- <img v-if="selected !== undefined && ourState[selected.y][selected.x].type === 'carrier' && isLegalRepair(x,y)" :class="hexClasses(x,y)" src="green-hex.png" height="80px"/>
 								<img v-else-if="selected !== undefined && ourState[selected.y][selected.x].type !== 'carrier' && isLegalAttack(x,y)" :class="hexClasses(x,y)" src="red-hex.png" height="80px"/>
 								<img v-else :class="hexClasses(x,y)" src="hex.png" height="80px"/> -->
-								<img :class="hexClasses(x,y)" :src="hexImg(x,y)" height="80px"/> 
-								<img :class="pieceClasses(col.owner, x, y)" :src="col.img"/>
+								<img :class="hexClasses(x,y)" :src="hexImg(x,y)" height="80px" :style="gridProps"/> 
+								<img :class="pieceClasses(col.owner, x, y)" :src="col.img" :style="gridProps"/>
 								<img v-if="isLegalMove(x,y)" class="move-circle" src="circle.png"/>
 								<!-- <div v-if="col.type" class="tooltip">
 									<div class="spaceship-type">{{ col.type }}</div>
@@ -146,6 +146,8 @@ export default {
 	return {
 		selected: undefined,
 		hovered: undefined,
+		innerWidth: undefined,
+		boardLoading: true,
 		chatMessage: '',
 		sendingMsg: false,
 		newLogs: 0,
@@ -412,6 +414,21 @@ export default {
 	  },
 	  enemyFuel () {
 		  return this.playerIs === 0? this.fuel1: this.fuel0
+	  },
+	  gridProps() {
+		let styles = {}
+		if(this.innerWidth > 1250) {
+			styles['--scale'] = 1
+		} else if(this.innerWidth > 768) {
+			styles['--scale'] = this.innerWidth / 1200
+		} else if(this.innerWidth < 768) {
+			styles['--scale'] = this.innerWidth / 960
+		} else {
+			styles['--scale'] = this.innerWidth / 1250
+		}
+		
+		styles['--factor'] = 0.9 * styles['--scale']
+		return styles
 	  }
   },
   methods: {
@@ -447,7 +464,7 @@ export default {
 			}
 		},
 		responsify() {
-			console.log(window.innerWidth)
+			this.innerWidth = window.innerWidth
 		},
 		tabClicked(index) {
 			if(index === 'logs') this.resetChats()
@@ -749,6 +766,7 @@ export default {
 	} finally {
 		this.boardLoading = false
 	}
+	this.innerWidth = window.innerWidth
 	window.addEventListener("resize", this.responsify)
   },
   destroyed() {
@@ -759,12 +777,12 @@ export default {
 
 <style>
 :root {
-	--scale: 0.9;
+	--factor: calc(0.9 * var(--scale));
 	--board-to-window-ratio: 0.575;
 	--parcel-height: 120px;
 	--parcel-number: 9;
 	--parcel-width: calc(0.85 * var(--parcel-height));
-	--parcel-pyramid-height: calc((var(--parcel-height) - 46px) / 2);
+	--parcel-pyramid-height: calc((var(--parcel-height) - 46px) / 2); 
 }
 h1 {
 	margin: 0;
@@ -775,16 +793,16 @@ h1 {
 }
 .hex-grid-container {
 	margin-top: 5.5vh;
-	transform: translate(calc(((var(--scale) * (var(--parcel-width))) / 2.2)));
+	transform: translate(calc(((var(--factor) * (var(--parcel-width))) / 2.2)));
 	width: calc(var(--parcel-width) * var(--parcel-number));
 }
 .row {
 	display: block;
 }
 .row:nth-child(even) {
-	transform:translateX(calc((var(--parcel-width) / 2) * var(--scale) + 0.7px ));
-	margin-top: calc((var(--parcel-pyramid-height) * var(--scale) * -1) - 0.2px );
-	margin-bottom: calc((var(--parcel-pyramid-height) * var(--scale) * -1) - 0.4px );
+	transform:translateX(calc((var(--parcel-width) / 2) * var(--factor) + ((0.7px * var(--scale)) / var(--factor)) ));
+	margin-top: calc((var(--parcel-pyramid-height) * var(--factor) * -1) - ((0.2px * var(--scale)) / var(--factor))  );
+	margin-bottom: calc((var(--parcel-pyramid-height) * var(--factor) * -1) - ((0.4px * var(--scale)) / var(--factor))  );
 }
 .col {
 	display: inline;
@@ -794,11 +812,11 @@ h1 {
 .hex-parcel {
 	/* filter:invert(); */
 	opacity: 0.65;
-	height: calc(var(--parcel-height) * var(--scale));
+	height: calc(var(--parcel-height) * var(--factor));
 	cursor: pointer;
 }
 .hoverable-movable:hover .hex-parcel {
-	filter:invert();
+	filter: invert();
 	opacity: 1;
 }
 /* .hoverable-attackable {
@@ -812,7 +830,7 @@ h1 {
 }
 .hoverable-approachable {
 	filter: brightness(2);
-	opacity:1;
+	opacity: 1;
 }
 .spaceship-stats {
 	/* margin: 0 auto; */
@@ -924,16 +942,16 @@ h1 {
 .col-piece {
 	position: absolute;
 	opacity: 0.75 !important;
-	left: calc(21.75px * var(--scale));
-	bottom: calc(32.25px * var(--scale));
-	height: calc(60.5px * var(--scale));
+	left: calc(21.75px * var(--factor));
+	bottom: calc(32.25px * var(--factor));
+	height: calc(60.5px * var(--factor));
 }
 
 .move-circle {
 	position: absolute;
-	left: calc(30px * var(--scale));
-	bottom: calc(40px * var(--scale));
-	height: calc(45px * var(--scale));
+	left: calc(30px * var(--factor));
+	bottom: calc(40px * var(--factor));
+	height: calc(45px * var(--factor));
 	opacity: 0.3 !important;
 }
 .selected {

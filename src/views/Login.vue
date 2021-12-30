@@ -32,7 +32,7 @@ import { ethers } from 'ethers'
 export default {
     data() {
         return {
-
+            prevRouteName: null
         }
     },
     methods: {
@@ -63,9 +63,14 @@ export default {
                 component: GameGuide
             })
         },
-        reload(){   
-            this.$router.go(this.$router.currentRoute)
+        reload(){
+            console.log(this.prevRouteName, this.prevRouteParams)
+            if(this.prevRouteName === 'Join Game with Link') this.$router.go(-3)
+            else this.$router.go()
         }
+    },
+    created() {
+        this.prevRouteName = this.$route.params.redirect
     }
 }
 </script>

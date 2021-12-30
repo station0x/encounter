@@ -151,6 +151,7 @@ export default {
 }
 .match-wrapper {
     margin: 0 auto;
+    max-width: 1500px;
 }
 .onboarding-animation {
     background: black;
