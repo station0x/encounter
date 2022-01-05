@@ -3,13 +3,13 @@
 		<div class="loader-wrapper" v-if="boardLoading">
 			<Loader v-model="boardLoading"/>
 		</div>
-		<div v-else class="columns m-0" style="height: 865px">
+		<div v-else class="columns m-0" style="min-height: 865px">
 			<div class="column left p-0">
 				<EnemyCard @endEnemyTurn="endEnemyTurn" :playerAddress="enemyAddress" :fuel="enemyFuel" :lastTurnTimestamp="lastTurnTimestamp" :isEnemyTurn="!isMyTurn" :playerAlias="enemyAlias"/>
-				<div class="chat-wrapper">					
+				<div v-if="!$store.getters.isMobile" class="chat-wrapper">					
 					<div class="logs-tabs">
 						<b-tabs v-model="tabsModel" @input="tabClicked" expanded class="logs-tabs">
-							<b-tab-item value="logs" class="logs-tabs">
+							<b-tab-item value="logs" >
 								<template #header>
 									<b-icon icon="information-outline"></b-icon>
 									<span> Game Log <b-tag v-if="newLogs !== 0" type="is-dark" rounded style="margin-left:6px"> {{ newLogs }} </b-tag> </span>
@@ -54,7 +54,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="column is-narrow middle">
+			<div class="column is-narrow middle p-0">
 				<div class="hex-grid-container">
 					<div id="hex-grid" :style="gridProps" :class="{rotate: playerIs === 1}">
 						<div class="row" v-for="(row, y) in ourState" :key="y">
@@ -84,7 +84,7 @@
 				<div @click="openGameGuideModal" class="clickable-text" style="margin-top: 110px; text-align: center; color: #F98F09; width: fit-content; margin: 0 auto">Game Guide  <b-icon icon="alert-circle" size="is-small" style="margin-left: 5px; margin-top: -40px"></b-icon></div>
 			</div>
 			<div class="column right p-0">
-				<div class="spaceship-stats">
+				<div v-if="!$store.getters.isMobile" class="spaceship-stats">
 					<center v-if="spaceshipStats.type === 'base'" style="margin-top: 25%">
 						<img class="spaceship-img" :src="spaceshipStats.img"/>
 						<h1 class="spaceship-type" :style="{color: spaceshipStats.owner === this.playerIs ? '#416BFF' : '#C72929'}">{{spaceshipStats.type}}</h1>
@@ -146,7 +146,6 @@ export default {
 	return {
 		selected: undefined,
 		hovered: undefined,
-		innerWidth: undefined,
 		boardLoading: true,
 		chatMessage: '',
 		sendingMsg: false,
@@ -177,7 +176,8 @@ export default {
 		},
 		moveIcon: require('../assets/img/moveIcon.svg'),
 		attackIcon: require('../assets/img/attackIcon.svg'),
-		repairIcon: require('../assets/img/repairIcon.svg')
+		repairIcon: require('../assets/img/repairIcon.svg'),
+		blankImg: require('../assets/img/blank.gif')
 	}
   },
   components: {
@@ -186,53 +186,57 @@ export default {
 		Loader
   },
   computed:{
-	  ourState () {
-		  if(!this.state) return []
-		  return this.state.map(row => {
-			  return row.map(col => {
-				if(col.owner === this.playerIs) {
-					if(col.type === "base") {
-						col.img = this.blue.base
-					}
-					else if(col.type == "fighter") {
-						col.img = this.blue.fighter
-					}
-					else if(col.type == "scout") {
-						col.img = this.blue.scout
-					}
-					else if(col.type == "destroyer") {
-						col.img = this.blue.destoyer
-					}
-					else if(col.type == "carrier") {
-						col.img = this.blue.carrier
-					}
-					else if(col.type == "gunship") {
-						col.img = this.blue.gunship
-					}
-				} else if (col.owner !== this.playerIs) {
-					if(col.type === "base") {
-						col.img = this.red.base
-					}
-					else if(col.type == "fighter") {
-						col.img = this.red.fighter
-					}
-					else if(col.type == "scout") {
-						col.img = this.red.scout
-					}
-					else if(col.type == "destroyer") {
-						col.img = this.red.destoyer
-					}
-					else if(col.type == "carrier") {
-						col.img = this.red.carrier
-					}
-					else if(col.type == "gunship") {
-						col.img = this.red.gunship
-					}
+	ourState () {
+		if(!this.state) return []
+		return this.state.map(row => {
+			return row.map(col => {
+			if(col.owner === this.playerIs) {
+				if(col.type === "base") {
+					col.img = this.blue.base
 				}
-				return col
-			  })
-		  })
-	  },
+				else if(col.type == "fighter") {
+					col.img = this.blue.fighter
+				}
+				else if(col.type == "scout") {
+					col.img = this.blue.scout
+				}
+				else if(col.type == "destroyer") {
+					col.img = this.blue.destoyer
+				}
+				else if(col.type == "carrier") {
+					col.img = this.blue.carrier
+				}
+				else if(col.type == "gunship") {
+					col.img = this.blue.gunship
+				} else {
+					col.img = this.blankImg
+				}
+			} else if (col.owner !== this.playerIs) {
+				if(col.type === "base") {
+					col.img = this.red.base
+				}
+				else if(col.type == "fighter") {
+					col.img = this.red.fighter
+				}
+				else if(col.type == "scout") {
+					col.img = this.red.scout
+				}
+				else if(col.type == "destroyer") {
+					col.img = this.red.destoyer
+				}
+				else if(col.type == "carrier") {
+					col.img = this.red.carrier
+				}
+				else if(col.type == "gunship") {
+					col.img = this.red.gunship
+				} else {
+					col.img = this.blankImg
+				}
+			}
+			return col
+			})
+		})
+	},
 	sortedLogs() {
 		return arraySort([...this.log], 'index')
 	},
@@ -417,16 +421,12 @@ export default {
 	  },
 	  gridProps() {
 		let styles = {}
-		if(this.innerWidth > 1250) {
-			styles['--scale'] = 1
-		} else if(this.innerWidth > 768) {
-			styles['--scale'] = this.innerWidth / 1200
-		} else if(this.innerWidth < 768) {
-			styles['--scale'] = this.innerWidth / 960
-		} else {
-			styles['--scale'] = this.innerWidth / 1250
+		if(this.$store.getters.innerWidth > 769) {
+			styles['--scale'] = 1.03
 		}
-		
+		else {
+			styles['--scale'] = this.$store.getters.innerWidth / 895
+		}
 		styles['--factor'] = 0.9 * styles['--scale']
 		return styles
 	  }
@@ -462,9 +462,6 @@ export default {
 			} else {
 				return 'hex.png'
 			}
-		},
-		responsify() {
-			this.innerWidth = window.innerWidth
 		},
 		tabClicked(index) {
 			if(index === 'logs') this.resetChats()
@@ -766,11 +763,6 @@ export default {
 	} finally {
 		this.boardLoading = false
 	}
-	this.innerWidth = window.innerWidth
-	window.addEventListener("resize", this.responsify)
-  },
-  destroyed() {
-	window.removeEventListener("resize", this.responsify)
   }
 }
 </script>
@@ -792,7 +784,6 @@ h1 {
     margin: auto;
 }
 .hex-grid-container {
-	margin-top: 5.5vh;
 	transform: translate(calc(((var(--factor) * (var(--parcel-width))) / 2.2)));
 	width: calc(var(--parcel-width) * var(--parcel-number));
 }
@@ -1001,7 +992,7 @@ h1 {
 	border-left: 1px solid #303030;
 }
 .chat-wrapper {
-	height: 45%;
+	height: 47.4%;
     /* width: 100%;
     bottom: 0;
     position: absolute; */

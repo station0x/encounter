@@ -48,15 +48,11 @@
           </b-dropdown-item>
           <hr class="dropdown-divider">
           <b-dropdown-item @click="openProfile" value="profile" aria-role="menuitem">
-              <b-icon icon="book-open"></b-icon>
+              <b-icon icon="account-circle-outline" custom-size="mdi-18px"></b-icon>
               Profile
           </b-dropdown-item>
-          <b-dropdown-item value="settings">
-              <b-icon icon="settings"></b-icon>
-              Settings
-          </b-dropdown-item>
           <b-dropdown-item @click="logout" value="logout" aria-role="menuitem">
-              <b-icon icon="logout"></b-icon>
+              <b-icon icon="logout-variant" custom-size="mdi-18px"></b-icon>
               Logout
           </b-dropdown-item>
         </b-dropdown>

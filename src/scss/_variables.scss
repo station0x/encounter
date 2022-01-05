@@ -4,6 +4,7 @@ $pink: #fa7c91;
 $brown: #757763;
 $beige-light: #d0d1cd;
 $beige-lighter: #eff0eb;
+$white: #ffffff;
 $twitter: #4099ff;
 $gray: rgba(0,0,0,.3);
 
@@ -26,6 +27,7 @@ $beige-lighter: rgba(0,0,0,0.5);
 $primary-invert: $dark;
 $scheme-main: $dark;
 $border: $background;
+$highlight-white: rgba(255,255,255,0.05);
 
 $grey: $primary;
 $grey-dark: $primary;
@@ -105,3 +107,8 @@ $colors: (
 $link: $primary;
 $link-invert: $primary-invert;
 $link-focus-border: $primary;
+
+
+// Dropdown
+$dropdown-item-hover-color: $white;
+$dropdown-item-hover-background-color: $highlight-white;

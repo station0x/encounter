@@ -21,7 +21,8 @@ export default new Vuex.Store({
         matchId: undefined,
         matchState: undefined,
         loaded: false,
-        registered: false
+        registered: false,
+        innerWidth: window.innerWidth
     },
     getters: {},
     mutations: {
@@ -81,6 +82,9 @@ export default new Vuex.Store({
         registerAddress(state, bool) {
             if(bool) state.registered = true
             else state.registered = false
+        },
+        changeWindowWidth(state, width) {
+            state.innerWidth = width
         }
     },
     actions: {
@@ -158,5 +162,13 @@ export default new Vuex.Store({
                 dispatch('startPolling')
             }
         }  
-    ]
+    ],
+    getters: {
+        innerWidth: state => {
+            return state.innerWidth
+        },
+        isMobile: state => {
+            return state.innerWidth > 769 ? false : true
+        }
+    }
 })
