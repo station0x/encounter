@@ -16,21 +16,24 @@
             <b-button @click="confirmSurrender" class="surrender">Surrender</b-button>
         </center>
         <div class="mobile-card-wrapper" v-else>
-            <div class="mobile-hex" :style="cssProps">
-                <div class="mobile-hex-background">
-                    <img class="mobile-gravatar" :src="gravatar">
+            <div class="mobile-card-box">
+                <div class="mobile-hex" :style="cssProps">
+                    <div class="mobile-hex-background">
+                        <img class="mobile-gravatar" :src="gravatar">
+                    </div>
+                </div>
+                <div class="mobile-data-wrapper">
+                    <h1 class="mobile-you">{{ playerAlias }}</h1>
+                    <h1 @click="$router.push({ name: 'Player Profile', params: { playerAddress: playerAddress } })"  class="mobile-your-address">{{ formattedAddress }}</h1>
                 </div>
             </div>
-            <div class="mobile-data-wrapper">
-                <h1 class="mobile-you">{{ playerAlias }}</h1>
-                <h1 @click="$router.push({ name: 'Player Profile', params: { playerAddress: playerAddress } })"  class="mobile-your-address">{{ formattedAddress }}</h1>
-            </div>
             <div class="mobile-data-wrapper-right">
-                <span class="mobile-energy">{{fuel}}</span>
-                <img class="mobile-energy-icon" src="/energy.svg" width="23px"/>
+                <span :myTurn="!isMyTurn" class="mobile-energy">{{fuel}}</span>
+                <img :myTurn="!isMyTurn" class="mobile-energy-icon" src="/energy.svg" width="23px"/>
                 <div class="mobile-btn-group">
                     <b-button @click="endTurn" :disabled="!isMyTurn" class="mobile-end-turn" icon-right="swap-horizontal-bold" type="is-danger">End Turn<strong v-if="isMyTurn" style="margin-left: 10px">{{ lastTurnTimestamp === undefined ? turnTimeout : countdown }}</strong></b-button>
-                </div>            </div>
+                </div>
+            </div>
         </div>
         <v-gravatar style="display: none" ref="gravatar" :email="playerAddress" alt="Nobody" :size="530"/>
     </div>
@@ -139,11 +142,13 @@ section.modal-card-body.is-flex {
     font-family: 'Roboto';
     font-size: 35px;
     color: #F98F09;
+    transition: all ease-in-out 600ms;
 }
 .energy-icon {
     margin-bottom: -7px;
     margin-right: 5px;
     width: 18px;
+    transition: all ease-in-out 600ms;
 }
 .surrender {
     margin-top: 2.2rem !important;
@@ -326,40 +331,43 @@ section.modal-card-body.is-flex {
 }
 @media screen and (max-width: 500px) {
     .mobile-card-wrapper {
-        padding: 25px 20px;
+        padding: 13px 20px;
         display: inline-block;
         width: 100%;
-        height: 110px;
+        height: 100px;
         position: relative;
+    }
+    .player-card {
+        height: 100px;
     }
     .mobile-hex {
         margin-right: 10px;
     }
     .mobile-energy {
-    font-family: 'Roboto';
-    font-size: 19px;
-    margin-top: 3px;
-    color: #F98F09;
-    float: right;
+        font-family: 'Roboto';
+        font-size: 19px;
+        margin-top: 0px;
+        color: #F98F09;
+        float: right;
     }
     .mobile-energy-icon {
         float: right;
         width: 10px;
-        margin-top: 5px;
+        margin-top: 1.5px;
         margin-right: 4px;
     }
     .mobile-end-turn {
         margin-right: 10px;
         padding: 10px 15px;
-        font-size: 11px;
+        font-size: 13px;
         margin-right: -40px;
-        margin-top: 35px;
+        margin-top: 30px;
         height: 35px;
     }
     .mobile-data-wrapper-right {
         position: absolute;
         bottom: 0;
-        right: 10px;
+        right: 20px;
         padding: 1rem;
         height: 100%;
     }
@@ -368,7 +376,23 @@ section.modal-card-body.is-flex {
         float: none;
         position: absolute;
         right: 10px;
-        margin-top: 35px;
+        margin-top: 32px;
+    }
+    .mobile-card-box {
+        margin-top: 4px;
+    }
+    .mobile-energy[myTurn] {
+        font-family: 'Roboto';
+        font-size: 30px;
+        margin-top: 10px;
+        color: #F98F09;
+        float: right;
+    }
+    .mobile-energy-icon[myTurn] {
+        float: right;
+        width: 17px;
+        margin-top: 12.5px;
+        margin-right: 4px;
     }
 }
 </style>

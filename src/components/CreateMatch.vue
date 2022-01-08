@@ -156,10 +156,4 @@ export default {
     background: #F88C09;
     border: #F88C09;
 }
-.invitation-link {
-    margin-bottom: -40px;
-    font-size: 19px;
-    color: white;
-    margin-top: 60px;
-}
 </style>

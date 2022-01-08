@@ -7,13 +7,7 @@
         font-weight: 200 700;
         font-display: swap;
         font-style: normal;
-}
-@media screen and (max-width: 769px) {
-    html, body {
-        max-width: 100%;
-        overflow-x: hidden;
-    }
-}
+} 
 body {
     background-color: black !important;
 }
@@ -77,4 +71,56 @@ body {
     line-height: 16px;
     color: white;
     margin: 0px 20px 0px 20px;
+}
+.invitation-link {
+    margin-bottom: -40px;
+    font-size: 19px;
+    color: white;
+    margin-top: 60px;
+    overflow-wrap: break-word;
+}
+.board-grid {
+	min-height: 865px;
+}
+
+/* Mobile styles */
+@media screen and (max-width: 769px) {
+    html, body {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+    .major-text {
+        font-size: 22px;
+        line-height: 25px;
+    }
+    .onboarding-wrapper {
+        padding: 35px;
+        margin-top: 20px;
+    }
+    .clickable-text {
+        margin-top: 20px;
+        font-size: 17px;
+    }
+    .minor-text {
+        font-size: 15px;
+    }
+    .info-text {
+        font-size: 14px !important;
+    }
+    .board-grid {
+        min-height: 100vh;
+    }
+    .chat-message {
+        font-size: 14px;
+        text-align: center;
+    }
+    .b-tabs .tab-content {
+        padding: 0.7rem !important;
+    }
+    .logs-tabs {
+        padding: 0px !important;
+    }
+    #chat-logs {
+        height: 100px;
+    }
 }
