@@ -1011,7 +1011,6 @@ h1 {
 	bottom: calc(32.25px * var(--factor));
 	height: calc(60.5px * var(--factor));
 }
-
 .move-circle {
 	position: absolute;
 	left: calc(30px * var(--factor));
