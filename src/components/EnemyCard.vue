@@ -13,18 +13,20 @@
             <div :disabled="!isEnemyTurn" class="turn-timer">Ends in: <strong style="color: #F88C09; margin-left: 10px">{{ lastTurnTimestamp === undefined ? turnTimeout : countdown }}</strong></div>
         </center>
         <div class="mobile-card-wrapper" v-else>
-            <div class="mobile-hex" :style="cssProps">
-                <div class="mobile-hex-background">
-                    <img class="mobile-gravatar" :src="gravatar">
+            <div class="mobile-card-box">
+                <div class="mobile-hex" :style="cssProps">
+                    <div class="mobile-hex-background">
+                        <img class="mobile-gravatar" :src="gravatar">
+                    </div>
+                </div>
+                <div class="mobile-data-wrapper">
+                    <h1 class="mobile-you">{{ playerAlias }}</h1>
+                    <h1 @click="$router.push({ name: 'Player Profile', params: { playerAddress: playerAddress } })"  class="mobile-your-address">{{ formattedAddress }}</h1>
                 </div>
             </div>
-            <div class="mobile-data-wrapper">
-                <h1 class="mobile-you">{{ playerAlias }}</h1>
-                <h1 @click="$router.push({ name: 'Player Profile', params: { playerAddress: playerAddress } })"  class="mobile-your-address">{{ formattedAddress }}</h1>
-            </div>
             <div class="mobile-data-wrapper-right">
-                <span class="mobile-energy">{{fuel}}</span>
-                <img class="mobile-energy-icon" src="/energy.svg" width="23px"/>
+                <span :enemyTurn="!isEnemyTurn" class="mobile-energy">{{fuel}}</span>
+                <img :enemyTurn="!isEnemyTurn" class="mobile-energy-icon" src="/energy.svg" width="23px"/>
                 <div :disabled="!isEnemyTurn" class="mobile-turn-timer">Ends in: <strong style="color: #F88C09; margin-left: 10px">{{ lastTurnTimestamp === undefined ? turnTimeout : countdown }}</strong></div>
             </div>
         </div>
@@ -118,11 +120,13 @@ export default {
     font-family: 'Roboto';
     font-size: 38px;
     color: #F98F09;
+    transition: all ease-in-out 600ms;
 }
 .energy-icon {
     margin-bottom: -6px;
     margin-right: 5px;
     width: 18px;
+    transition: all ease-in-out 600ms;
 }
 .you {
     font-size: 27px;
@@ -188,7 +192,7 @@ export default {
 .mobile-energy {
     font-family: 'Roboto';
     font-size: 26px;
-    margin-top: 3px;
+    margin-top: 0px;
     color: #F98F09;
     float: right;
 }
@@ -272,26 +276,29 @@ export default {
 }
 @media screen and (max-width: 500px) {
     .mobile-card-wrapper {
-        padding: 25px 20px;
+        padding: 10px 20px;
         display: inline-block;
         width: 100%;
-        height: 110px;
+        height: 100px;
         position: relative;
+    }
+    .player-card {
+        height: 100px;
     }
     .mobile-hex {
         margin-right: 10px;
     }
-        .mobile-energy {
+    .mobile-energy {
         font-family: 'Roboto';
         font-size: 19px;
-        margin-top: 3px;
+        margin-top: 0px;
         color: #F98F09;
         float: right;
     }
     .mobile-energy-icon {
         float: right;
         width: 10px;
-        margin-top: 5px;
+        margin-top: 2.5px;
         margin-right: 4px;
     }
     .mobile-turn-timer {
@@ -299,20 +306,36 @@ export default {
         color: #F88C09;
         height: 35px;
         margin-right: 10px;
-        padding: 10px 15px;
-        font-size: 11px;
+        padding: 8px 15px;
+        font-size: 13px;
         font-weight: 500;
         border-radius: 5px;
         transition: 500ms ease-in-out;
         max-width: fit-content;
         margin-right: -40px;
-        margin-top: 35px;
+        margin-top: 30px;
     }
     .mobile-data-wrapper-right {
         position: absolute;
         top: 7.5px;
-        right: 10px;
+        right: 20px;
         padding: 1rem;
+    }
+    .mobile-card-box {
+        margin-top: 8px;
+    }
+    .mobile-energy[enemyTurn] {
+        font-family: 'Roboto';
+        font-size: 27px;
+        margin-top: 10px;
+        color: #F98F09;
+        float: right;
+    }
+    .mobile-energy-icon[enemyTurn] {
+        float: right;
+        width: 15px;
+        margin-top: 14px;
+        margin-right: 4px;
     }
 }
 </style>

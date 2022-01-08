@@ -3,8 +3,8 @@
 		<div class="loader-wrapper" v-if="boardLoading">
 			<Loader v-model="boardLoading"/>
 		</div>
-		<div v-else class="columns m-0" style="min-height: 865px">
-			<div class="column left p-0">
+		<div v-else class="columns m-0 board-grid">
+			<div class="column left p-0" :class="{'no-right-border': $store.getters.isMobile}">
 				<EnemyCard @endEnemyTurn="endEnemyTurn" :playerAddress="enemyAddress" :fuel="enemyFuel" :lastTurnTimestamp="lastTurnTimestamp" :isEnemyTurn="!isMyTurn" :playerAlias="enemyAlias"/>
 				<div v-if="!$store.getters.isMobile" class="chat-wrapper">					
 					<div class="logs-tabs">
@@ -81,7 +81,7 @@
 						</div>
 					</div>
 				</div>
-				<div @click="openGameGuideModal" class="clickable-text" style="margin-top: 110px; text-align: center; color: #F98F09; width: fit-content; margin: 0 auto">Game Guide  <b-icon icon="alert-circle" size="is-small" style="margin-left: 5px; margin-top: -40px"></b-icon></div>
+				<div v-if="!$store.getters.isMobile" @click="openGameGuideModal" class="clickable-text" style="margin-top: 110px; text-align: center; color: #F98F09; width: fit-content; margin: 0 auto">Game Guide  <b-icon icon="alert-circle" size="is-small" style="margin-left: 5px; margin-top: -40px"></b-icon></div>
 			</div>
 			<div class="column right p-0">
 				<div v-if="!$store.getters.isMobile" class="spaceship-stats">
@@ -123,6 +123,103 @@
 					</div>
 				</div>
 				<PlayerCard @endTurn="endTurn" @surrender="surrender" :playerAddress="$store.state.address" :fuel="myFuel" :lastTurnTimestamp="lastTurnTimestamp" :isMyTurn="isMyTurn" :playerAlias="playerAlias"/>
+				<div v-if="$store.getters.isMobile">
+					<b-tabs v-model="tabsModel" @input="tabClicked" size="is-small" position="is-centered" class="block mobile-tabs">
+						<b-tab-item value="radar">
+							<template #header>
+								<b-icon custom-size="mdi-18px" icon="radar"></b-icon>
+								<span> Radar <b-tag v-if="newLogs !== 0" type="is-dark" rounded style="margin-left:6px"> {{ newLogs }} </b-tag> </span>
+							</template>
+							<div id="radar">
+								<div v-if="!$store.getters.isMobile" class="spaceship-stats">
+									<center v-if="spaceshipStats.type === 'base'" style="margin-top: 25%">
+										<img class="spaceship-img" :src="spaceshipStats.img"/>
+										<h1 class="spaceship-type" :style="{color: spaceshipStats.owner === this.playerIs ? '#416BFF' : '#C72929'}">{{spaceshipStats.type}}</h1>
+									</center>
+									<center v-else>
+										<img class="spaceship-img" :src="spaceshipStats.img"/>
+										<h1 class="spaceship-type" :style="{color: spaceshipStats.owner === this.playerIs ? '#416BFF' : '#C72929'}">{{spaceshipStats.type}}</h1>
+									</center>
+									<b-progress 
+										v-if="spaceshipStats.type"
+										class="hp-progress"
+										:type="spaceshipStats.hpColor" 
+										:value="spaceshipStats.hp"
+										:max="spaceshipStats.maxHp"
+										show-value>
+										<h1 class="progressbar-text">HP:  {{spaceshipStats.hp}} / {{ spaceshipStats.maxHp}}</h1>
+									</b-progress>
+									<h1 v-if="spaceshipStats.type !== 'base'" style="color: white; font-size: 17px; text-align: left; margin: 0px 20px 10px 20px;font-family: 'ClashDisplay-Variable';">Abilities</h1>
+									<div v-if="spaceshipStats.type !== 'base'" class="ability move">
+										<img class="ability-icon" :src="moveIcon"/>
+										<div class="ability-text" style="color: #EFC97F">Move</div>
+										<span class="energy-ability">{{spaceshipStats.moveCost}}</span>
+										<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
+									</div>
+									<div v-if="spaceshipStats.type !== 'carrier' && spaceshipStats.type !== 'base'" class="ability attack">
+										<img class="ability-icon" :src="attackIcon"/>
+										<div class="ability-text" style="color: #FF4949">Attack {{spaceshipStats.attack}}</div>
+										<span class="attack-ability">{{spaceshipStats.attackCost}}</span>
+										<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
+									</div>
+									<div v-if="spaceshipStats.type === 'carrier' && spaceshipStats.type !== 'base'" class="ability repair">
+										<img class="ability-icon" :src="repairIcon"/>
+										<div class="ability-text" style="color: #348227">Repair 25%</div>
+										<span class="attack-ability">{{spaceshipStats.repairCost}}</span>
+										<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
+									</div>
+								</div>
+							</div>
+						</b-tab-item>
+						<b-tab-item value="logs" >
+							<template #header>
+								<b-icon custom-size="mdi-18px" icon="information-outline"></b-icon>
+								<span> Game Log <b-tag v-if="newLogs !== 0" type="is-dark" rounded style="margin-left:6px"> {{ newLogs }} </b-tag> </span>
+							</template>
+							<div id="action-logs">
+								<div v-for="(msg, key) in sortedLogs" :key="key">
+									<div v-if="msg.playerNo === playerIs" class="chat-message" :style="{'color': (sortedLogs.length - 1) - key < newLogs ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.5)'}">
+										{{formatAction(msg)}}
+									</div>
+									<div v-else-if="msg.playerNo !== playerIs" class="chat-message" :style="{'color': (sortedLogs.length - 1) - key < newLogs ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.5)'}">
+										{{formatAction(msg)}}
+									</div>
+								</div>
+							</div>
+						</b-tab-item>
+						<b-tab-item value="chat" class="logs-tabs">
+							<template #header>
+								<b-icon custom-size="mdi-18px" icon="forum"></b-icon>
+								<span> Chat <b-tag v-if="newChats !== 0" type="is-link is-light" rounded style="margin-left:6px"> {{ newChats }} </b-tag> </span>
+							</template>
+							<div id="chat-logs">
+								<div v-for="(msg, key) in sortedChats" :key="key">
+									<div v-if="msg.msg" class="chat-message">
+										<span v-if="msg.playerNo === playerIs" :class="{'newEle-left': (sortedChats.length - 1) - key < newChats}" style="color: #416BFF">You: </span>
+										<span v-else :class="{'newEle-left': (sortedChats.length - 1) - key < newChats}" style="color: #C72929">Enemy: </span>
+																				
+										<span :class="{'newEle-right': (sortedChats.length - 1) - key < newChats}"> {{msg.msg}} </span>
+									</div>
+								</div>
+							</div>
+						</b-tab-item>
+						<b-tab-item value="menu" class="logs-tabs">
+							<template #header>
+								<b-icon custom-size="mdi-24px" icon="menu"></b-icon>
+							</template>
+							<div id="menu">
+								<div v-for="(msg, key) in sortedChats" :key="key">
+									<div v-if="msg.msg" class="chat-message">
+										<span v-if="msg.playerNo === playerIs" :class="{'newEle-left': (sortedChats.length - 1) - key < newChats}" style="color: #416BFF">You: </span>
+										<span v-else :class="{'newEle-left': (sortedChats.length - 1) - key < newChats}" style="color: #C72929">Enemy: </span>
+																				
+										<span :class="{'newEle-right': (sortedChats.length - 1) - key < newChats}"> {{msg.msg}} </span>
+									</div>
+								</div>
+							</div>
+						</b-tab-item>
+					</b-tabs>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -792,8 +889,8 @@ h1 {
 }
 .row:nth-child(even) {
 	transform:translateX(calc((var(--parcel-width) / 2) * var(--factor) + ((0.7px * var(--scale)) / var(--factor)) ));
-	margin-top: calc((var(--parcel-pyramid-height) * var(--factor) * -1) - ((0.2px * var(--scale)) / var(--factor))  );
-	margin-bottom: calc((var(--parcel-pyramid-height) * var(--factor) * -1) - ((0.4px * var(--scale)) / var(--factor))  );
+	margin-top: calc((var(--parcel-pyramid-height) * var(--factor) * -1) - ((1.8px * var(--scale)) / var(--factor))  );
+	margin-bottom: calc((var(--parcel-pyramid-height) * var(--factor) * -1) - ((1.5px * var(--scale)) / var(--factor))  );
 }
 .col {
 	display: inline;
@@ -903,37 +1000,14 @@ h1 {
 	height: 17px;
 	display: inline-block;
 }
-/* .col .tooltip {
-    visibility: hidden;
-    width: 270px;
-    background-color: black !important;
-    color: #fff;
-    text-align: center;
-    padding: 5px 0;
-    position: absolute;
-    left: -80px;
-    border-radius: 5px;
-    border: 1px solid white;
-	opacity: 1;
-    height: 300px;
-    padding: 20px;
-	z-index: 10;
-}
-.bottomTooltip {
-	bottom: 125px;
-}
-.topTooltip {
-	bottom: 0px;
-	transform: translateY(150px);
-} */
 /* Show the tooltip text when you mouse over the tooltip container */
 .col:hover .tooltip {
   visibility: visible;
 }
 .col-piece {
 	position: absolute;
-	opacity: 0.75 !important;
-	left: calc(21.75px * var(--factor));
+	opacity: 1 !important;
+	left: calc(20px * var(--factor));
 	bottom: calc(32.25px * var(--factor));
 	height: calc(60.5px * var(--factor));
 }
@@ -964,51 +1038,28 @@ h1 {
 }
 .main-wrapper {
 	border: 1px solid #303030;
-	/* display: flex;
-	flex-direction: row;
-	flex-wrap: nowrap;
-	justify-content: space-between;
-	align-items: stretch; */
-	/* padding-top: 7.5vh; */
+
 }
-/* .left, .right {
-	flex-grow: 0;
-   	flex-shrink: 0;
-	flex-basis: 21.8%;
-	position: relative;
-} */
 .middle {
-	/* flex-grow: 1;
-   	flex-shrink: 0;
-	order: 2; */
 	padding: 40px 0;
 }
 .left {
-	/* order: 1; */
 	border-right: 1px solid #303030;
 }
 .right {
-	/* order: 3; */
 	border-left: 1px solid #303030;
 }
 .chat-wrapper {
 	height: 47.4%;
-    /* width: 100%;
-    bottom: 0;
-    position: absolute; */
 }
 .chat-input {
 	height: 55px;
-	/* width: 100%;
-	bottom: 0;
-	position: absolute; */
-	/* left: 0; */
 }
 .chat-btn {
 	background: black !important;
 	border-radius: 0px !important;
     border-top: 1px solid #303030 !important;
-	border-right: 1px solid #303030 !important;
+	border-right: 1px solid black !important;
 	border-bottom: 1px solid #303030 !important;
 	border-left: none !important;
 	height: 55px !important;
@@ -1093,6 +1144,15 @@ img {
   height: 100vh;
   width: 100vw;
 }
+.no-right-border {
+	border-right: none;
+}
+.mobile-tabs {
+	padding-top: 2px;
+}
+
+
+
 /* tabs customization */
 .tabs ul {
 	border-bottom-color: #303030 !important;
