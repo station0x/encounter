@@ -127,8 +127,8 @@ body {
         position: absolute;
         opacity: 1 !important;
         left: calc(13px * var(--factor)) !important;
-        bottom: calc(26px * var(--factor)) !important;
-        height: calc(70px * var(--factor)) !important;
+        bottom: calc(20px * var(--factor)) !important;
+        height: calc(72px * var(--factor)) !important;
     }
     .row:nth-child(even) {
         transform:translateX(calc((var(--parcel-width) / 2) * var(--factor) + ((0.7px * var(--scale)) / var(--factor)) )) !important;

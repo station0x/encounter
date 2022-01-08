@@ -85,7 +85,7 @@
 			</div>
 			<div class="column right p-0">
 				<div v-if="!$store.getters.isMobile" class="spaceship-stats">
-					<center v-if="spaceshipStats.type === 'base'" style="margin-top: 25%">
+					<center v-if="mobileSpaceshipStats.type === 'base'" style="margin-top: 25%">
 						<img class="spaceship-img" :src="spaceshipStats.img"/>
 						<h1 class="spaceship-type" :style="{color: spaceshipStats.owner === this.playerIs ? '#416BFF' : '#C72929'}">{{spaceshipStats.type}}</h1>
 					</center>
@@ -358,6 +358,26 @@ export default {
 	spaceshipStats() {
 		let piece
 		  if(this.hovered === undefined){
+			  piece = this.ourState[8][4]
+		  } else {
+			  piece = this.ourState[this.hovered.y][this.hovered.x]
+		  }
+		  if(!piece.type) piece = this.ourState[8][4]
+		  piece.maxHp = CONSTANTS.spaceshipsAttributes[piece.type].hp
+		  piece.attack = CONSTANTS.spaceshipsAttributes[piece.type].attack
+		  piece.moveCost = CONSTANTS.spaceshipsAttributes[piece.type].moveFuelCost
+		  if(piece.type === 'carrier') piece.repairCost = CONSTANTS.spaceshipsAttributes[piece.type].repairFuelCost
+		  else piece.attackCost = CONSTANTS.spaceshipsAttributes[piece.type].attackFuelCost
+		  piece.hpPercentage = Math.floor(piece.hp / piece.maxHp * 100)
+		  piece.hpColor = 'is-success'
+		  if(piece.hpPercentage < 50) piece.hpColor = 'is-danger'
+		  else if(piece.hpPercentage < 100) piece.hpColor = 'is-warning'
+
+		  return piece
+	  },
+		mobilespaceshipStats() {
+		let piece
+		  if(this.selected === undefined){
 			  piece = this.ourState[8][4]
 		  } else {
 			  piece = this.ourState[this.hovered.y][this.hovered.x]
@@ -703,7 +723,112 @@ export default {
 		return classes
 	  },
 	  select(piece, x, y) {
+		  if(this.$store.getters.isMobile) {
+			  this.mobileSelect(piece, x, y)
+			  return
+		  }
 		  if(!this.isMyTurn) return
+		  if(piece.type) { // if column contains a piece
+			  if(piece.owner === this.playerIs){ // if piece is mine
+				if(this.selected && this.selected.x === x && this.selected.y === y) { // if this is the selected piece
+					this.selected = undefined // unselect
+				} else { // if piece is not selected
+					if(this.isLegalRepair(x,y) && piece.type != "base") { // if piece is a legal repair (except base)
+						const newState = [...this.state]
+						const repairPercent = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].repairPercent
+						const maxHp = CONSTANTS.spaceshipsAttributes[newState[y][x].type].hp
+						if(!repairPercent) return
+						const hp = newState[y][x].hp
+						const newHp = Math.min(Math.floor(hp + (maxHp / 100 * repairPercent)), maxHp);
+						newState[y][x].hp = newHp
+						const fuelCost = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].repairFuelCost
+						this.$store.commit('setMyFuel', this.myFuel - fuelCost)
+						newState[this.selected.y][this.selected.x].lastRepairTurn = this.turnNum
+						this.$store.commit('setBoard', newState)
+						if(this.myFuel - fuelCost === 0) {
+							// this.playSound(this.turnSfx)
+							this.$store.commit('endTurn')
+						}
+						const from = {...this.selected}
+						this.$store.dispatch('enqueue', () => axios.get('/api/match/boardAction', {
+							params:{
+								signature:this.$store.state.signature,
+								matchId: this.$store.state.matchId,
+								action: 'repair',
+								from,
+								to: {x,y}
+							}
+						}))
+						this.playSound(this.repairSfx)
+					} else if(piece.type != "base") { // if not base
+						this.selected = { // select piece
+							x,
+							y
+						}
+					}
+				}
+			  } else if(this.isLegalAttack(x,y)) { // if piece is not mine but is a legal attack
+				const newState = [...this.state]
+				const attack = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].attack
+				if(!attack) return
+				const hp = newState[y][x].hp
+				const newHp = hp - attack;
+				if(newHp > 0) {
+					newState[y][x].hp = newHp
+				} else {
+					if(newState[y][x].type === "base") {
+						this.$store.commit('setWinner', this.playerIs)
+					}
+					newState[y][x] = {}
+				}
+				const fuelCost = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].attackFuelCost
+				this.$store.commit('setMyFuel', this.myFuel - fuelCost)
+				newState[this.selected.y][this.selected.x].lastAttackTurn = this.turnNum
+				this.$store.commit('setBoard', newState)
+				if(this.myFuel - fuelCost === 0) {
+					// this.playSound(this.turnSfx)
+					this.$store.commit('endTurn')
+				}
+				const from = {...this.selected}
+				this.$store.dispatch('enqueue', () => axios.get('/api/match/boardAction', {
+					params:{
+						signature:this.$store.state.signature,
+						matchId: this.$store.state.matchId,
+						action: 'attack',
+						from,
+						to: {x,y}
+					}
+				}))
+				this.playSound(this.shotSfx)
+			}
+		} else {
+			if(this.isLegalMove(x,y)) {
+				const newState = [...this.state]
+				const fuelCost = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].moveFuelCost
+				newState[y][x] = newState[this.selected.y][this.selected.x]
+				newState[this.selected.y][this.selected.x] = {}
+				this.$store.commit('setMyFuel', this.myFuel - fuelCost)
+				if(this.myFuel - fuelCost === 0) {
+					// this.playSound(this.turnSfx)
+					this.$store.commit('endTurn')
+				}
+				this.$store.commit('setBoard', newState)
+				const from = {...this.selected}
+				this.$store.dispatch('enqueue', () => axios.get('/api/match/boardAction', {
+					params:{
+						signature:this.$store.state.signature,
+						matchId: this.$store.state.matchId,
+						action: 'move',
+						from,
+						to: {x,y}
+					}
+				}))
+				this.selected = {x,y}
+			}
+		}
+	  },
+	  mobileSelect(piece, x, y) {
+		if(!this.isMyTurn) return
 		  if(piece.type) { // if column contains a piece
 			  if(piece.owner === this.playerIs){ // if piece is mine
 				if(this.selected && this.selected.x === x && this.selected.y === y) { // if this is the selected piece
