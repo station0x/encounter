@@ -121,7 +121,7 @@ body {
         padding: 0px !important;
     }
     #chat-logs {
-        height: 100px;
+        height: 300px !important;
     }
     .col-piece.rotate {
         position: absolute;

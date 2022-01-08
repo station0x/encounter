@@ -124,15 +124,15 @@
 				</div>
 				<PlayerCard @endTurn="endTurn" @surrender="surrender" :playerAddress="$store.state.address" :fuel="myFuel" :lastTurnTimestamp="lastTurnTimestamp" :isMyTurn="isMyTurn" :playerAlias="playerAlias"/>
 				<div v-if="$store.getters.isMobile">
-					<b-tabs v-model="tabsModel" @input="tabClicked" size="is-small" position="is-centered" class="block mobile-tabs">
+					<b-tabs v-model="tabsModel" @input="tabClicked" expanded size="is-small" position="is-centered" class="block mobile-tabs">
 						<b-tab-item value="radar">
 							<template #header>
 								<b-icon custom-size="mdi-18px" icon="radar"></b-icon>
 								<span> Radar <b-tag v-if="newLogs !== 0" type="is-dark" rounded style="margin-left:6px"> {{ newLogs }} </b-tag> </span>
 							</template>
 							<div id="radar">
-								<div v-if="!$store.getters.isMobile" class="spaceship-stats">
-									<center v-if="spaceshipStats.type === 'base'" style="margin-top: 25%">
+								<div v-if="$store.getters.isMobile" class="spaceship-stats">
+									<!-- <center v-if="spaceshipStats.type === 'base'" style="margin-top: 25%">
 										<img class="spaceship-img" :src="spaceshipStats.img"/>
 										<h1 class="spaceship-type" :style="{color: spaceshipStats.owner === this.playerIs ? '#416BFF' : '#C72929'}">{{spaceshipStats.type}}</h1>
 									</center>
@@ -167,7 +167,7 @@
 										<div class="ability-text" style="color: #348227">Repair 25%</div>
 										<span class="attack-ability">{{spaceshipStats.repairCost}}</span>
 										<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
-									</div>
+									</div> -->
 								</div>
 							</div>
 						</b-tab-item>
@@ -724,111 +724,12 @@ export default {
 	  },
 	  select(piece, x, y) {
 		  if(this.$store.getters.isMobile) {
-			  this.mobileSelect(piece, x, y)
-			  return
+			if(piece.type) {
+				this.tabsModel = undefined
+				this.hovered = {x,y}
+			}
 		  }
 		  if(!this.isMyTurn) return
-		  if(piece.type) { // if column contains a piece
-			  if(piece.owner === this.playerIs){ // if piece is mine
-				if(this.selected && this.selected.x === x && this.selected.y === y) { // if this is the selected piece
-					this.selected = undefined // unselect
-				} else { // if piece is not selected
-					if(this.isLegalRepair(x,y) && piece.type != "base") { // if piece is a legal repair (except base)
-						const newState = [...this.state]
-						const repairPercent = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].repairPercent
-						const maxHp = CONSTANTS.spaceshipsAttributes[newState[y][x].type].hp
-						if(!repairPercent) return
-						const hp = newState[y][x].hp
-						const newHp = Math.min(Math.floor(hp + (maxHp / 100 * repairPercent)), maxHp);
-						newState[y][x].hp = newHp
-						const fuelCost = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].repairFuelCost
-						this.$store.commit('setMyFuel', this.myFuel - fuelCost)
-						newState[this.selected.y][this.selected.x].lastRepairTurn = this.turnNum
-						this.$store.commit('setBoard', newState)
-						if(this.myFuel - fuelCost === 0) {
-							// this.playSound(this.turnSfx)
-							this.$store.commit('endTurn')
-						}
-						const from = {...this.selected}
-						this.$store.dispatch('enqueue', () => axios.get('/api/match/boardAction', {
-							params:{
-								signature:this.$store.state.signature,
-								matchId: this.$store.state.matchId,
-								action: 'repair',
-								from,
-								to: {x,y}
-							}
-						}))
-						this.playSound(this.repairSfx)
-					} else if(piece.type != "base") { // if not base
-						this.selected = { // select piece
-							x,
-							y
-						}
-					}
-				}
-			  } else if(this.isLegalAttack(x,y)) { // if piece is not mine but is a legal attack
-				const newState = [...this.state]
-				const attack = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].attack
-				if(!attack) return
-				const hp = newState[y][x].hp
-				const newHp = hp - attack;
-				if(newHp > 0) {
-					newState[y][x].hp = newHp
-				} else {
-					if(newState[y][x].type === "base") {
-						this.$store.commit('setWinner', this.playerIs)
-					}
-					newState[y][x] = {}
-				}
-				const fuelCost = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].attackFuelCost
-				this.$store.commit('setMyFuel', this.myFuel - fuelCost)
-				newState[this.selected.y][this.selected.x].lastAttackTurn = this.turnNum
-				this.$store.commit('setBoard', newState)
-				if(this.myFuel - fuelCost === 0) {
-					// this.playSound(this.turnSfx)
-					this.$store.commit('endTurn')
-				}
-				const from = {...this.selected}
-				this.$store.dispatch('enqueue', () => axios.get('/api/match/boardAction', {
-					params:{
-						signature:this.$store.state.signature,
-						matchId: this.$store.state.matchId,
-						action: 'attack',
-						from,
-						to: {x,y}
-					}
-				}))
-				this.playSound(this.shotSfx)
-			}
-		} else {
-			if(this.isLegalMove(x,y)) {
-				const newState = [...this.state]
-				const fuelCost = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].moveFuelCost
-				newState[y][x] = newState[this.selected.y][this.selected.x]
-				newState[this.selected.y][this.selected.x] = {}
-				this.$store.commit('setMyFuel', this.myFuel - fuelCost)
-				if(this.myFuel - fuelCost === 0) {
-					// this.playSound(this.turnSfx)
-					this.$store.commit('endTurn')
-				}
-				this.$store.commit('setBoard', newState)
-				const from = {...this.selected}
-				this.$store.dispatch('enqueue', () => axios.get('/api/match/boardAction', {
-					params:{
-						signature:this.$store.state.signature,
-						matchId: this.$store.state.matchId,
-						action: 'move',
-						from,
-						to: {x,y}
-					}
-				}))
-				this.selected = {x,y}
-			}
-		}
-	  },
-	  mobileSelect(piece, x, y) {
-		if(!this.isMyTurn) return
 		  if(piece.type) { // if column contains a piece
 			  if(piece.owner === this.playerIs){ // if piece is mine
 				if(this.selected && this.selected.x === x && this.selected.y === y) { // if this is the selected piece
