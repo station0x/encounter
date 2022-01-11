@@ -1,5 +1,5 @@
 <template>
-  <b-navbar spaced>
+  <b-navbar :mobile-burger="false" spaced>
     <template #brand>
       <b-navbar-item tag="router-link" :to="{ path: '/' }">
         <img
@@ -17,45 +17,27 @@
       </b-navbar-item>
       <center>
         <b-button class="nav-btn" v-if="!isConnected" type="is-primary" @click="connectMetamask">Connect Wallet</b-button>
-      </center>
-        <!-- <b-navbar-dropdown :label="fmtdWalletAddress"	hoverable class="button nav-btn" >
-            <b-navbar-item>
+        <b-dropdown v-if="isConnected" :triggers="['hover']" position="is-bottom-left" aria-role="menu">
+          <template #trigger>
+            <b-button
+              class="nav-btn"
+              :label="fmtdWalletAddress"
+              icon-right="menu-down" />
+          </template>
+            <b-dropdown-item custom aria-role="menuitem">
+                <center> Logged as <b> {{ fmtdWalletAddress }}</b> </center>
+            </b-dropdown-item>
+            <hr class="dropdown-divider">
+            <b-dropdown-item @click="openProfile" value="profile" aria-role="menuitem">
+                <b-icon icon="account-circle-outline" custom-size="mdi-18px"></b-icon>
                 Profile
-            </b-navbar-item> -->
-            <!-- <b-dropdown-item value="Profile">
-                <b-icon icon="settings"></b-icon>
-                Settings
-            </b-dropdown-item> -->
-            <!-- <hr class="dropdown-divider" aria-role="menuitem">
-            <b-dropdown-item value="settings">
-                <b-icon icon="settings"></b-icon>
-                Settings
             </b-dropdown-item>
             <b-dropdown-item @click="logout" value="logout" aria-role="menuitem">
-                <b-icon icon="logout"></b-icon>
+                <b-icon icon="logout-variant" custom-size="mdi-18px"></b-icon>
                 Logout
-            </b-dropdown-item> -->
-        <!-- </b-navbar-dropdown> -->
-      <b-dropdown v-if="isConnected" :triggers="['hover']" position="is-bottom-left" aria-role="menu">
-        <template #trigger>
-          <b-button
-            class="nav-btn"
-            :label="fmtdWalletAddress"
-            icon-right="menu-down" />
-        </template>
-          <b-dropdown-item custom aria-role="menuitem">
-              <center> Logged as <b> {{ fmtdWalletAddress }}</b> </center>
-          </b-dropdown-item>
-          <hr class="dropdown-divider">
-          <b-dropdown-item @click="openProfile" value="profile" aria-role="menuitem">
-              <b-icon icon="account-circle-outline" custom-size="mdi-18px"></b-icon>
-              Profile
-          </b-dropdown-item>
-          <b-dropdown-item @click="logout" value="logout" aria-role="menuitem">
-              <b-icon icon="logout-variant" custom-size="mdi-18px"></b-icon>
-              Logout
-          </b-dropdown-item>
-        </b-dropdown>
+            </b-dropdown-item>
+          </b-dropdown>
+        </center>
     </template>
   </b-navbar>
 </template>

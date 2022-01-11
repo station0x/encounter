@@ -6,40 +6,44 @@
                 alt="Station0x Encounter Logo"
                 class="main-logo"
             />
-            <div class="onboarding-wrapper">
-                <div v-if="!invitationLink">
-                    <div class="minor-text">Welcome to</div>
-                    <div class="major-text">Station ZeroX: Encounter</div>
+            <div class="art-wrap">
+                <div class="art-wrap-overlay">
+                    <div class="onboarding-wrapper">
+                        <div v-if="!invitationLink">
+                            <div class="minor-text">Welcome to</div>
+                            <div class="major-text">Station ZeroX: Encounter</div>
+                        </div>
+                        <div v-else>
+                            <div class="major-text">Send match link to challenge a friend</div>
+                            <div class="minor-text">The game will start as soon as your friend joins</div>
+                        </div>
+                        <h1 class="invitation-link" v-if="invitationLink">{{ invitationLink }}</h1>
+                        <div class="divider"></div>
+                        <b-button type="is-light" :disabled="findingMatchLoader" v-if="!invitationLink" :loading="createMatchLoader" class="primary-btn" @click="createMatch">Create Match</b-button>
+                        <b-tooltip 
+                            type="is-dark"
+                            :triggers="['hover']"
+                            auto-close>
+                            <template v-slot:content>
+                                Matchmake with available players
+                            </template>
+                            <b-button :loading="checkMatchLoader" type="is-light" v-if="!invitationLink" class="primary-btn" @click="triggerMatchmaking">{{ findingMatchLoader ? 'Leave Queue' : 'Find Match' }}</b-button>
+                        </b-tooltip>
+                        <b-tooltip 
+                            type="is-dark"
+                            :triggers="['click']"
+                            auto-close>
+                            <template v-slot:content>
+                                Link Copied!
+                            </template>
+                            <b-button v-if="invitationLink" v-clipboard:copy="linkPrefix + invitationLink" class="primary-btn">Copy Link</b-button>
+                        </b-tooltip>
+                        <div @click="openGameGuideModal" class="clickable-text" style="margin-top: 20 !important">Game Guide  <b-icon icon="alert-circle" size="is-small" style="margin-left: 5px; margin-top: -40px"></b-icon></div>
+                        <div class="info-text">This game is in alpha version and may contain bugs</div>
+                    </div>
                 </div>
-                <div v-else>
-                    <div class="major-text">Send match link to challenge a friend</div>
-                    <div class="minor-text">The game will start as soon as your friend joins</div>
-                </div>
-                <h1 class="invitation-link" v-if="invitationLink">{{ invitationLink }}</h1>
-                <div class="divider"></div>
-                <b-button type="is-light" :disabled="findingMatchLoader" v-if="!invitationLink" :loading="createMatchLoader" class="primary-btn" @click="createMatch">Create Match</b-button>
-                <b-tooltip 
-                    type="is-dark"
-                    :triggers="['hover']"
-                    auto-close>
-                    <template v-slot:content>
-                        Matchmake with available players
-                    </template>
-                    <b-button :loading="checkMatchLoader" type="is-light" v-if="!invitationLink" class="primary-btn" @click="triggerMatchmaking">{{ findingMatchLoader ? 'Leave Queue' : 'Find Match' }}</b-button>
-                </b-tooltip>
-                <b-tooltip 
-                    type="is-dark"
-                    :triggers="['click']"
-                    auto-close>
-                    <template v-slot:content>
-                        Link Copied!
-                    </template>
-                    <b-button v-if="invitationLink" v-clipboard:copy="linkPrefix + invitationLink" class="primary-btn">Copy Link</b-button>
-                </b-tooltip>
-                <div @click="openGameGuideModal" class="clickable-text" style="margin-top: 20 !important">Game Guide  <b-icon icon="alert-circle" size="is-small" style="margin-left: 5px; margin-top: -40px"></b-icon></div>
-                <div class="info-text">This game is in alpha version and may contain bugs</div>
             </div>
-            <b-progress v-if="findingMatchLoader" type="is-dark" :rounded="false" style="width: 750px; margin-top: -10px" size="is-small"></b-progress>
+            <b-progress class="mmr-progressbar" v-if="findingMatchLoader" type="is-dark" :rounded="false" size="is-small"></b-progress>
         </center>
     </div>
 </template>

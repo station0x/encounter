@@ -70,7 +70,7 @@ export default {
         },
         async submitName () {
             if(this.newName.length > 0) {
-                this.loading = true;
+                this.loading = true
                 try {
                     const res = await axios.get('/api/player/changePlayerAlias', {
                         params:{

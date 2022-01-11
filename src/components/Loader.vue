@@ -1,8 +1,12 @@
 <template>
-    <div class="loader-wrapper">
-        <center class="loader-wrapper">
-            <img class="elementToFadeInAndOut" :src="loader" width="120px"/>
-        </center>
+    <div class="hero is-fullheight">
+        <div class="hero-body">
+            <div class="container has-text-centered">
+                <center class="loader-wrapper">
+                    <img class="elementToFadeInAndOut" :src="loader" width="120px"/>
+                </center>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -19,15 +23,9 @@ export default {
 
 <style scoped>
 .loader-wrapper {
-    height: 100vh;
-    width: 100vw;
-    line-height: 100vh;
-    vertical-align: middle;
     transition: 400ms ease-in-out;
 }
 .elementToFadeInAndOut {
-    /* width:200px;
-    height: 200px; */
     background: black;
     -webkit-animation: fadeinout 1.5s linear forwards;
     animation: fadeinout 1.5s linear forwards;
