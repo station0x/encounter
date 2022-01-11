@@ -1,17 +1,190 @@
 <template>
 	<div class="main-wrapper">
-		<div class="loader-wrapper" v-if="boardLoading">
-			<Loader v-model="boardLoading"/>
-		</div>
-		<div class="left">
-			<EnemyCard @endEnemyTurn="endEnemyTurn" :playerAddress="enemyAddress" :fuel="enemyFuel" :lastTurnTimestamp="lastTurnTimestamp" :isEnemyTurn="!isMyTurn" :playerAlias="enemyAlias"/>
-			<div class="chat-wrapper">					
-				<div class="logs-tabs">
-					<b-tabs v-model="tabsModel" @input="tabClicked" expanded class="logs-tabs">
-						<b-tab-item value="logs" class="logs-tabs">
+		<div class="columns m-0 board-grid">
+			<div class="column left p-0" :class="{'no-right-border': $store.getters.isMobile}">
+				<EnemyCard @endEnemyTurn="endEnemyTurn" :playerAddress="enemyAddress" :fuel="enemyFuel" :lastTurnTimestamp="lastTurnTimestamp" :isEnemyTurn="!isMyTurn" :playerAlias="enemyAlias"/>
+				<div v-if="!$store.getters.isMobile" class="chat-wrapper">					
+					<div class="logs-tabs">
+						<b-tabs v-model="tabsModel" @input="tabClicked" expanded class="logs-tabs">
+							<b-tab-item value="logs" >
+								<template #header>
+									<b-icon icon="information-outline"></b-icon>
+									<span> Game Log <b-tag v-if="newLogs !== 0" type="is-dark" rounded style="margin-left:6px"> {{ newLogs }} </b-tag> </span>
+								</template>
+								<div id="action-logs">
+									<div v-for="(msg, key) in sortedLogs" :key="key">
+										<div v-if="msg.playerNo === playerIs" class="chat-message" :style="{'color': (sortedLogs.length - 1) - key < newLogs ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.5)'}">
+											{{formatAction(msg)}}
+										</div>
+										<div v-else-if="msg.playerNo !== playerIs" class="chat-message" :style="{'color': (sortedLogs.length - 1) - key < newLogs ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.5)'}">
+											{{formatAction(msg)}}
+										</div>
+									</div>
+								</div>
+							</b-tab-item>
+							<b-tab-item value="chat" class="logs-tabs">
+								<template #header>
+									<b-icon icon="forum"></b-icon>
+									<span> Chat <b-tag v-if="newChats !== 0" type="is-link is-light" rounded style="margin-left:6px"> {{ newChats }} </b-tag> </span>
+								</template>
+								<div id="chat-logs">
+									<div v-for="(msg, key) in sortedChats" :key="key">
+										<div v-if="msg.msg" class="chat-message">
+											<span v-if="msg.playerNo === playerIs" :class="{'newEle-left': (sortedChats.length - 1) - key < newChats}" style="color: #416BFF">You: </span>
+											<span v-else :class="{'newEle-left': (sortedChats.length - 1) - key < newChats}" style="color: #C72929">Enemy: </span>
+																					
+											<span :class="{'newEle-right': (sortedChats.length - 1) - key < newChats}"> {{msg.msg}} </span>
+										</div>
+									</div>
+								</div>
+							</b-tab-item>
+						</b-tabs>
+					</div>
+					<div class="chat-input">
+						<b-field>
+							<!-- <b-input @focus="chatMessage = ''" v-model="chatMessage" :custom-class="{'chat-textarea': true, 'chat-placeholder-color': chatMessage === 'Please be nice in chat!'}" size="is-small" expanded></b-input> -->
+							<b-input v-on:keyup.native.enter="sendMessage" v-model="chatMessage" custom-class="chat-textarea" size="is-small" expanded></b-input>
+							<p class="control">
+								<b-button class="chat-btn" @click="sendMessage" label="Send"></b-button>
+							</p>
+						</b-field>
+					</div>
+				</div>
+			</div>
+			<div class="column is-narrow middle p-0">
+				<div class="hex-grid-container">
+					<div id="hex-grid" :style="gridProps" :class="{rotate: playerIs === 1}">
+						<div class="row" v-for="(row, y) in ourState" :key="y">
+							<div @mouseover="hovered = {x,y}" @click="select(col, x, y)" :class="{
+								'col': true, 
+								'hoverable-movable': col.type !== 'base' && col.owner === playerIs && !isLegalRepair(x,y),
+								'hoverable-attackable': isLegalAttack(x,y),
+								'hoverable-repairabe': isLegalRepair(x,y),
+								'hoverable-approachable': isLegalMove(x,y)
+								}" v-for="(col, x) in row" :key="x" :style="gridProps">
+								<!-- <img v-if="selected !== undefined && ourState[selected.y][selected.x].type === 'carrier' && isLegalRepair(x,y)" :class="hexClasses(x,y)" src="green-hex.png" height="80px"/>
+								<img v-else-if="selected !== undefined && ourState[selected.y][selected.x].type !== 'carrier' && isLegalAttack(x,y)" :class="hexClasses(x,y)" src="red-hex.png" height="80px"/>
+								<img v-else :class="hexClasses(x,y)" src="hex.png" height="80px"/> -->
+								<img :class="hexClasses(x,y)" :src="hexImg(x,y)" height="80px" :style="gridProps"/> 
+								<img :class="pieceClasses(col.owner, x, y)" :src="col.img" :style="gridProps"/>
+								<img v-if="isLegalMove(x,y)" class="move-circle" src="circle.png"/>
+								<!-- <div v-if="col.type" class="tooltip">
+									<div class="spaceship-type">{{ col.type }}</div>
+									<span class="attribute" v-for="(value, key) in getSpaceshipAttributes(col)" :key="key">
+									{{key}}: {{value}}
+									</span>
+								</div> -->
+							</div>
+						</div>
+					</div>
+				</div>
+				<div v-if="!$store.getters.isMobile" @click="openGameGuideModal" class="clickable-text" style="text-align: center; color: #F98F09; width: fit-content; margin: 0 auto; margin-top: 30px;">Game Guide  <b-icon icon="alert-circle" size="is-small" style="margin-left: 5px; margin-top: -40px"></b-icon></div>
+			</div>
+			<div class="column right p-0">
+				<div v-if="!$store.getters.isMobile" class="spaceship-stats">
+					<center v-if="spaceshipStats.type === 'base'" style="margin-top: 25%">
+						<img class="spaceship-img" :src="spaceshipStats.img"/>
+						<h1 class="spaceship-type" :style="{color: spaceshipStats.owner === this.playerIs ? '#416BFF' : '#C72929'}">{{spaceshipStats.type}}</h1>
+					</center>
+					<center v-else>
+						<img class="spaceship-img" :src="spaceshipStats.img"/>
+						<h1 class="spaceship-type" :style="{color: spaceshipStats.owner === this.playerIs ? '#416BFF' : '#C72929'}">{{spaceshipStats.type}}</h1>
+					</center>
+					<b-progress 
+						v-if="spaceshipStats.type"
+						class="hp-progress"
+						:type="spaceshipStats.hpColor" 
+						:value="spaceshipStats.hp"
+						:max="spaceshipStats.maxHp"
+						show-value>
+						<h1 class="progressbar-text">HP:  {{spaceshipStats.hp}} / {{ spaceshipStats.maxHp}}</h1>
+					</b-progress>
+					<h1 v-if="spaceshipStats.type !== 'base'" style="color: white; font-size: 17px; text-align: left; margin: 0px 20px 10px 20px;font-family: 'ClashDisplay-Variable';">Abilities</h1>
+					<div v-if="spaceshipStats.type !== 'base'" class="ability move">
+						<img class="ability-icon" :src="moveIcon"/>
+						<div class="ability-text" style="color: #EFC97F">Move</div>
+						<span class="energy-ability">{{spaceshipStats.moveCost}}</span>
+						<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
+					</div>
+					<div v-if="spaceshipStats.type !== 'carrier' && spaceshipStats.type !== 'base'" class="ability attack">
+						<img class="ability-icon" :src="attackIcon"/>
+						<div class="ability-text" style="color: #FF4949">Attack {{spaceshipStats.attack}}</div>
+						<span class="attack-ability">{{spaceshipStats.attackCost}}</span>
+						<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
+					</div>
+					<div v-if="spaceshipStats.type === 'carrier' && spaceshipStats.type !== 'base'" class="ability repair">
+						<img class="ability-icon" :src="repairIcon"/>
+						<div class="ability-text" style="color: #348227">Repair 25%</div>
+						<span class="attack-ability">{{spaceshipStats.repairCost}}</span>
+						<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
+					</div>
+				</div>
+				<PlayerCard @endTurn="endTurn" @surrender="surrender" :playerAddress="$store.state.address" :fuel="myFuel" :lastTurnTimestamp="lastTurnTimestamp" :isMyTurn="isMyTurn" :playerAlias="playerAlias"/>
+				<div v-if="$store.getters.isMobile">
+					<b-tabs v-model="tabsModel" @input="tabClicked" expanded size="is-small" position="is-centered" class="block mobile-tabs">
+						<b-tab-item value="radar">
 							<template #header>
-								<b-icon icon="information-outline"></b-icon>
-								<span> Game Log <b-tag v-if="newLogs !== 0" type="is-dark" rounded style="margin-left:6px"> {{ newLogs }} </b-tag> </span>
+								<b-icon custom-size="mdi-18px" icon="radar"></b-icon>
+								<span> Radar </span>
+							</template>
+							<div id="radar">
+								<div v-if="$store.getters.isMobile" class="spaceship-stats">
+									<div class="columns is-mobile m-0" style="min-height: 100%">
+										<div class="column is-3" style="padding: 0.7rem">
+											<center>
+												<img class="spaceship-img" :src="spaceshipStats.img"/>
+											</center>
+											<b-progress 
+												v-if="spaceshipStats.type"
+												class="hp-progress"
+												:type="spaceshipStats.hpColor" 
+												:value="spaceshipStats.hp"
+												size="is-small"
+												:max="spaceshipStats.maxHp">
+											</b-progress>
+											<h1 class="progressbar-outer-text">HP:  {{spaceshipStats.hp}} / {{ spaceshipStats.maxHp}}</h1>
+										</div>
+										<div class="column is-5" style="padding: 0">
+											<h1 class="spaceship-type" :style="{color: spaceshipStats.owner === this.playerIs ? '#416BFF' : '#C72929'}">{{spaceshipStats.type}}</h1>
+											<p class="spaceships-desc">{{spaceshipStats.desc}}</p>
+										</div>
+										<div class="column is-4" style="padding: 0.4rem">
+											<div v-if="spaceshipStats.type !== 'base'" class="info-card">
+												<center>
+													<img class="info-card-icon" :src="moveInfoIcon" />
+													<h1 class="info-card-text"> Moving </h1>
+													<span :myTurn="!isMyTurn" class="info-card-energy">-{{spaceshipStats.moveCost}}</span>
+													<img :myTurn="!isMyTurn" class="info-card-energy-icon" src="/energy.svg" width="23px"/>
+												</center>
+											</div>
+											<div v-if="spaceshipStats.type !== 'carrier' && spaceshipStats.type !== 'base'" class="info-card">
+												<center>
+													<img class="info-card-icon" :src="attackInfoIcon" />
+													<p class="info-card-attack-number">{{ spaceshipStats.attack }}</p>
+													<h1 class="info-card-text"> Attacking </h1>
+													<span :myTurn="!isMyTurn" class="info-card-energy">-{{spaceshipStats.attackCost}}</span>
+													<img :myTurn="!isMyTurn" class="info-card-energy-icon" src="/energy.svg" width="23px"/>
+												</center>
+											</div>
+											<div v-if="spaceshipStats.type === 'carrier' && spaceshipStats.type !== 'base'" class="info-card">
+												<center>
+													<img class="info-card-icon" :src="repairInfoIcon" />
+													<p class="info-card-repair-number">25%</p>
+													<h1 class="info-card-text"> Repairing </h1>
+													<span :myTurn="!isMyTurn" class="info-card-energy">-{{spaceshipStats.repairCost}}</span>
+													<img :myTurn="!isMyTurn" class="info-card-energy-icon" src="/energy.svg" width="23px"/>
+												</center>
+											</div>
+											<div class="info-card"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</b-tab-item>
+						<b-tab-item value="logs" >
+							<template #header>
+								<b-icon custom-size="mdi-18px" icon="information-outline"></b-icon>
+								<span> Game Log <b-tag v-if="newLogs !== 0" type="is-link is-light" rounded style="margin-left:6px"> {{ newLogs }} </b-tag> </span>
 							</template>
 							<div id="action-logs">
 								<div v-for="(msg, key) in sortedLogs" :key="key">
@@ -26,7 +199,7 @@
 						</b-tab-item>
 						<b-tab-item value="chat" class="logs-tabs">
 							<template #header>
-								<b-icon icon="forum"></b-icon>
+								<b-icon custom-size="mdi-18px" icon="forum"></b-icon>
 								<span> Chat <b-tag v-if="newChats !== 0" type="is-link is-light" rounded style="margin-left:6px"> {{ newChats }} </b-tag> </span>
 							</template>
 							<div id="chat-logs">
@@ -40,83 +213,36 @@
 								</div>
 							</div>
 						</b-tab-item>
+						<b-tab-item value="menu" class="logs-tabs">
+							<template #header>
+								<b-icon custom-size="mdi-24px" icon="menu"></b-icon>
+							</template>
+							<div id="menu">
+								<center>
+									<a @click="openLeaderboard" class="button nav-btn">
+										Leaderboard
+									</a>
+									<a @click="openProfile" class="button nav-btn">
+										Profile
+									</a>
+								</center>
+								<center>
+									<a @click="confirmSurrender" class="button surrender">Surrender</a>
+								</center>
+							</div>
+						</b-tab-item>
 					</b-tabs>
-				</div>
-				<div class="chat-input">
-					<b-field>
-						<!-- <b-input @focus="chatMessage = ''" v-model="chatMessage" :custom-class="{'chat-textarea': true, 'chat-placeholder-color': chatMessage === 'Please be nice in chat!'}" size="is-small" expanded></b-input> -->
-						<b-input v-on:keyup.native.enter="sendMessage" v-model="chatMessage" custom-class="chat-textarea" size="is-small" expanded></b-input>
-						<p class="control">
-							<b-button class="chat-btn" @click="sendMessage" label="Send"></b-button>
-						</p>
-					</b-field>
-				</div>
-			</div>
-		</div>
-		<div class="middle">
-			<div class="hex-grid-container">
-				<div id="hex-grid" :class="{rotate: playerIs === 1}">
-					<div class="row" v-for="(row, y) in ourState" :key="y">
-						<div @mouseover="hovered = {x,y}" @click="select(col, x, y)" :class="{
-							'col': true, 
-							'hoverable-movable': col.type !== 'base' && col.owner === playerIs && !isLegalRepair(x,y),
-							'hoverable-attackable': isLegalAttack(x,y),
-							'hoverable-repairabe': isLegalRepair(x,y),
-							'hoverable-approachable': isLegalMove(x,y)
-							}" v-for="(col, x) in row" :key="x">
-							<!-- <img v-if="selected !== undefined && ourState[selected.y][selected.x].type === 'carrier' && isLegalRepair(x,y)" :class="hexClasses(x,y)" src="green-hex.png" height="80px"/>
-							<img v-else-if="selected !== undefined && ourState[selected.y][selected.x].type !== 'carrier' && isLegalAttack(x,y)" :class="hexClasses(x,y)" src="red-hex.png" height="80px"/>
-							<img v-else :class="hexClasses(x,y)" src="hex.png" height="80px"/> -->
-							<img :class="hexClasses(x,y)" :src="hexImg(x,y)" height="80px"/> 
-							<img :class="pieceClasses(col.owner, x, y)" :src="col.img"/>
-							<img v-if="isLegalMove(x,y)" class="move-circle" src="circle.png"/>
-							<!-- <div v-if="col.type" class="tooltip">
-								<div class="spaceship-type">{{ col.type }}</div>
-								<span class="attribute" v-for="(value, key) in getSpaceshipAttributes(col)" :key="key">
-								{{key}}: {{value}}
-								</span>
-							</div> -->
-						</div>
+					<div v-if="tabsModel === 'chat'" class="chat-input">
+						<b-field>
+							<!-- <b-input @focus="chatMessage = ''" v-model="chatMessage" :custom-class="{'chat-textarea': true, 'chat-placeholder-color': chatMessage === 'Please be nice in chat!'}" size="is-small" expanded></b-input> -->
+							<b-input v-on:keyup.native.enter="sendMessage" v-model="chatMessage" custom-class="chat-textarea" size="is-small" expanded></b-input>
+							<p class="control">
+								<b-button class="chat-btn" @click="sendMessage" label="Send"></b-button>
+							</p>
+						</b-field>
 					</div>
 				</div>
 			</div>
-			<div @click="openGameGuideModal" class="clickable-text" style="margin-top: 110px; text-align: center; color: #F98F09; width: fit-content; margin: 0 auto">Game Guide  <b-icon icon="alert-circle" size="is-small" style="margin-left: 5px; margin-top: -40px"></b-icon></div>
-		</div>
-		<div class="right">
-			<div v-if="spaceshipStats.type" class="spaceship-stats">
-				<center>
-					<img class="spaceship-img" :src="spaceshipStats.img"/>
-					<h1 class="spaceship-type" :style="{color: spaceshipStats.owner === this.playerIs ? '#416BFF' : '#C72929'}">{{spaceshipStats.type}}</h1>
-				</center>
-				<b-progress 
-					class="hp-progress"
-					:type="spaceshipStats.hpColor" 
-					:value="spaceshipStats.hp"
-					:max="spaceshipStats.maxHp"
-					show-value>
-					<h1 class="progressbar-text">HP:  {{spaceshipStats.hp}} / {{ spaceshipStats.maxHp}}</h1>
-				</b-progress>
-				<h1 v-if="spaceshipStats.type !== 'base'" style="color: white; font-size: 17px; text-align: left; margin: 0px 20px 10px 20px;font-family: 'ClashDisplay-Variable';">Abilities</h1>
-				<div v-if="spaceshipStats.type !== 'base'" class="ability move">
-					<img class="ability-icon" :src="moveIcon"/>
-					<div class="ability-text" style="color: #EFC97F">Move</div>
-					<span class="energy-ability">{{spaceshipStats.moveCost}}</span>
-					<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
-				</div>
-				<div v-if="spaceshipStats.type !== 'carrier' && spaceshipStats.type !== 'base'" class="ability attack">
-					<img class="ability-icon" :src="attackIcon"/>
-					<div class="ability-text" style="color: #FF4949">Attack {{spaceshipStats.attack}}</div>
-					<span class="attack-ability">{{spaceshipStats.attackCost}}</span>
-					<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
-				</div>
-				<div v-if="spaceshipStats.type === 'carrier' && spaceshipStats.type !== 'base'" class="ability repair">
-					<img class="ability-icon" :src="repairIcon"/>
-					<div class="ability-text" style="color: #348227">Repair 25%</div>
-					<span class="attack-ability">{{spaceshipStats.repairCost}}</span>
-					<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
-				</div>
-			</div>
-			<PlayerCard @endTurn="endTurn" @surrender="surrender" :playerAddress="$store.state.address" :fuel="myFuel" :lastTurnTimestamp="lastTurnTimestamp" :isMyTurn="isMyTurn" :playerAlias="playerAlias"/>
 		</div>
 	</div>
 	<!-- <b-button v-if="isMyTurn" @click="endTurn">End Turn</b-button>
@@ -129,7 +255,6 @@ import CONSTANTS from "../../constants.json"
 import PlayerCard from "@/components/PlayerCard.vue"
 import EnemyCard from "@/components/EnemyCard.vue"
 import GameGuide from '@/components/GameGuide.vue'
-import Loader from '@/components/Loader.vue'
 import arraySort from 'array-sort'
 
 export default {
@@ -168,62 +293,69 @@ export default {
 		},
 		moveIcon: require('../assets/img/moveIcon.svg'),
 		attackIcon: require('../assets/img/attackIcon.svg'),
-		repairIcon: require('../assets/img/repairIcon.svg')
+		repairIcon: require('../assets/img/repairIcon.svg'),
+		blankImg: require('../assets/img/blank.gif'),
+		attackInfoIcon: require('../assets/img/attack-info.svg'),
+		moveInfoIcon: require('../assets/img/move-info.svg'),
+		repairInfoIcon: require('../assets/img/repair-info.svg')
 	}
   },
   components: {
 		PlayerCard,
-		EnemyCard,
-		Loader
+		EnemyCard
   },
   computed:{
-	  ourState () {
-		  if(!this.state) return []
-		  return this.state.map(row => {
-			  return row.map(col => {
-				if(col.owner === this.playerIs) {
-					if(col.type === "base") {
-						col.img = this.blue.base
-					}
-					else if(col.type == "fighter") {
-						col.img = this.blue.fighter
-					}
-					else if(col.type == "scout") {
-						col.img = this.blue.scout
-					}
-					else if(col.type == "destroyer") {
-						col.img = this.blue.destoyer
-					}
-					else if(col.type == "carrier") {
-						col.img = this.blue.carrier
-					}
-					else if(col.type == "gunship") {
-						col.img = this.blue.gunship
-					}
-				} else if (col.owner !== this.playerIs) {
-					if(col.type === "base") {
-						col.img = this.red.base
-					}
-					else if(col.type == "fighter") {
-						col.img = this.red.fighter
-					}
-					else if(col.type == "scout") {
-						col.img = this.red.scout
-					}
-					else if(col.type == "destroyer") {
-						col.img = this.red.destoyer
-					}
-					else if(col.type == "carrier") {
-						col.img = this.red.carrier
-					}
-					else if(col.type == "gunship") {
-						col.img = this.red.gunship
-					}
+	ourState () {
+		if(!this.state) return []
+		return this.state.map(row => {
+			return row.map(col => {
+			if(col.owner === this.playerIs) {
+				if(col.type === "base") {
+					col.img = this.blue.base
 				}
-				return col
-			  })
-		  })
-	  },
+				else if(col.type == "fighter") {
+					col.img = this.blue.fighter
+				}
+				else if(col.type == "scout") {
+					col.img = this.blue.scout
+				}
+				else if(col.type == "destroyer") {
+					col.img = this.blue.destoyer
+				}
+				else if(col.type == "carrier") {
+					col.img = this.blue.carrier
+				}
+				else if(col.type == "gunship") {
+					col.img = this.blue.gunship
+				} else {
+					col.img = this.blankImg
+				}
+			} else if (col.owner !== this.playerIs) {
+				if(col.type === "base") {
+					col.img = this.red.base
+				}
+				else if(col.type == "fighter") {
+					col.img = this.red.fighter
+				}
+				else if(col.type == "scout") {
+					col.img = this.red.scout
+				}
+				else if(col.type == "destroyer") {
+					col.img = this.red.destoyer
+				}
+				else if(col.type == "carrier") {
+					col.img = this.red.carrier
+				}
+				else if(col.type == "gunship") {
+					col.img = this.red.gunship
+				} else {
+					col.img = this.blankImg
+				}
+			}
+			return col
+			})
+		})
+	},
 	sortedLogs() {
 		return arraySort([...this.log], 'index')
 	},
@@ -237,20 +369,25 @@ export default {
 	},
 	playerAlias() {
 		if(this.playerProfile !== undefined) {
-			return this.playerProfile.playerAlias.length !== 0 ? this.playerProfile.playerAlias : 'You'
+			if (this.playerProfile.playerAlias === undefined) return 'You'
+			else return this.playerProfile.playerAlias.length > 0 ? this.playerProfile.playerAlias : 'You'
 		} else return 'You'
 	},
 	enemyAlias() {
+		console.log(this.enemyProfile)
 		if(this.enemyProfile !== undefined) {
-			return this.enemyProfile.playerAlias.length !== 0 ? this.enemyProfile.playerAlias : 'Enemy'
+			if (this.enemyProfile.playerAlias === undefined) return 'Enemy'
+			else return this.enemyProfile.playerAlias > 0 ?  this.enemyProfile.playerAlias : 'Enemy'
 		} else return 'Enemy'
 	},
 	spaceshipStats() {
+		let piece
 		  if(this.hovered === undefined){
-			  return {}
+			  piece = this.ourState[8][4]
+		  } else {
+			  piece = this.ourState[this.hovered.y][this.hovered.x]
 		  }
-		  const piece = this.ourState[this.hovered.y][this.hovered.x]
-		  if(!piece.type) return {}
+		  if(!piece.type) piece = this.ourState[8][4]
 		  piece.maxHp = CONSTANTS.spaceshipsAttributes[piece.type].hp
 		  piece.attack = CONSTANTS.spaceshipsAttributes[piece.type].attack
 		  piece.moveCost = CONSTANTS.spaceshipsAttributes[piece.type].moveFuelCost
@@ -403,6 +540,17 @@ export default {
 	  },
 	  enemyFuel () {
 		  return this.playerIs === 0? this.fuel1: this.fuel0
+	  },
+	  gridProps() {
+		let styles = {}
+		if(this.$store.getters.innerWidth > 769) {
+			styles['--scale'] = 1.03
+		}
+		else {
+			styles['--scale'] = this.$store.getters.innerWidth / 895
+		}
+		styles['--factor'] = 0.9 * styles['--scale']
+		return styles
 	  }
   },
   methods: {
@@ -414,6 +562,16 @@ export default {
             })
             isEnemy ? this.enemyProfile = res.data.playerDoc : this.playerProfile = res.data.playerDoc
         },
+		confirmSurrender() {
+            this.$buefy.dialog.confirm({
+                title: 'Surrender',
+                message: 'Are you sure you want to surrender? This action cannot be undone.',
+                confirmText: 'Surrender',
+                type: 'is-danger',
+                hasIcon: true,
+                onConfirm: () => this.surrender()
+            })
+        },
 	  	surrender() {
 			const winner = this.playerIs === 0 ? 1 : 0
 			this.$store.commit('setWinner', winner)
@@ -424,6 +582,14 @@ export default {
 				}
 			}))
 		},
+		openProfile() {
+          let routeData = this.$router.resolve({ name: 'Player Profile', params: { playerAddress: this.$store.state.address } })
+          window.open(routeData.href, '_blank')
+        },
+        openLeaderboard() {
+          let routeData = this.$router.resolve({ name: 'Leaderboard' })
+          window.open(routeData.href, '_blank')
+        },
 		hexImg(x, y) {
 			if(this.selected) {
 				if(this.ourState[this.selected.y][this.selected.x].type === "carrier" && this.isLegalRepair(x, y)) {
@@ -580,6 +746,12 @@ export default {
 		return classes
 	  },
 	  select(piece, x, y) {
+		  if(this.$store.getters.isMobile) {
+			if(piece.type) {
+				this.tabsModel = undefined
+				this.hovered = {x,y}
+			}
+		  }
 		  if(!this.isMyTurn) return
 		  if(piece.type) { // if column contains a piece
 			  if(piece.owner === this.playerIs){ // if piece is mine
@@ -714,7 +886,6 @@ export default {
 		},
 	  "$store.state.matchState" (newState, oldState) {
 		if(newState.log.length !== oldState.log.length) {
-			console.log(newState.log[newState.log.length - 1].action)
 			if(newState.log[newState.log.length - 1].action === 'attack') {
 				this.playSound(this.shotSfx)
 			} else if(newState.log[newState.log.length - 1].action === 'repair') {
@@ -728,43 +899,46 @@ export default {
 	}
   },
   async created() {
-	  this.boardLoading = true
-
-	  try {
-		await Promise.all([
-			this.fetchProfile(this.$store.state.address, false),
-			this.fetchProfile(this.enemyAddress, true)
-		])
-	  } finally {
-		this.boardLoading = false
-	  }
+	// this.boardLoading = true
+	// try {
+	await Promise.all([
+		this.fetchProfile(this.$store.state.address, false),
+		this.fetchProfile(this.enemyAddress, true)
+	])
+	// } finally {
+	// 	this.boardLoading = false
+	// }
   }
 }
 </script>
 
 <style>
 :root {
-	--scale: 0.87;
+	--factor: calc(0.9 * var(--scale));
+	--board-to-window-ratio: 0.575;
 	--parcel-height: 120px;
-	--parcelNumber: 9;
+	--parcel-number: 9;
+	--parcel-width: calc(0.85 * var(--parcel-height));
+	--parcel-pyramid-height: calc((var(--parcel-height) - 46px) / 2); 
 }
 h1 {
 	margin: 0;
 }
 #hex-grid {
-    width: fit-content;
+    width: calc(var(--parcel-width) * var(--parcel-number));
     margin: auto;
 }
 .hex-grid-container {
-	transform: translateX(calc(((var(--scale) * (var(--parcel-height) * var(--scale))) / 4) * (-1)))
+	transform: translate(calc(((var(--factor) * (var(--parcel-width))) / 2.2)));
+	width: calc(var(--parcel-width) * var(--parcel-number));
 }
 .row {
 	display: block;
 }
 .row:nth-child(even) {
-	transform:translateX(calc(52.5px * var(--scale)));
-	margin-top: calc(-36.4px * var(--scale));
-	margin-bottom: calc(-36.4px * var(--scale));
+	transform:translateX(calc((var(--parcel-width) / 2) * var(--factor) + ((0.7px * var(--scale)) / var(--factor)) ));
+	margin-top: calc((var(--parcel-pyramid-height) * var(--factor) * -1) - ((1.8px * var(--scale)) / var(--factor))  );
+	margin-bottom: calc((var(--parcel-pyramid-height) * var(--factor) * -1) - ((1.5px * var(--scale)) / var(--factor))  );
 }
 .col {
 	display: inline;
@@ -774,11 +948,11 @@ h1 {
 .hex-parcel {
 	/* filter:invert(); */
 	opacity: 0.65;
-	height: calc(var(--parcel-height) * var(--scale));
+	height: calc(var(--parcel-height) * var(--factor));
 	cursor: pointer;
 }
 .hoverable-movable:hover .hex-parcel {
-	filter:invert();
+	filter: invert();
 	opacity: 1;
 }
 /* .hoverable-attackable {
@@ -792,11 +966,12 @@ h1 {
 }
 .hoverable-approachable {
 	filter: brightness(2);
-	opacity:1;
+	opacity: 1;
 }
 .spaceship-stats {
-	margin: 0 auto;
+	/* margin: 0 auto; */
 	padding: 10px;
+	height: 46%;
 }
 .spaceship-type {
 	color: #416BFF;
@@ -815,6 +990,11 @@ h1 {
 	color: black; 
 	font-size: 12px; 
 	font-weight: 500;
+}
+.progressbar-outer-text {
+	font-size: 10px; 
+	font-weight: 500;
+	margin-left: 3px;
 }
 .ability {
 	box-sizing: border-box;
@@ -873,29 +1053,6 @@ h1 {
 	height: 17px;
 	display: inline-block;
 }
-/* .col .tooltip {
-    visibility: hidden;
-    width: 270px;
-    background-color: black !important;
-    color: #fff;
-    text-align: center;
-    padding: 5px 0;
-    position: absolute;
-    left: -80px;
-    border-radius: 5px;
-    border: 1px solid white;
-	opacity: 1;
-    height: 300px;
-    padding: 20px;
-	z-index: 10;
-}
-.bottomTooltip {
-	bottom: 125px;
-}
-.topTooltip {
-	bottom: 0px;
-	transform: translateY(150px);
-} */
 /* Show the tooltip text when you mouse over the tooltip container */
 .col:hover .tooltip {
   visibility: visible;
@@ -903,16 +1060,15 @@ h1 {
 .col-piece {
 	position: absolute;
 	opacity: 1 !important;
-	left: calc(18.75px * var(--scale));
-	bottom: calc(26.25px * var(--scale));
-	height: calc(67.5px * var(--scale));
+	left: calc(20px * var(--factor));
+	bottom: calc(32.25px * var(--factor));
+	height: calc(60.5px * var(--factor));
 }
-
 .move-circle {
 	position: absolute;
-	left: calc(30px * var(--scale));
-	bottom: calc(40px * var(--scale));
-	height: calc(45px * var(--scale));
+	left: calc(30px * var(--factor));
+	bottom: calc(40px * var(--factor));
+	height: calc(45px * var(--factor));
 	opacity: 0.3 !important;
 }
 .selected {
@@ -934,53 +1090,28 @@ h1 {
 }
 .main-wrapper {
 	border: 1px solid #303030;
-	height: 830px;
-	display: flex;
-	flex-direction: row;
-	flex-wrap: nowrap;
-	justify-content: space-between;
-	align-items: stretch;
-	/* padding-top: 7.5vh; */
-}
-.left, .right {
-	flex-grow: 0;
-   	flex-shrink: 0;
-	flex-basis: 21.8%;
-	position: relative;
+
 }
 .middle {
-	flex-grow: 1;
-   	flex-shrink: 0;
-	order: 2;
 	padding: 40px 0;
 }
 .left {
-	order: 1;
 	border-right: 1px solid #303030;
 }
 .right {
-	order: 3;
 	border-left: 1px solid #303030;
 }
 .chat-wrapper {
-	height: 52%;
-    width: 100%;
-    bottom: 0;
-    position: absolute;
-	padding: 20px;
+	height: 47.4%;
 }
 .chat-input {
 	height: 55px;
-	width: 100%;
-	bottom: 0;
-	position: absolute;
-	left: 0;
 }
 .chat-btn {
 	background: black !important;
 	border-radius: 0px !important;
     border-top: 1px solid #303030 !important;
-	border-right: 1px solid #303030 !important;
+	border-right: 1px solid black !important;
 	border-bottom: 1px solid #303030 !important;
 	border-left: none !important;
 	height: 55px !important;
@@ -1028,7 +1159,7 @@ input[placeholder], [placeholder], *[placeholder] {
 }
 .logs-tabs {
 	height: 100%;
-	padding-bottom: 10px;
+	padding: 10px;
 }
 .b-tabs .tab-content {
 	height: 100% !important;
@@ -1065,6 +1196,15 @@ img {
   height: 100vh;
   width: 100vw;
 }
+.no-right-border {
+	border-right: none;
+}
+.mobile-tabs {
+	padding-top: 2px;
+}
+
+
+
 /* tabs customization */
 .tabs ul {
 	border-bottom-color: #303030 !important;

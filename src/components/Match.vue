@@ -1,15 +1,19 @@
 <template>
     <div>
         <div v-if="onboarding && this.$store.state.matchState.turnNum === 1 && this.$store.state.matchState.winner === null" class="onboarding-animation">
-            <center>
-                <div class="wrapper">
-                    <div class="paragraph para-1">The year is 2{{getRandomInt(100,999)}}</div>
-                    <div class="paragraph para-2">Location: Skvorc industrial region</div>
-                    <div class="paragraph para-3">Juperian fleet #{{getRandomInt(100,999)}} is securing nearby Plutonium miners</div>
-                    <div class="paragraph para-4">Unidentified hostiles are approaching at high speed</div>
-                    <div class="skip-btn" @click="onboarding=false">Skip</div>
+            <div class="hero is-fullheight">
+                <div class="hero-body">
+                    <div class="container has-text-centered">
+                        <center class="loader-wrapper">
+                            <div class="paragraph para-1">The year is 2{{getRandomInt(100,999)}}</div>
+                            <div class="paragraph para-2">Location: Skvorc industrial region</div>
+                            <div class="paragraph para-3">Juperian fleet #{{getRandomInt(100,999)}} is securing nearby Plutonium miners</div>
+                            <div class="paragraph para-4">Unidentified hostiles are approaching at high speed</div>
+                            <div class="skip-btn" @click="onboarding=false">Skip</div>
+                        </center>
+                    </div>
                 </div>
-            </center>
+            </div>
         </div>
         <div class="match-wrapper">
             <!-- <b-button v-if="soundisOn" @click="soundOff" class="sound-btn" icon-right="volume-high"></b-button>
@@ -151,6 +155,7 @@ export default {
 }
 .match-wrapper {
     margin: 0 auto;
+    max-width: 1500px;
 }
 .onboarding-animation {
     background: black;
@@ -206,14 +211,10 @@ export default {
     font-size: 21px;
     color: rgba(255,255,255,.3);
     cursor: pointer;
-    position: absolute;
-    bottom: 5vh;
-    right: 10vh;
     text-transform: uppercase;
 }
 .skip-btn:hover {
     color: white;
-    border-bottom: 1px solid white;
 }
 
 @keyframes fadeInOpacity {

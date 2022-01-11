@@ -1,5 +1,5 @@
 <template>
-  <b-navbar spaced>
+  <b-navbar :mobile-burger="false" spaced>
     <template #brand>
       <b-navbar-item tag="router-link" :to="{ path: '/' }">
         <img
@@ -10,27 +10,34 @@
     </template>
 
     <template #end>
-      <b-navbar-item v-if="isConnected" @click="$router.push({ name: 'Player Profile', params: { playerAddress: $store.state.address } })" target="_blank">
-        <a class="button nav-btn">
-          Profile
-        </a>
-      </b-navbar-item>
-        <b-navbar-item v-if="isConnected" @click="$router.push({ name: 'Leaderboard'})" target="_blank">
+        <b-navbar-item v-if="isConnected" @click="openLeaderboard">
         <a class="button nav-btn">
           Leaderboard
         </a>
       </b-navbar-item>
       <center>
         <b-button class="nav-btn" v-if="!isConnected" type="is-primary" @click="connectMetamask">Connect Wallet</b-button>
-      </center>
-      <center v-if="isConnected">
-
-        <b-tooltip label="Disconnect and Logout" position="is-bottom" type="is-dark">
-            <b-button @click="logout" class="button nav-btn" icon-right="logout">
-                {{ fmtdWalletAddress }}
-            </b-button>
-        </b-tooltip>
-      </center>
+        <b-dropdown v-if="isConnected" :triggers="['hover']" position="is-bottom-left" aria-role="menu">
+          <template #trigger>
+            <b-button
+              class="nav-btn"
+              :label="fmtdWalletAddress"
+              icon-right="menu-down" />
+          </template>
+            <b-dropdown-item custom aria-role="menuitem">
+                <center> Logged as <b> {{ fmtdWalletAddress }}</b> </center>
+            </b-dropdown-item>
+            <hr class="dropdown-divider">
+            <b-dropdown-item @click="openProfile" value="profile" aria-role="menuitem">
+                <b-icon icon="account-circle-outline" custom-size="mdi-18px"></b-icon>
+                Profile
+            </b-dropdown-item>
+            <b-dropdown-item @click="logout" value="logout" aria-role="menuitem">
+                <b-icon icon="logout-variant" custom-size="mdi-18px"></b-icon>
+                Logout
+            </b-dropdown-item>
+          </b-dropdown>
+        </center>
     </template>
   </b-navbar>
 </template>
@@ -67,12 +74,20 @@ export default {
         logout() {
             this.$store.dispatch('disconnect')
             this.$router.push({name: 'Login'})
+        },
+        openProfile() {
+          let routeData = this.$router.resolve({ name: 'Player Profile', params: { playerAddress: this.$store.state.address } })
+          window.open(routeData.href, '_blank')
+        },
+        openLeaderboard() {
+          let routeData = this.$router.resolve({ name: 'Leaderboard' })
+          window.open(routeData.href, '_blank')
         }
     }
 }
 </script>
 
-<style>
+<style lang="scss">
 .logout-btn {
   font-family: 'ClashDisplay-Variable';
   font-size: 19px;
@@ -150,10 +165,11 @@ img.nav-logo {
   transition: 200ms ease-in;
 }
 .nav-btn:hover {
-    background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' stroke='%23416BFF' stroke-width='2' stroke-dasharray='5%2c 45%2c 12' stroke-dashoffset='26' stroke-linecap='square'/%3e%3c/svg%3e") !important;
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' stroke='%23416BFF' stroke-width='2' stroke-dasharray='5%2c 45%2c 12' stroke-dashoffset='26' stroke-linecap='square'/%3e%3c/svg%3e") !important;
 }
 i.mdi.mdi-logout {
-    font-size: 20px;
-    margin-right: -5px;
+  font-size: 20px;
+  margin-right: -5px;
 }
+$dropdown-item-hover-color: red;
 </style>
