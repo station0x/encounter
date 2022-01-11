@@ -47,6 +47,7 @@ module.exports = async (req, res) => {
         col.lastRepairTurn = 0
 
         col.hp = CONSTANTS.spaceshipsAttributes[col.type].hp
+        col.desc = CONSTANTS.spaceshipsAttributes[col.type].desc
         return col
     }))
     const result = await matches.insertOne({

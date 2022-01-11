@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-	  <Navbar/>
+	  <Navbar v-if="!$store.getters.isMobile"/>
 		<router-view></router-view>
   </div>
 </template>
@@ -10,7 +10,19 @@ import Navbar from '@/components/Navbar'
 export default {
   name: 'App',
   components: {
-	  Navbar
+	Navbar
+  },
+  methods: {
+	  	responsify() {
+			this.$store.commit('changeWindowWidth', window.innerWidth)
+		}
+  },
+  created() {
+  	this.$store.commit('changeWindowWidth', window.innerWidth)
+	window.addEventListener("resize", this.responsify)
+  },
+  destroyed() {
+	window.removeEventListener("resize", this.responsify)
   }
 }
 </script>

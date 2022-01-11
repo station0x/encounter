@@ -166,37 +166,43 @@
     ],
   "spaceshipsAttributes": {
     "base": {
-      "hp": 100
+      "hp": 100,
+      "desc": "Base is the bumping heart of the spaceships fleet. It's an immobile spacecraft that control and command all of your spaceships. Your mission is to defend yours and destroy the enemy's."
     },
     "fighter": {
       "attack": 25,
-      "hp": 60,
+      "hp": 65,
       "moveFuelCost": 2,
-      "attackFuelCost": 3
+      "attackFuelCost": 3,
+      "desc": "Fighter is tough and have moderately high damage. It's balanced. It have 25 attack damage, 65 hp and consumes 2 fuel per turn."
     },
     "scout": {
       "attack": 10,
       "hp": 50,
       "moveFuelCost": 1,
-      "attackFuelCost": 3
+      "attackFuelCost": 3,
+      "desc": "Scouts are the most mobile spaceships but also squishy. It consumes only 1 fuel per move but have the lowest attack damage. It's undoubtly the most unpredicted spaceship that can surprise your enemy."
     },
     "carrier": {
       "repairPercent": 25,
       "hp": 50,
       "moveFuelCost": 2,
-      "repairFuelCost": 2
+      "repairFuelCost": 2,
+      "desc": "Carrierships are healers. It cannot attack other spaceships but can repair your own. If you lose it, you cannot repair your spaceships forever! You can only heal one spaceship per turn, use it wisely."
     },
     "gunship": {
       "attack": 30,
       "hp": 60,
       "moveFuelCost": 2,
-      "attackFuelCost": 3
+      "attackFuelCost": 3,
+      "desc": "Gunships have the highest damage but is fairly damagable. Don't solo it unless you know what are you doing."
     },
     "destroyer": {
       "attack": 15,
       "hp": 90,
       "moveFuelCost": 2,
-      "attackFuelCost": 3
+      "attackFuelCost": 3,
+      "desc": "Destroyer frigates are the tankiest spaceship with the highest HP in the game. It's not mobile and have a moderately low attack damage."
     }
   }
 }
