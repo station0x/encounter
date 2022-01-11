@@ -82,6 +82,84 @@ body {
 .board-grid {
 	min-height: 865px;
 }
+.info-card-attack-number {
+    color: 
+    #DB0000;
+    font-size: 14px;
+    margin-left: 0px;
+    margin-top: -39px;
+    font-weight: 900;
+    margin-bottom: 18.5px;
+}
+.info-card-repair-number {
+    color: #29D403;
+    font-size: 13px;
+    margin-left: 2px;
+    margin-top: -37px;
+    font-weight: 900;
+    margin-bottom: 18px;
+}
+
+.primary-btn {
+    height: 60px;
+    margin: 15px;
+    padding: 15px;
+    font-size: 19px;
+    font-weight: 500;
+    background: #0E1739 !important;
+    color: white !important;
+    background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' stroke='%23416BFF' stroke-width='2' stroke-dasharray='3%2c 56%2c 16' stroke-dashoffset='22' stroke-linecap='square'/%3e%3c/svg%3e") !important;
+    border: none !important;
+    border-radius: 0px !important;
+    font-family: 'ClashDisplay-Variable';
+    transition: 200ms ease-in;
+}
+.primary-btn:hover {
+    width: 320px !important;
+}
+.secondary-btn {
+    background: rgba(248, 140, 9, 0.1);
+    border: 1px solid #F88C09;
+    color: #F88C09;
+    width: 230px;
+    height: 60px;
+    margin: 15px;
+    padding: 15px;
+    font-size: 19px;
+    font-weight: 500;
+    transition: 250ms ease-in-out;
+}
+.secondary-btn:hover {
+    color: black;
+    background: #F88C09;
+    border: #F88C09;
+}
+button.button.secondary-btn[disabled] {
+    color: rgba(0,0,0,0.3);
+}
+.secondary-btn:hover[disabled] {
+    color: black;
+    background: #dbdbdb;
+    border: #dbdbdb;
+}
+.art-wrap {
+    max-width: 950px;
+    min-width: 300px;
+    height: 650px;
+    margin-top: -80px;
+    background-image: url('/art.png');
+}
+.art-wrap-overlay {
+    height: 100%;
+    width: 100%;
+    background: radial-gradient(54.1% 54.1% at 50% 50%, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.7) 100%);
+    padding: 1em;
+    padding-top: 7em;
+}
+.mmr-progressbar {
+    width: 750px; 
+    margin-top: -10px;
+}
 
 /* Mobile styles */
 @media screen and (max-width: 769px) {
@@ -121,7 +199,8 @@ body {
         padding: 0px !important;
     }
     #chat-logs {
-        height: 300px !important;
+        max-height: 100px !important;
+        padding-bottom: 0px !important;
     }
     .col-piece.rotate {
         position: absolute;
@@ -134,5 +213,134 @@ body {
         transform:translateX(calc((var(--parcel-width) / 2) * var(--factor) + ((0.7px * var(--scale)) / var(--factor)) )) !important;
         margin-top: calc((var(--parcel-pyramid-height) * var(--factor) * -1) - ((2.9px * var(--scale)) / var(--factor))  ) !important;
         margin-bottom: calc((var(--parcel-pyramid-height) * var(--factor) * -1) - ((3.1px * var(--scale)) / var(--factor))  ) !important;
+    }
+    .spaceship-stats {
+        padding: 0px !important;
+    }
+    .spaceship-img {
+        width: 70px !important;
+        margin: 0px auto !important;
+        margin-bottom: 10px !important;
+    }
+    .spaceship-type {
+        color: white !important;
+        font-size: 16px !important;
+        text-align: left !important;
+        font-weight: 600;
+    }
+    .progressbar-text {
+        font-size: 6px !important;
+        margin-top: -2px !important;
+    }
+    progress.progress.is-small.is-success.is-more-than-half, progress.progress.is-small.is-warning.is-more-than-half, progress.progress.is-small.is-danger, progress.progress.is-small.is-warning {
+        height: 0.4rem !important;
+    }
+    .progress-wrapper.hp-progress {
+        margin: 0px !important;
+    }
+    .spaceships-desc {
+        font-weight: 300;
+        font-size: 12px;
+    }
+    .info-card {
+        float: left;
+        padding: 5px;
+        width: 50%;
+    }
+    .info-card-icon {
+        width: 55px;
+        margin-bottom: 8px;
+    }
+    .info-card-text {
+        font-size: 11px;
+        font-weight: 500;
+        text-transform: uppercase;
+    }
+    .info-card-energy {
+        color: #F98F09;
+        font-size: 16px;
+    }
+    .info-card-energy-icon {
+        width: 11px;
+        margin-left: 3px;
+        margin-bottom: -5px;
+    }
+    a.navbar-item {
+        padding: 0.5rem 0 !important;
+    }
+    .navbar-menu { 
+        background-color: black !important;
+    }
+    a.button.nav-btn {
+        margin: 5px !important;
+    }
+    .surrender {
+        bottom: 0;
+        min-width: 170px !important;
+        background-color: #FF4949 !important;
+        text-transform: capitalize;
+        height: 50px !important;
+        width: 120px !important;
+        font-size: 15px !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 0px !important;
+        font-family: 'ClashDisplay-Variable';
+        transition: 200ms ease-in;
+        margin: 5px !important;
+        margin-top: 2px !important;
+    }
+    .primary-btn:hover {
+        width: 230px !important;
+    }
+    .mmr-progressbar {
+        width: 100%;
+    }
+    .art-wrap-overlay {
+        padding-top: 5.5rem;
+    }
+    .chat-input {
+        position: absolute;
+        bottom: 0px;
+        width: 100%;
+        left: 0px;
+    }
+}
+
+/* Mobile styles */
+@media screen and (max-width: 400px) {
+    .spaceships-desc {
+        font-weight: 300;
+        font-size: 12px;
+    }
+    .info-card {
+        float: left;
+        padding: 5px;
+    }
+    .info-card-icon {
+        width: 35px;
+        margin-bottom: 6px;
+    }
+    .info-card-text {
+        font-size: 11px;
+        font-weight: 500;
+        text-transform: uppercase;
+    }
+    .info-card-energy {
+        color: #F98F09;
+        font-size: 16px;
+    }
+    .info-card-energy-icon {
+        width: 11px;
+        margin-left: 3px;
+        margin-bottom: -5px;
+    }
+    .info-card-attack-number {
+        color: red;
+
+    }
+    .info-card-repair-number {
+        color: green;
+        font-size: 15px;
     }
 }

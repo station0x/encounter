@@ -1,9 +1,6 @@
 <template>
 	<div class="main-wrapper">
-		<div class="loader-wrapper" v-if="boardLoading">
-			<Loader v-model="boardLoading"/>
-		</div>
-		<div v-else class="columns m-0 board-grid">
+		<div class="columns m-0 board-grid">
 			<div class="column left p-0" :class="{'no-right-border': $store.getters.isMobile}">
 				<EnemyCard @endEnemyTurn="endEnemyTurn" :playerAddress="enemyAddress" :fuel="enemyFuel" :lastTurnTimestamp="lastTurnTimestamp" :isEnemyTurn="!isMyTurn" :playerAlias="enemyAlias"/>
 				<div v-if="!$store.getters.isMobile" class="chat-wrapper">					
@@ -81,11 +78,11 @@
 						</div>
 					</div>
 				</div>
-				<div v-if="!$store.getters.isMobile" @click="openGameGuideModal" class="clickable-text" style="margin-top: 110px; text-align: center; color: #F98F09; width: fit-content; margin: 0 auto">Game Guide  <b-icon icon="alert-circle" size="is-small" style="margin-left: 5px; margin-top: -40px"></b-icon></div>
+				<div v-if="!$store.getters.isMobile" @click="openGameGuideModal" class="clickable-text" style="text-align: center; color: #F98F09; width: fit-content; margin: 0 auto; margin-top: 30px;">Game Guide  <b-icon icon="alert-circle" size="is-small" style="margin-left: 5px; margin-top: -40px"></b-icon></div>
 			</div>
 			<div class="column right p-0">
 				<div v-if="!$store.getters.isMobile" class="spaceship-stats">
-					<center v-if="mobileSpaceshipStats.type === 'base'" style="margin-top: 25%">
+					<center v-if="spaceshipStats.type === 'base'" style="margin-top: 25%">
 						<img class="spaceship-img" :src="spaceshipStats.img"/>
 						<h1 class="spaceship-type" :style="{color: spaceshipStats.owner === this.playerIs ? '#416BFF' : '#C72929'}">{{spaceshipStats.type}}</h1>
 					</center>
@@ -128,53 +125,66 @@
 						<b-tab-item value="radar">
 							<template #header>
 								<b-icon custom-size="mdi-18px" icon="radar"></b-icon>
-								<span> Radar <b-tag v-if="newLogs !== 0" type="is-dark" rounded style="margin-left:6px"> {{ newLogs }} </b-tag> </span>
+								<span> Radar </span>
 							</template>
 							<div id="radar">
 								<div v-if="$store.getters.isMobile" class="spaceship-stats">
-									<!-- <center v-if="spaceshipStats.type === 'base'" style="margin-top: 25%">
-										<img class="spaceship-img" :src="spaceshipStats.img"/>
-										<h1 class="spaceship-type" :style="{color: spaceshipStats.owner === this.playerIs ? '#416BFF' : '#C72929'}">{{spaceshipStats.type}}</h1>
-									</center>
-									<center v-else>
-										<img class="spaceship-img" :src="spaceshipStats.img"/>
-										<h1 class="spaceship-type" :style="{color: spaceshipStats.owner === this.playerIs ? '#416BFF' : '#C72929'}">{{spaceshipStats.type}}</h1>
-									</center>
-									<b-progress 
-										v-if="spaceshipStats.type"
-										class="hp-progress"
-										:type="spaceshipStats.hpColor" 
-										:value="spaceshipStats.hp"
-										:max="spaceshipStats.maxHp"
-										show-value>
-										<h1 class="progressbar-text">HP:  {{spaceshipStats.hp}} / {{ spaceshipStats.maxHp}}</h1>
-									</b-progress>
-									<h1 v-if="spaceshipStats.type !== 'base'" style="color: white; font-size: 17px; text-align: left; margin: 0px 20px 10px 20px;font-family: 'ClashDisplay-Variable';">Abilities</h1>
-									<div v-if="spaceshipStats.type !== 'base'" class="ability move">
-										<img class="ability-icon" :src="moveIcon"/>
-										<div class="ability-text" style="color: #EFC97F">Move</div>
-										<span class="energy-ability">{{spaceshipStats.moveCost}}</span>
-										<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
+									<div class="columns is-mobile m-0" style="min-height: 100%">
+										<div class="column is-3" style="padding: 0.7rem">
+											<center>
+												<img class="spaceship-img" :src="spaceshipStats.img"/>
+											</center>
+											<b-progress 
+												v-if="spaceshipStats.type"
+												class="hp-progress"
+												:type="spaceshipStats.hpColor" 
+												:value="spaceshipStats.hp"
+												size="is-small"
+												:max="spaceshipStats.maxHp">
+											</b-progress>
+											<h1 class="progressbar-outer-text">HP:  {{spaceshipStats.hp}} / {{ spaceshipStats.maxHp}}</h1>
+										</div>
+										<div class="column is-5" style="padding: 0">
+											<h1 class="spaceship-type" :style="{color: spaceshipStats.owner === this.playerIs ? '#416BFF' : '#C72929'}">{{spaceshipStats.type}}</h1>
+											<p class="spaceships-desc">{{spaceshipStats.desc}}</p>
+										</div>
+										<div class="column is-4" style="padding: 0.4rem">
+											<div v-if="spaceshipStats.type !== 'base'" class="info-card">
+												<center>
+													<img class="info-card-icon" :src="moveInfoIcon" />
+													<h1 class="info-card-text"> Moving </h1>
+													<span :myTurn="!isMyTurn" class="info-card-energy">-{{spaceshipStats.moveCost}}</span>
+													<img :myTurn="!isMyTurn" class="info-card-energy-icon" src="/energy.svg" width="23px"/>
+												</center>
+											</div>
+											<div v-if="spaceshipStats.type !== 'carrier' && spaceshipStats.type !== 'base'" class="info-card">
+												<center>
+													<img class="info-card-icon" :src="attackInfoIcon" />
+													<p class="info-card-attack-number">{{ spaceshipStats.attack }}</p>
+													<h1 class="info-card-text"> Attacking </h1>
+													<span :myTurn="!isMyTurn" class="info-card-energy">-{{spaceshipStats.attackCost}}</span>
+													<img :myTurn="!isMyTurn" class="info-card-energy-icon" src="/energy.svg" width="23px"/>
+												</center>
+											</div>
+											<div v-if="spaceshipStats.type === 'carrier' && spaceshipStats.type !== 'base'" class="info-card">
+												<center>
+													<img class="info-card-icon" :src="repairInfoIcon" />
+													<p class="info-card-repair-number">25%</p>
+													<h1 class="info-card-text"> Repairing </h1>
+													<span :myTurn="!isMyTurn" class="info-card-energy">-{{spaceshipStats.repairCost}}</span>
+													<img :myTurn="!isMyTurn" class="info-card-energy-icon" src="/energy.svg" width="23px"/>
+												</center>
+											</div>
+											<div class="info-card"></div>
+										</div>
 									</div>
-									<div v-if="spaceshipStats.type !== 'carrier' && spaceshipStats.type !== 'base'" class="ability attack">
-										<img class="ability-icon" :src="attackIcon"/>
-										<div class="ability-text" style="color: #FF4949">Attack {{spaceshipStats.attack}}</div>
-										<span class="attack-ability">{{spaceshipStats.attackCost}}</span>
-										<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
-									</div>
-									<div v-if="spaceshipStats.type === 'carrier' && spaceshipStats.type !== 'base'" class="ability repair">
-										<img class="ability-icon" :src="repairIcon"/>
-										<div class="ability-text" style="color: #348227">Repair 25%</div>
-										<span class="attack-ability">{{spaceshipStats.repairCost}}</span>
-										<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
-									</div> -->
 								</div>
 							</div>
 						</b-tab-item>
 						<b-tab-item value="logs" >
 							<template #header>
 								<b-icon custom-size="mdi-18px" icon="information-outline"></b-icon>
-								<span> Game Log <b-tag v-if="newLogs !== 0" type="is-dark" rounded style="margin-left:6px"> {{ newLogs }} </b-tag> </span>
+								<span> Game Log <b-tag v-if="newLogs !== 0" type="is-link is-light" rounded style="margin-left:6px"> {{ newLogs }} </b-tag> </span>
 							</template>
 							<div id="action-logs">
 								<div v-for="(msg, key) in sortedLogs" :key="key">
@@ -208,17 +218,29 @@
 								<b-icon custom-size="mdi-24px" icon="menu"></b-icon>
 							</template>
 							<div id="menu">
-								<div v-for="(msg, key) in sortedChats" :key="key">
-									<div v-if="msg.msg" class="chat-message">
-										<span v-if="msg.playerNo === playerIs" :class="{'newEle-left': (sortedChats.length - 1) - key < newChats}" style="color: #416BFF">You: </span>
-										<span v-else :class="{'newEle-left': (sortedChats.length - 1) - key < newChats}" style="color: #C72929">Enemy: </span>
-																				
-										<span :class="{'newEle-right': (sortedChats.length - 1) - key < newChats}"> {{msg.msg}} </span>
-									</div>
-								</div>
+								<center>
+									<a @click="openLeaderboard" class="button nav-btn">
+										Leaderboard
+									</a>
+									<a @click="openProfile" class="button nav-btn">
+										Profile
+									</a>
+								</center>
+								<center>
+									<a @click="confirmSurrender" class="button surrender">Surrender</a>
+								</center>
 							</div>
 						</b-tab-item>
 					</b-tabs>
+					<div v-if="tabsModel === 'chat'" class="chat-input">
+						<b-field>
+							<!-- <b-input @focus="chatMessage = ''" v-model="chatMessage" :custom-class="{'chat-textarea': true, 'chat-placeholder-color': chatMessage === 'Please be nice in chat!'}" size="is-small" expanded></b-input> -->
+							<b-input v-on:keyup.native.enter="sendMessage" v-model="chatMessage" custom-class="chat-textarea" size="is-small" expanded></b-input>
+							<p class="control">
+								<b-button class="chat-btn" @click="sendMessage" label="Send"></b-button>
+							</p>
+						</b-field>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -233,7 +255,6 @@ import CONSTANTS from "../../constants.json"
 import PlayerCard from "@/components/PlayerCard.vue"
 import EnemyCard from "@/components/EnemyCard.vue"
 import GameGuide from '@/components/GameGuide.vue'
-import Loader from '@/components/Loader.vue'
 import arraySort from 'array-sort'
 
 export default {
@@ -243,7 +264,6 @@ export default {
 	return {
 		selected: undefined,
 		hovered: undefined,
-		boardLoading: true,
 		chatMessage: '',
 		sendingMsg: false,
 		newLogs: 0,
@@ -274,13 +294,15 @@ export default {
 		moveIcon: require('../assets/img/moveIcon.svg'),
 		attackIcon: require('../assets/img/attackIcon.svg'),
 		repairIcon: require('../assets/img/repairIcon.svg'),
-		blankImg: require('../assets/img/blank.gif')
+		blankImg: require('../assets/img/blank.gif'),
+		attackInfoIcon: require('../assets/img/attack-info.svg'),
+		moveInfoIcon: require('../assets/img/move-info.svg'),
+		repairInfoIcon: require('../assets/img/repair-info.svg')
 	}
   },
   components: {
 		PlayerCard,
-		EnemyCard,
-		Loader
+		EnemyCard
   },
   computed:{
 	ourState () {
@@ -347,37 +369,20 @@ export default {
 	},
 	playerAlias() {
 		if(this.playerProfile !== undefined) {
-			return this.playerProfile.playerAlias.length !== 0 ? this.playerProfile.playerAlias : 'You'
+			if (this.playerProfile.playerAlias === undefined) return 'You'
+			else return this.playerProfile.playerAlias.length > 0 ? this.playerProfile.playerAlias : 'You'
 		} else return 'You'
 	},
 	enemyAlias() {
+		console.log(this.enemyProfile)
 		if(this.enemyProfile !== undefined) {
-			return this.enemyProfile.playerAlias.length !== 0 ? this.enemyProfile.playerAlias : 'Enemy'
+			if (this.enemyProfile.playerAlias === undefined) return 'Enemy'
+			else return this.enemyProfile.playerAlias > 0 ?  this.enemyProfile.playerAlias : 'Enemy'
 		} else return 'Enemy'
 	},
 	spaceshipStats() {
 		let piece
 		  if(this.hovered === undefined){
-			  piece = this.ourState[8][4]
-		  } else {
-			  piece = this.ourState[this.hovered.y][this.hovered.x]
-		  }
-		  if(!piece.type) piece = this.ourState[8][4]
-		  piece.maxHp = CONSTANTS.spaceshipsAttributes[piece.type].hp
-		  piece.attack = CONSTANTS.spaceshipsAttributes[piece.type].attack
-		  piece.moveCost = CONSTANTS.spaceshipsAttributes[piece.type].moveFuelCost
-		  if(piece.type === 'carrier') piece.repairCost = CONSTANTS.spaceshipsAttributes[piece.type].repairFuelCost
-		  else piece.attackCost = CONSTANTS.spaceshipsAttributes[piece.type].attackFuelCost
-		  piece.hpPercentage = Math.floor(piece.hp / piece.maxHp * 100)
-		  piece.hpColor = 'is-success'
-		  if(piece.hpPercentage < 50) piece.hpColor = 'is-danger'
-		  else if(piece.hpPercentage < 100) piece.hpColor = 'is-warning'
-
-		  return piece
-	  },
-		mobilespaceshipStats() {
-		let piece
-		  if(this.selected === undefined){
 			  piece = this.ourState[8][4]
 		  } else {
 			  piece = this.ourState[this.hovered.y][this.hovered.x]
@@ -557,6 +562,16 @@ export default {
             })
             isEnemy ? this.enemyProfile = res.data.playerDoc : this.playerProfile = res.data.playerDoc
         },
+		confirmSurrender() {
+            this.$buefy.dialog.confirm({
+                title: 'Surrender',
+                message: 'Are you sure you want to surrender? This action cannot be undone.',
+                confirmText: 'Surrender',
+                type: 'is-danger',
+                hasIcon: true,
+                onConfirm: () => this.surrender()
+            })
+        },
 	  	surrender() {
 			const winner = this.playerIs === 0 ? 1 : 0
 			this.$store.commit('setWinner', winner)
@@ -567,6 +582,14 @@ export default {
 				}
 			}))
 		},
+		openProfile() {
+          let routeData = this.$router.resolve({ name: 'Player Profile', params: { playerAddress: this.$store.state.address } })
+          window.open(routeData.href, '_blank')
+        },
+        openLeaderboard() {
+          let routeData = this.$router.resolve({ name: 'Leaderboard' })
+          window.open(routeData.href, '_blank')
+        },
 		hexImg(x, y) {
 			if(this.selected) {
 				if(this.ourState[this.selected.y][this.selected.x].type === "carrier" && this.isLegalRepair(x, y)) {
@@ -863,7 +886,6 @@ export default {
 		},
 	  "$store.state.matchState" (newState, oldState) {
 		if(newState.log.length !== oldState.log.length) {
-			console.log(newState.log[newState.log.length - 1].action)
 			if(newState.log[newState.log.length - 1].action === 'attack') {
 				this.playSound(this.shotSfx)
 			} else if(newState.log[newState.log.length - 1].action === 'repair') {
@@ -877,15 +899,15 @@ export default {
 	}
   },
   async created() {
-	this.boardLoading = true
-	try {
-		await Promise.all([
-			this.fetchProfile(this.$store.state.address, false),
-			this.fetchProfile(this.enemyAddress, true)
-		])
-	} finally {
-		this.boardLoading = false
-	}
+	// this.boardLoading = true
+	// try {
+	await Promise.all([
+		this.fetchProfile(this.$store.state.address, false),
+		this.fetchProfile(this.enemyAddress, true)
+	])
+	// } finally {
+	// 	this.boardLoading = false
+	// }
   }
 }
 </script>
@@ -968,6 +990,11 @@ h1 {
 	color: black; 
 	font-size: 12px; 
 	font-weight: 500;
+}
+.progressbar-outer-text {
+	font-size: 10px; 
+	font-weight: 500;
+	margin-left: 3px;
 }
 .ability {
 	box-sizing: border-box;

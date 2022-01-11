@@ -6,18 +6,22 @@
             alt="Station0x Encounter Logo"
             class="main-logo"
             />
-            <div class="onboarding-wrapper">
-                <div>
-                    <div class="major-text">Station ZeroX: Encounter</div>
-                    <div class="minor-text">Use your access key to get access to the closed beta version</div>
+            <div class="art-wrap">
+                <div class="art-wrap-overlay">
+                    <div class="onboarding-wrapper">
+                        <div>
+                            <div class="major-text">Station ZeroX: Encounter</div>
+                            <div class="minor-text">Use your access key to get access to the closed beta version</div>
+                        </div>
+                        <div class="divider-light"></div>
+                        <b-field>
+                            <b-input @focus="accessKey = ''" v-model="accessKey" custom-class="access-field" size="is-small" expanded></b-input>
+                        </b-field>
+                        <b-button class="primary-btn" :loading="matchLoader" @click="registerAddress">Get Access</b-button>
+                        <div @click="openGameGuideModal" class="clickable-text-light">Game Guide <b-icon icon="alert-circle" size="is-small" style="margin-left: 5pxSend match link to challenge a friend"></b-icon></div>
+                        <div class="info-text">This game is in alpha version and may contain bugs</div>
+                    </div>
                 </div>
-                <div class="divider-light"></div>
-                <b-field>
-                    <b-input @focus="accessKey = ''" v-model="accessKey" custom-class="access-field" size="is-small" expanded></b-input>
-                </b-field>
-                <b-button class="primary-btn" :loading="matchLoader" @click="registerAddress">Get Access</b-button>
-                <div @click="openGameGuideModal" class="clickable-text-light">Game Guide <b-icon icon="alert-circle" size="is-small" style="margin-left: 5pxSend match link to challenge a friend"></b-icon></div>
-                <div class="info-text">This game is in alpha version and may contain bugs</div>
             </div>
         </center>
     </div>
