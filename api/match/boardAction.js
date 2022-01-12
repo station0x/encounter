@@ -83,7 +83,7 @@ module.exports = async (req, res) => {
     }
 
     // Update fuel
-    [newMatchStats, fuel] = updateFuel(newMatchStats, playerNumber, fromAttributes.attackFuelCost)
+    ;[newMatchStats, fuel] = updateFuel(newMatchStats, playerNumber, fromAttributes.attackFuelCost)
 
     // Update Last turn used
     newMatchStats.board[from.y][from.x].lastAttackTurn = newMatchStats.turnNum
@@ -119,7 +119,7 @@ module.exports = async (req, res) => {
     newMatchStats.board[to.y][to.x].hp = newHp
 
     // Update fuel
-    [newMatchStats, fuel] = updateFuel(newMatchStats, playerNumber, fromAttributes.repairFuelCost)
+    ;[newMatchStats, fuel] = updateFuel(newMatchStats, playerNumber, fromAttributes.repairFuelCost)
 
     // Update Last turn used
     newMatchStats.board[from.y][from.x].lastRepairTurn = newMatchStats.turnNum
