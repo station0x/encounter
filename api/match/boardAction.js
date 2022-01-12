@@ -43,7 +43,7 @@ module.exports = async (req, res) => {
     newMatchStats.board[from.y][from.x] = {}
 
     // Update fuel
-    [newMatchStats, fuel] = updateFuel(newMatchStats, playerNumber, fromAttributes.moveFuelCost)
+    ;[newMatchStats, fuel] = updateFuel(newMatchStats, playerNumber, fromAttributes.moveFuelCost)
 
     // Update Match History
     newMatchStats.history.push({from: {x: from.x, y: from.y}, to: {x: to.x, y: to.y}, action, playerNumber})
