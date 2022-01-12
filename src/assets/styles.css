@@ -197,10 +197,18 @@ button.button.secondary-btn[disabled] {
     }
     .logs-tabs {
         padding: 0px !important;
+        height: auto;
     }
     #chat-logs {
         max-height: 100px !important;
         padding-bottom: 0px !important;
+    }
+    .chat-message {
+        text-align: left;
+        padding-left: 10px !important;
+    }
+    #action-logs {
+        max-height: 130px;
     }
     .col-piece.rotate {
         position: absolute;
