@@ -34,7 +34,6 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  console.log
   if(to.matched.some(record => record.meta.requiresLogin) && !store.state.address) next({ name: 'Login' })
   else if(to.name == 'Login' && store.state.address) next({ name: 'Home' })
   else next()
