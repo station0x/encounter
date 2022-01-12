@@ -4,9 +4,7 @@ const clientPromise = require('../../api-utils/mongodb-client');
 const getAddress = require('../../api-utils/getAddress');
 const { ObjectId } = require('mongodb');
 const CONSTANTS = require('../../constants.json');
-var Elo = require( 'elo-js' );
-
-var elo = new Elo();
+const {endMatch} = require('../../api-utils/match')
 
 module.exports = async (req, res) => {
     const client = await clientPromise;
@@ -26,52 +24,12 @@ module.exports = async (req, res) => {
 
     let newMatchStats = {...matchDoc}
     const winner = playerNumber === 0 ? 1 : 0
-    newMatchStats.winner = winner
 
-    let newPlayer0Stats = {...player0Doc}
-    newPlayer0Stats.matchHistory.push(ObjectId(req.query.matchId))
+    newMatchStats = await endMatch(newMatchStats, db.collection("players"), winner)
 
-    let newPlayer1Stats = {...player1Doc}
-    newPlayer1Stats.matchHistory.push(ObjectId(req.query.matchId))
-
-    if(newMatchStats.type === "matchmaking") {
-        newPlayer0Stats.elo = newPlayer0Stats.elo === undefined ? 1200 : newPlayer0Stats.elo
-        newPlayer1Stats.elo = newPlayer1Stats.elo === undefined ? 1200 : newPlayer1Stats.elo
-
-        if(newMatchStats.winner === 0) {
-            newPlayer0Stats.elo = elo.ifWins(newPlayer0Stats.elo, newPlayer1Stats.elo)
-            newPlayer1Stats.elo = elo.ifLoses(newPlayer1Stats.elo, newPlayer0Stats.elo)
-        } else {
-            newPlayer1Stats.elo = elo.ifWins(newPlayer1Stats.elo, newPlayer0Stats.elo)
-            newPlayer0Stats.elo = elo.ifLoses(newPlayer0Stats.elo, newPlayer1Stats.elo)
-        }
-    }
-
-    await Promise.all([
-        matches.updateOne({_id:matchDoc._id}, {
-            $set:newMatchStats
-        }),
-        players.updateOne({address:newMatchStats.player0}, {
-            $unset:{activeMatch:""},
-        }),
-        
-        players.updateOne({address:newMatchStats.player1}, {
-            $unset:{activeMatch:""}
-        })
-    ])
-
-    delete newPlayer0Stats.activeMatch
-    delete newPlayer1Stats.activeMatch
-
-    await Promise.all([
-        players.updateOne({address:newMatchStats.player0}, {
-            $set:newPlayer0Stats
-        }),
-        
-        players.updateOne({address:newMatchStats.player1}, {
-            $set:newPlayer1Stats
-        })
-    ])
+    await matches.updateOne({_id:matchDoc._id}, {
+        $set:newMatchStats
+    })
 
     res.status(200).json({ success: true });
 }
