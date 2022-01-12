@@ -10,7 +10,6 @@ function validate(query) {
 }
 
 module.exports = async (req, res) => {
-    console.log(req.query)
     // const address = getAddress(req.query.signature)
     if(!validate(req.query)) {
         res.json({success:false, error:"invalid"})
@@ -23,7 +22,6 @@ module.exports = async (req, res) => {
     const db = client.db()
     const keys = db.collection("access_keys")
     const keyDoc = (await keys.find({key}).limit(1).toArray())[0];
-    console.log(keyDoc)
     if(keyDoc) throw new Error('Key Already exists')
 
     await keys.insertOne({

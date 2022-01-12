@@ -4,150 +4,9 @@ const clientPromise = require('../../api-utils/mongodb-client');
 const getAddress = require('../../api-utils/getAddress');
 const { ObjectId } = require('mongodb');
 const CONSTANTS = require('../../constants.json');
-var Elo = require( 'elo-js' );
-var elo = new Elo();
+const {endMatch, updateFuel, endTurn} = require('../../api-utils/match')
+const {isOccupied, isLegalMove, isOurPiece, isLegalAttack, isLegalRepair, canMakeAction, checkPlayerUnarmed} = require('../../common/board')
 
-function isOccupied(board, x, y) {
-    return board[y][x].type ? true : false
-}
-
-function legalMoves(board, x, y) {
-    const isEven = y % 2  == 0
-    let legalMoves = [
-        { x, y: y - 1 },
-        { x: x + 1, y: y - 1 },
-        { x: x + 1, y },
-        { x: x + 1, y: y + 1 },
-        { x, y: y + 1 },
-        { x: x - 1, y }
-    ]
-    if(isEven) {
-        legalMoves[0].x -= 1;
-        legalMoves[1].x -= 1;
-        legalMoves[3].x -= 1;
-        legalMoves[4].x -= 1;
-    }
-    return legalMoves
-        .filter(move => {
-        const minX = 0
-        const minY = 0
-        const maxY = board.length-1
-        const maxX = board[0].length-1
-        return move.x >= minX && move.x <= maxX && move.y >= minY && move.y <= maxY
-        })
-      .filter(move => !isOccupied(board, move.x, move.y))
-}
-
-function isLegalMove(board, selectedX, selectedY, moveX, moveY) {
-    return legalMoves(board, selectedX, selectedY).filter(move => move.x === moveX && move.y === moveY).length > 0
-}
-
-function isOurPiece(board, playerNumber, x, y) {
-    return board[y][x].owner === playerNumber;
-}
-
-function isEnemyPiece(board, playerNumber, x ,y) {
-    return board[y][x].owner !== playerNumber
-}
-
-function isMyPiece(board, playerNumber, x ,y) {
-    return board[y][x].owner === playerNumber
-}
-
-function canMakeAction(action, board, x, y, turnNum) {
-    if(action === 'attack') {
-        return board[y][x].lastAttackTurn !== turnNum
-    } else if(action === 'repair') {
-        return board[y][x].lastRepairTurn !== turnNum
-    }
-    return false
-}
-
-function legalAttacks(board, x, y) {
-    const type = board[y][x].type
-    const attack = CONSTANTS.spaceshipsAttributes[type].attack
-    if(!attack) return []
-    const isEven = y % 2  == 0
-    let legalMoves = [
-        { x, y: y - 1 },
-        { x: x + 1, y: y - 1 },
-        { x: x + 1, y },
-        { x: x + 1, y: y + 1 },
-        { x, y: y + 1 },
-        { x: x - 1, y } 
-    ]
-    if(isEven) {
-        legalMoves[0].x -= 1;
-        legalMoves[1].x -= 1;
-        legalMoves[3].x -= 1;
-        legalMoves[4].x -= 1;
-    }
-    const playerNumber = board[y][x].owner;
-    return legalMoves
-    .filter(move => {
-        const minX = 0
-        const minY = 0
-        const maxY = board.length-1
-        const maxX = board[0].length-1
-        return move.x >= minX && move.x <= maxX && move.y >= minY && move.y <= maxY
-    })
-    .filter(move => isOccupied(board, move.x, move.y))
-    .filter(move => isEnemyPiece(board, playerNumber, move.x, move.y))
-}
-
-function legalRepairs(board, x, y) {
-    const type = board[y][x].type
-    const repairPercent = CONSTANTS.spaceshipsAttributes[type].repairPercent
-    if(!repairPercent) return []
-    const isEven = y % 2  == 0
-    let legalMoves = [
-        { x, y: y - 1 },
-        { x: x + 1, y: y - 1 },
-        { x: x + 1, y },
-        { x: x + 1, y: y + 1 },
-        { x, y: y + 1 },
-        { x: x - 1, y } 
-    ]
-    if(isEven) {
-        legalMoves[0].x -= 1;
-        legalMoves[1].x -= 1;
-        legalMoves[3].x -= 1;
-        legalMoves[4].x -= 1;
-    }
-    const playerNumber = board[y][x].owner;
-    return legalMoves
-    .filter(move => {
-        const minX = 0
-        const minY = 0
-        const maxY = board.length-1
-        const maxX = board[0].length-1
-        return move.x >= minX && move.x <= maxX && move.y >= minY && move.y <= maxY
-    })
-    .filter(move => isOccupied(board, move.x, move.y))
-    .filter(move => board[move.y][move.x].type !== "base")
-    .filter(move => isMyPiece(board, playerNumber, move.x, move.y))
-    .filter(move => board[move.y][move.x].hp < CONSTANTS.spaceshipsAttributes[board[move.y][move.x].type].hp)
-}
-
-function isLegalAttack(board, selectedX, selectedY, x, y) {
-    return legalAttacks(board, selectedX, selectedY).filter(move => move.x === x && move.y === y).length > 0
-}
-
-function isLegalRepair(board, selectedX, selectedY, x, y) {
-    return legalRepairs(board, selectedX, selectedY).filter(move => move.x === x && move.y === y).length > 0
-}
-
-function CheckPlayerUnarmed(board, playerNo) {
-    for(let i = 0; i<board.length; i++) {
-        for(let j = 0; j<board[i].length; j++) {
-            const piece = board[i][j]
-            if(piece.type && piece.owner !== playerNo && piece.type !== 'base' && piece.type !== 'carrier') {
-                return false
-            }
-        }
-    }
-    return true
-}
 
 module.exports = async (req, res) => {
    const client = await clientPromise;
@@ -184,29 +43,13 @@ module.exports = async (req, res) => {
     newMatchStats.board[from.y][from.x] = {}
 
     // Update fuel
-    fuel -= fromAttributes.moveFuelCost;
-    if(playerNumber === 0) {
-        newMatchStats.fuel0 = fuel
-    } else if(playerNumber === 1) {
-        newMatchStats.fuel1 = fuel
-    }
+    [newMatchStats, fuel] = updateFuel(newMatchStats, playerNumber, fromAttributes.moveFuelCost)
 
     // Update Match History
     newMatchStats.history.push({from: {x: from.x, y: from.y}, to: {x: to.x, y: to.y}, action, playerNumber})
 
     if(fuel === 0) { // if remaining fuel is 0, automatically end turn
-        newMatchStats.playerTurn = newMatchStats.playerTurn === 0 ? 1 : 0
-        // Push to history
-        newMatchStats.history.push({from: {}, to: {}, action: 'endTurn', playerNumber})
-        // Increment Turn Number
-        newMatchStats.turnNum = newMatchStats.turnNum + 1
-        // Update last turn timestamp
-        newMatchStats.lastTurnTimestamp = Date.now()
-        if(playerNumber === 0) {
-            newMatchStats.fuel1 = Math.min(newMatchStats.fuel1 + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
-        } else if(playerNumber === 1) {
-            newMatchStats.fuel0 = Math.min(newMatchStats.fuel0 + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
-        }
+        newMatchStats = endTurn(newMatchStats, playerNumber)
     }
 
     await matches.updateOne({_id:matchDoc._id}, {
@@ -226,114 +69,21 @@ module.exports = async (req, res) => {
     if(newHp > 0) {
         newMatchStats.board[to.y][to.x].hp = newHp
     } else {
-        // if base is destroyed, end game
         const type = newMatchStats.board[to.y][to.x].type
         newMatchStats.board[to.y][to.x] = {}
+        // if base is destroyed, end game
         if(type === "base") { // game ended
-            newMatchStats.winner = playerNumber
-            const players = db.collection("players")
-            let player0Doc = (await players.find({address:matchDoc.player0}).limit(1).toArray())[0]
-            let player1Doc = (await players.find({address:matchDoc.player1}).limit(1).toArray())[0]
-
-            let newPlayer0Stats = {...player0Doc}
-            newPlayer0Stats.matchHistory.push(ObjectId(req.query.matchId))
-
-            let newPlayer1Stats = {...player1Doc}
-            newPlayer1Stats.matchHistory.push(ObjectId(req.query.matchId))
-
-            if(newMatchStats.type === "matchmaking") {
-                newPlayer0Stats.elo = newPlayer0Stats.elo === undefined ? 1200 : newPlayer0Stats.elo
-                newPlayer1Stats.elo = newPlayer1Stats.elo === undefined ? 1200 : newPlayer1Stats.elo
-    
-                if(newMatchStats.winner === 0) {
-                    newPlayer0Stats.elo = elo.ifWins(newPlayer0Stats.elo, newPlayer1Stats.elo)
-                    newPlayer1Stats.elo = elo.ifLoses(newPlayer1Stats.elo, newPlayer0Stats.elo)
-                } else {
-                    newPlayer1Stats.elo = elo.ifWins(newPlayer1Stats.elo, newPlayer0Stats.elo)
-                    newPlayer0Stats.elo = elo.ifLoses(newPlayer0Stats.elo, newPlayer1Stats.elo)
-                }
-            }
-            
-            await Promise.all([
-                players.updateOne({address:newMatchStats.player0}, {
-                    $unset:{activeMatch:""},
-                }),
-                players.updateOne({address:newMatchStats.player1}, {
-                    $unset:{activeMatch:""}
-                })
-            ])
-            
-            delete newPlayer0Stats.activeMatch
-            delete newPlayer1Stats.activeMatch
-        
-            await Promise.all([
-                players.updateOne({address:newMatchStats.player0}, {
-                    $set:newPlayer0Stats
-                }),
-                
-                players.updateOne({address:newMatchStats.player1}, {
-                    $set:newPlayer1Stats
-                })
-            ])
+            newMatchStats = await endMatch(newMatchStats, db.collection("players"), playerNumber)
         } else {
             // if all enemy spaceships are destroyed except the base (end the game)
-            if(CheckPlayerUnarmed(newMatchStats.board, playerNumber)) {
-                newMatchStats.winner = playerNumber
-                const players = db.collection("players")
-                let player0Doc = (await players.find({address:matchDoc.player0}).limit(1).toArray())[0]
-                let player1Doc = (await players.find({address:matchDoc.player1}).limit(1).toArray())[0]
-
-                let newPlayer0Stats = {...player0Doc}
-                newPlayer0Stats.matchHistory.push(ObjectId(req.query.matchId))
-                
-                let newPlayer1Stats = {...player1Doc}
-                newPlayer1Stats.matchHistory.push(ObjectId(req.query.matchId))
-
-                if(newMatchStats.type === "matchmaking") {
-                    newPlayer0Stats.elo = newPlayer0Stats.elo === undefined ? 1200 : newPlayer0Stats.elo
-                    newPlayer1Stats.elo = newPlayer1Stats.elo === undefined ? 1200 : newPlayer1Stats.elo
-        
-                    if(newMatchStats.winner === 0) {
-                        newPlayer0Stats.elo = elo.ifWins(newPlayer0Stats.elo, newPlayer1Stats.elo)
-                        newPlayer1Stats.elo = elo.ifLoses(newPlayer1Stats.elo, newPlayer0Stats.elo)
-                    } else {
-                        newPlayer1Stats.elo = elo.ifWins(newPlayer1Stats.elo, newPlayer0Stats.elo)
-                        newPlayer0Stats.elo = elo.ifLoses(newPlayer0Stats.elo, newPlayer1Stats.elo)
-                    }
-                }
-                
-                await Promise.all([
-                    players.updateOne({address:newMatchStats.player0}, {
-                        $unset:{activeMatch:""},
-                    }),
-                    players.updateOne({address:newMatchStats.player1}, {
-                        $unset:{activeMatch:""}
-                    })
-                ])
-                
-                delete newPlayer0Stats.activeMatch
-                delete newPlayer1Stats.activeMatch
-            
-                await Promise.all([
-                    players.updateOne({address:newMatchStats.player0}, {
-                        $set:newPlayer0Stats
-                    }),
-                    
-                    players.updateOne({address:newMatchStats.player1}, {
-                        $set:newPlayer1Stats
-                    })
-                ])
+            if(checkPlayerUnarmed(newMatchStats.board, playerNumber)) {
+                newMatchStats = await endMatch(newMatchStats, db.collection("players"), playerNumber)
             }
         }
     }
 
     // Update fuel
-    fuel -= fromAttributes.attackFuelCost;
-    if(playerNumber === 0) {
-        newMatchStats.fuel0 = fuel
-    } else if(playerNumber === 1) {
-        newMatchStats.fuel1 = fuel
-    }
+    [newMatchStats, fuel] = updateFuel(newMatchStats, playerNumber, fromAttributes.attackFuelCost)
 
     // Update Last turn used
     newMatchStats.board[from.y][from.x].lastAttackTurn = newMatchStats.turnNum
@@ -348,18 +98,7 @@ module.exports = async (req, res) => {
     newMatchStats.logsIndex++
 
     if(fuel === 0) { // if remaining fuel is 0, automatically end turn
-        newMatchStats.playerTurn = newMatchStats.playerTurn === 0 ? 1 : 0
-        // Push to history
-        newMatchStats.history.push({from: {}, to: {}, action: 'endTurn', playerNumber})
-        // Increment Turn Number
-        newMatchStats.turnNum = newMatchStats.turnNum + 1
-        // Update last turn timestamp
-        newMatchStats.lastTurnTimestamp = Date.now()
-        if(playerNumber === 0) {
-            newMatchStats.fuel1 = Math.min(newMatchStats.fuel1 + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
-        } else if(playerNumber === 1) {
-            newMatchStats.fuel0 = Math.min(newMatchStats.fuel0 + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
-        }
+        newMatchStats = endTurn(newMatchStats, playerNumber)
     }
 
     await matches.updateOne({_id:matchDoc._id}, {
@@ -380,12 +119,7 @@ module.exports = async (req, res) => {
     newMatchStats.board[to.y][to.x].hp = newHp
 
     // Update fuel
-    fuel -= fromAttributes.repairFuelCost;
-    if(playerNumber === 0) {
-        newMatchStats.fuel0 = fuel
-    } else if(playerNumber === 1) {
-        newMatchStats.fuel1 = fuel
-    }
+    [newMatchStats, fuel] = updateFuel(newMatchStats, playerNumber, fromAttributes.repairFuelCost)
 
     // Update Last turn used
     newMatchStats.board[from.y][from.x].lastRepairTurn = newMatchStats.turnNum
@@ -400,18 +134,7 @@ module.exports = async (req, res) => {
     newMatchStats.logsIndex++
     
     if(fuel === 0) { // if remaining fuel is 0, automatically end turn
-        newMatchStats.playerTurn = newMatchStats.playerTurn === 0 ? 1 : 0
-        // Push to history
-        newMatchStats.history.push({from: {}, to: {}, action: 'endTurn', playerNumber})
-        // Increment Turn Number
-        newMatchStats.turnNum = newMatchStats.turnNum + 1
-        // Update last turn timestamp
-        newMatchStats.lastTurnTimestamp = Date.now()
-        if(playerNumber === 0) {
-            newMatchStats.fuel1 = Math.min(newMatchStats.fuel1 + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
-        } else if(playerNumber === 1) {
-            newMatchStats.fuel0 = Math.min(newMatchStats.fuel0 + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
-        }
+        newMatchStats = endTurn(newMatchStats, playerNumber)
     }
 
     await matches.updateOne({_id:matchDoc._id}, {

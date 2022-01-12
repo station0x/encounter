@@ -49,7 +49,6 @@ export default {
             } finally {}
         },
         async connectMetamask() {
-            console.log(this.$store.state.address)
             if(this.$store.state.address === null) {
                 const provider = new ethers.providers.Web3Provider(window.ethereum, "any")
                 const signer = provider.getSigner()
