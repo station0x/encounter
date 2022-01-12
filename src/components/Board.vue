@@ -82,7 +82,7 @@
 			</div>
 			<div class="column right p-0" style="min-width: 289px">
 				<div v-if="!$store.getters.isMobile" class="spaceship-stats">
-					<center v-if="spaceshipStats.type === 'base'" style="margin-top: 25%">
+					<center v-if="spaceshipStats.type === 'base'" style="margin-top: 20%">
 						<img class="spaceship-img" :src="spaceshipStats.img"/>
 						<h1 class="spaceship-type" :style="{color: spaceshipStats.owner === this.playerIs ? '#416BFF' : '#C72929'}">{{spaceshipStats.type}}</h1>
 					</center>
@@ -99,8 +99,29 @@
 						show-value>
 						<h1 class="progressbar-text">HP:  {{spaceshipStats.hp}} / {{ spaceshipStats.maxHp}}</h1>
 					</b-progress>
+					<p class="spaceships-desc">{{spaceshipStats.desc}}</p>
 					<h1 v-if="spaceshipStats.type !== 'base'" style="color: white; font-size: 17px; text-align: left; margin: 0px 20px 10px 20px;font-family: 'ClashDisplay-Variable';">Abilities</h1>
-					<div v-if="spaceshipStats.type !== 'base'" class="ability move">
+					<div v-if="spaceshipStats.type !== 'base'" class="info-card">
+							<img class="info-card-icon" :src="moveInfoIcon" />
+							<h1 class="info-card-text"> Move </h1>
+							<span :myTurn="!isMyTurn" class="info-card-energy">-{{spaceshipStats.moveCost}}</span>
+							<img :myTurn="!isMyTurn" class="info-card-energy-icon" src="/energy.svg" width="23px"/>
+					</div>
+					<div v-if="spaceshipStats.type !== 'carrier' && spaceshipStats.type !== 'base'" class="info-card">
+							<img class="info-card-icon" :src="attackInfoIcon" />
+							<p class="info-card-attack-number">{{ spaceshipStats.attack }}</p>
+							<h1 class="info-card-text"> Attack </h1>
+							<span :myTurn="!isMyTurn" class="info-card-energy">-{{spaceshipStats.attackCost}}</span>
+							<img :myTurn="!isMyTurn" class="info-card-energy-icon" src="/energy.svg" width="23px"/>
+					</div>
+					<div v-if="spaceshipStats.type === 'carrier' && spaceshipStats.type !== 'base'" class="info-card">
+							<img class="info-card-icon" :src="repairInfoIcon" />
+							<p class="info-card-repair-number">25%</p>
+							<h1 class="info-card-text"> Repair </h1>
+							<span :myTurn="!isMyTurn" class="info-card-energy">-{{spaceshipStats.repairCost}}</span>
+							<img :myTurn="!isMyTurn" class="info-card-energy-icon" src="/energy.svg" width="23px"/>
+					</div>
+					<!-- <div v-if="spaceshipStats.type !== 'base'" class="ability move">
 						<img class="ability-icon" :src="moveIcon"/>
 						<div class="ability-text" style="color: #EFC97F">Move</div>
 						<span class="energy-ability">{{spaceshipStats.moveCost}}</span>
@@ -117,7 +138,7 @@
 						<div class="ability-text" style="color: #348227">Repair 25%</div>
 						<span class="attack-ability">{{spaceshipStats.repairCost}}</span>
 						<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
-					</div>
+					</div> -->
 				</div>
 				<PlayerCard @endTurn="endTurn" @surrender="surrender" :playerAddress="$store.state.address" :fuel="myFuel" :lastTurnTimestamp="lastTurnTimestamp" :isMyTurn="isMyTurn" :playerAlias="playerAlias"/>
 				<div v-if="$store.getters.isMobile">
@@ -152,7 +173,7 @@
 											<div v-if="spaceshipStats.type !== 'base'" class="info-card">
 												<center>
 													<img class="info-card-icon" :src="moveInfoIcon" />
-													<h1 class="info-card-text"> Moving </h1>
+													<h1 class="info-card-text"> Move </h1>
 													<span :myTurn="!isMyTurn" class="info-card-energy">-{{spaceshipStats.moveCost}}</span>
 													<img :myTurn="!isMyTurn" class="info-card-energy-icon" src="/energy.svg" width="23px"/>
 												</center>
@@ -161,7 +182,7 @@
 												<center>
 													<img class="info-card-icon" :src="attackInfoIcon" />
 													<p class="info-card-attack-number">{{ spaceshipStats.attack }}</p>
-													<h1 class="info-card-text"> Attacking </h1>
+													<h1 class="info-card-text"> Attack </h1>
 													<span :myTurn="!isMyTurn" class="info-card-energy">-{{spaceshipStats.attackCost}}</span>
 													<img :myTurn="!isMyTurn" class="info-card-energy-icon" src="/energy.svg" width="23px"/>
 												</center>
@@ -170,7 +191,7 @@
 												<center>
 													<img class="info-card-icon" :src="repairInfoIcon" />
 													<p class="info-card-repair-number">25%</p>
-													<h1 class="info-card-text"> Repairing </h1>
+													<h1 class="info-card-text"> Repair </h1>
 													<span :myTurn="!isMyTurn" class="info-card-energy">-{{spaceshipStats.repairCost}}</span>
 													<img :myTurn="!isMyTurn" class="info-card-energy-icon" src="/energy.svg" width="23px"/>
 												</center>
@@ -276,22 +297,6 @@ export default {
 		shotSfx: require('../assets/sfx/shot.mp3'),
 		repairSfx: require('../assets/sfx/repair.mp3'),
 		radioSfxes: [require('../assets/sfx/radio1.mp3'), require('../assets/sfx/radio2.mp3'), require('../assets/sfx/radio3.mp3')],
-		blue: {
-			fighter: require('../assets/blue/fighter.png'),
-			gunship: require('../assets/blue/gunship.png'),
-			scout: require('../assets/blue/scout.png'),
-			destoyer: require('../assets/blue/destroyer.png'),
-			carrier: require('../assets/blue/carrier.png'),
-			base: require('../assets/blue/base.png')
-		},
-		red: {
-			fighter: require('../assets/red/fighter.png'),
-			gunship: require('../assets/red/gunship.png'),
-			scout: require('../assets/red/scout.png'),
-			destoyer: require('../assets/red/destroyer.png'),
-			carrier: require('../assets/red/carrier.png'),
-			base: require('../assets/red/base.png')
-		},
 		moveIcon: require('../assets/img/moveIcon.svg'),
 		attackIcon: require('../assets/img/attackIcon.svg'),
 		repairIcon: require('../assets/img/repairIcon.svg'),
@@ -311,47 +316,9 @@ export default {
 		return this.state.map(row => {
 			return row.map(col => {
 			if(col.owner === this.playerIs) {
-				if(col.type === "base") {
-					col.img = this.blue.base
-				}
-				else if(col.type == "fighter") {
-					col.img = this.blue.fighter
-				}
-				else if(col.type == "scout") {
-					col.img = this.blue.scout
-				}
-				else if(col.type == "destroyer") {
-					col.img = this.blue.destoyer
-				}
-				else if(col.type == "carrier") {
-					col.img = this.blue.carrier
-				}
-				else if(col.type == "gunship") {
-					col.img = this.blue.gunship
-				} else {
-					col.img = this.blankImg
-				}
+				col.img = col.type ? require(`../assets/blue/${col.type}.png`) : this.blankImg
 			} else if (col.owner !== this.playerIs) {
-				if(col.type === "base") {
-					col.img = this.red.base
-				}
-				else if(col.type == "fighter") {
-					col.img = this.red.fighter
-				}
-				else if(col.type == "scout") {
-					col.img = this.red.scout
-				}
-				else if(col.type == "destroyer") {
-					col.img = this.red.destoyer
-				}
-				else if(col.type == "carrier") {
-					col.img = this.red.carrier
-				}
-				else if(col.type == "gunship") {
-					col.img = this.red.gunship
-				} else {
-					col.img = this.blankImg
-				}
+				col.img = col.type ? require(`../assets/red/${col.type}.png`) : this.blankImg
 			}
 			return col
 			})
@@ -376,7 +343,8 @@ export default {
 	},
 	enemyAlias() {
 		if(this.enemyProfile !== undefined) {
-			if (this.enemyProfile.playerAlias === undefined) return 'Enemy'
+			if (this.enemyProfile.playerAlias === undefined) {console.log(this.enemyProfile.playerAlias);return 'Enemy'
+			}
 			else return this.enemyProfile.playerAlias > 0 ?  this.enemyProfile.playerAlias : 'Enemy'
 		} else return 'Enemy'
 	},
@@ -414,7 +382,6 @@ export default {
 		if(!this.selected || !this.isMyTurn) return false
 		const type = this.state[this.selected.y][this.selected.x].type
 		if(!type) return false
-		if(this.state[this.selected.y][this.selected.x].lastAttackTurn === this.turnNum) return false
 		const attributes = CONSTANTS.spaceshipsAttributes[type]
 		return this.myFuel >= attributes.attackFuelCost
 	  },
@@ -422,7 +389,6 @@ export default {
 		if(!this.selected || !this.isMyTurn) return false
 		const type = this.state[this.selected.y][this.selected.x].type
 		if(!type) return false
-		if(this.state[this.selected.y][this.selected.x].lastRepairTurn === this.turnNum) return false
 		const attributes = CONSTANTS.spaceshipsAttributes[type]
 		return this.myFuel >= attributes.repairFuelCost
 	  },
@@ -611,15 +577,15 @@ export default {
 		},
 	  isLegalMove(x,y) {
 			if(!this.selected || !this.isMyTurn || !this.canMove) return false
-			return legalMoves(this.state, this.selected.x, this.selected.y).filter(move => move.x === x && move.y === y).length > 0
+			return legalMoves(this.state, this.selected.x, this.selected.y, this.turnNum).filter(move => move.x === x && move.y === y).length > 0
 	  },
 	  isLegalAttack(x,y) {
 		  	if(!this.selected || !this.isMyTurn || !this.canAttack) return false
-			return legalAttacks(this.state, this.selected.x, this.selected.y).filter(move => move.x === x && move.y === y).length > 0
+			return legalAttacks(this.state, this.selected.x, this.selected.y, this.turnNum).filter(move => move.x === x && move.y === y).length > 0
 	  },
 	  isLegalRepair(x,y) {
 			if(!this.selected || !this.isMyTurn || !this.canRepair) return false
-			return legalRepairs(this.state, this.selected.x, this.selected.y).filter(move => move.x === x && move.y === y).length > 0
+			return legalRepairs(this.state, this.selected.x, this.selected.y, this.turnNum).filter(move => move.x === x && move.y === y).length > 0
 	  },
 	  pieceClasses(owner, x, y) {
 		  let classes = "col-piece "
@@ -691,6 +657,7 @@ export default {
 				const fuelCost = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].moveFuelCost
 				newState[y][x] = newState[this.selected.y][this.selected.x]
 				newState[this.selected.y][this.selected.x] = {}
+				if((this.selected.x === 0 && x === 8) || (this.selected.x === 8 && x === 0)) newState[y][x].lastWarpTurn = this.turnNum
 				this.$store.commit('setMyFuel', this.myFuel - fuelCost)
 				if(this.myFuel - fuelCost === 0) {
 					// this.playSound(this.turnSfx)
@@ -880,18 +847,19 @@ h1 {
 }
 .spaceship-stats {
 	/* margin: 0 auto; */
-	padding: 10px;
-	height: 46%;
+	padding: 20px;
+	height: 50%;
 }
 .spaceship-type {
 	color: #416BFF;
 	font-family: 'ClashDisplay-Variable';
 	font-size: 21px;
 	text-transform: capitalize;
+	margin-top: -10px;
 }
 .spaceship-img {
-	width: var(--parcel-height);
-	margin: 10px 20px 0px 20px;
+	width: 85px;
+	margin-bottom: 2px;
 }
 .hp-progress {
 	margin: 10px 20px 5px 20px;

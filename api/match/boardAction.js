@@ -34,7 +34,7 @@ module.exports = async (req, res) => {
 
    if(action === "move") {
     if(isOccupied(board, to.x, to.y)) throw new Error("Destination is already occupied")
-    if(!isLegalMove(board, from.x, from.y, to.x, to.y)) throw new Error("Illegal move")
+    if(!isLegalMove(board, from.x, from.y, to.x, to.y, matchDoc.turnNum)) throw new Error("Illegal move")
     if(!fromAttributes.moveFuelCost || fuel < fromAttributes.moveFuelCost) throw new Error("Insufficient fuel to move")
 
     // Move Piece
@@ -42,24 +42,27 @@ module.exports = async (req, res) => {
     newMatchStats.board[to.y][to.x] = newMatchStats.board[from.y][from.x]
     newMatchStats.board[from.y][from.x] = {}
 
-    // Update fuel
-    [newMatchStats, fuel] = updateFuel(newMatchStats, playerNumber, fromAttributes.moveFuelCost)
+    ;[newMatchStats, fuel] = updateFuel(newMatchStats, playerNumber, fromAttributes.moveFuelCost)
 
     // Update Match History
     newMatchStats.history.push({from: {x: from.x, y: from.y}, to: {x: to.x, y: to.y}, action, playerNumber})
 
+    // Update Last turn Warp used
+    if((from.x === 0 && to.x === 8) || (from.x === 8 && to.x === 0)) {
+        if(!canMakeAction("warp", newMatchStats.board, to.x, to.y, matchDoc.turnNum)) throw new Error('Piece already made an action in this turn')
+        newMatchStats.board[to.y][to.x].lastWarpTurn = newMatchStats.turnNum
+    }
+    
     if(fuel === 0) { // if remaining fuel is 0, automatically end turn
         newMatchStats = endTurn(newMatchStats, playerNumber)
     }
-
     await matches.updateOne({_id:matchDoc._id}, {
         $set:newMatchStats
     })
    } else if(action === "attack") {
     if(!isOccupied(board, to.x, to.y)) throw new Error("Destination is not occupied")
-    if(!isLegalAttack(board, from.x, from.y, to.x, to.y)) throw new Error("Illegal attack")
+    if(!isLegalAttack(board, from.x, from.y, to.x, to.y, matchDoc.turnNum)) throw new Error("Illegal attack")
     if(!fromAttributes.attackFuelCost || fuel < fromAttributes.attackFuelCost) throw new Error("Insufficient fuel to attack")
-    if(!canMakeAction(action, board, from.x, from.y, matchDoc.turnNum)) throw new Error('Piece already made an action in this turn')
 
     let newMatchStats = {...matchDoc}
     const attack = CONSTANTS.spaceshipsAttributes[newMatchStats.board[from.y][from.x].type].attack
@@ -81,11 +84,11 @@ module.exports = async (req, res) => {
             }
         }
     }
-
+    
     // Update fuel
-    [newMatchStats, fuel] = updateFuel(newMatchStats, playerNumber, fromAttributes.attackFuelCost)
+    ;[newMatchStats, fuel] = updateFuel(newMatchStats, playerNumber, fromAttributes.attackFuelCost)
 
-    // Update Last turn used
+    // Update Last turn Attack used
     newMatchStats.board[from.y][from.x].lastAttackTurn = newMatchStats.turnNum
 
     // Update Match History
@@ -106,9 +109,8 @@ module.exports = async (req, res) => {
     })
    } else if(action === "repair") {
     if(!isOccupied(board, to.x, to.y)) throw new Error("Destination is not occupied")
-    if(!isLegalRepair(board, from.x, from.y, to.x, to.y)) throw new Error("Illegal repair")
+    if(!isLegalRepair(board, from.x, from.y, to.x, to.y, matchDoc.turnNum)) throw new Error("Illegal repair")
     if(!fromAttributes.repairFuelCost || fuel < fromAttributes.repairFuelCost) throw new Error("Insufficient fuel to repair")
-    if(!canMakeAction(action, board, from.x, from.y, matchDoc.turnNum)) throw new Error('Piece already made an action in this turn')
 
     let newMatchStats = {...matchDoc}
     const maxHp = CONSTANTS.spaceshipsAttributes[newMatchStats.board[to.y][to.x].type].hp
@@ -119,7 +121,7 @@ module.exports = async (req, res) => {
     newMatchStats.board[to.y][to.x].hp = newHp
 
     // Update fuel
-    [newMatchStats, fuel] = updateFuel(newMatchStats, playerNumber, fromAttributes.repairFuelCost)
+    ;[newMatchStats, fuel] = updateFuel(newMatchStats, playerNumber, fromAttributes.repairFuelCost)
 
     // Update Last turn used
     newMatchStats.board[from.y][from.x].lastRepairTurn = newMatchStats.turnNum
