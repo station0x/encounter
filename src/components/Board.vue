@@ -4,7 +4,7 @@
 			<div class="column left p-0" :class="{'no-right-border': $store.getters.isMobile}">
 				<EnemyCard @endEnemyTurn="endEnemyTurn" :playerAddress="enemyAddress" :fuel="enemyFuel" :lastTurnTimestamp="lastTurnTimestamp" :isEnemyTurn="!isMyTurn" :playerAlias="enemyAlias"/>
 				<div v-if="!$store.getters.isMobile" class="chat-wrapper">					
-					<div class="logs-tabs">
+					<div class="logs-tab-wrapper">
 						<b-tabs v-model="tabsModel" @input="tabClicked" expanded class="logs-tabs">
 							<b-tab-item value="logs" >
 								<template #header>
@@ -40,15 +40,15 @@
 							</b-tab-item>
 						</b-tabs>
 					</div>
-					<div class="chat-input">
-						<b-field>
-							<!-- <b-input @focus="chatMessage = ''" v-model="chatMessage" :custom-class="{'chat-textarea': true, 'chat-placeholder-color': chatMessage === 'Please be nice in chat!'}" size="is-small" expanded></b-input> -->
-							<b-input v-on:keyup.native.enter="sendMessage" v-model="chatMessage" custom-class="chat-textarea" size="is-small" expanded></b-input>
-							<p class="control">
-								<b-button class="chat-btn" @click="sendMessage" label="Send"></b-button>
-							</p>
-						</b-field>
-					</div>
+				</div>
+				<div v-if="tabsModel === 'chat'" class="chat-input">
+					<b-field>
+						<!-- <b-input @focus="chatMessage = ''" v-model="chatMessage" :custom-class="{'chat-textarea': true, 'chat-placeholder-color': chatMessage === 'Please be nice in chat!'}" size="is-small" expanded></b-input> -->
+						<b-input v-on:keyup.native.enter="sendMessage" v-model="chatMessage" custom-class="chat-textarea" size="is-small" expanded></b-input>
+						<p class="control">
+							<b-button class="chat-btn" @click="sendMessage" label="Send"></b-button>
+						</p>
+					</b-field>
 				</div>
 			</div>
 			<div class="column is-narrow middle p-0">
@@ -80,7 +80,7 @@
 				</div>
 				<div v-if="!$store.getters.isMobile" @click="openGameGuideModal" class="clickable-text" style="text-align: center; color: #F98F09; width: fit-content; margin: 0 auto; margin-top: 30px;">Game Guide  <b-icon icon="alert-circle" size="is-small" style="margin-left: 5px; margin-top: -40px"></b-icon></div>
 			</div>
-			<div class="column right p-0">
+			<div class="column right p-0" style="min-width: 289px">
 				<div v-if="!$store.getters.isMobile" class="spaceship-stats">
 					<center v-if="spaceshipStats.type === 'base'" style="margin-top: 25%">
 						<img class="spaceship-img" :src="spaceshipStats.img"/>
@@ -1103,6 +1103,7 @@ h1 {
 }
 .chat-wrapper {
 	height: 47.4%;
+	max-width: 289px;
 }
 .chat-input {
 	height: 55px;
@@ -1156,18 +1157,26 @@ input[placeholder], [placeholder], *[placeholder] {
     height: 90%;
     padding-bottom: 10px;
 	overflow: scroll;
+	padding-top: 10px;
+	height: 400px;
 }
 .logs-tabs {
-	height: 100%;
+	height: 395px;
 	padding: 10px;
+}
+section.tab-content {
+	height: 395px !important;
+    padding: 15px !important;
 }
 .b-tabs .tab-content {
 	height: 100% !important;
+	padding-top: 0px !important;
 }
 .chat-message {
 	background: black;
 	padding: 3px 0px;
 	color: rgba(255,255,255,0.5);
+	overflow-wrap: break-word;
 }
 .chat-placeholder-color {
 	color: rgba(255,255,255,0.4) !important;
