@@ -62,8 +62,8 @@
 								'hoverable-repairabe': isLegalRepair(x,y),
 								'hoverable-approachable': isLegalMove(x,y)
 								}" v-for="(col, x) in row" :key="x" :style="gridProps">
-								<!-- <img v-if="selected !== undefined && ourState[selected.y][selected.x].type === 'carrier' && isLegalRepair(x,y)" :class="hexClasses(x,y)" src="green-hex.png" height="80px"/>
-								<img v-else-if="selected !== undefined && ourState[selected.y][selected.x].type !== 'carrier' && isLegalAttack(x,y)" :class="hexClasses(x,y)" src="red-hex.png" height="80px"/>
+								<!-- <img v-if="selected !== undefined && ourState[selected.y][selected.x].type === 'salvation' && isLegalRepair(x,y)" :class="hexClasses(x,y)" src="green-hex.png" height="80px"/>
+								<img v-else-if="selected !== undefined && ourState[selected.y][selected.x].type !== 'salvation' && isLegalAttack(x,y)" :class="hexClasses(x,y)" src="red-hex.png" height="80px"/>
 								<img v-else :class="hexClasses(x,y)" src="hex.png" height="80px"/> -->
 								<img :class="hexClasses(x,y)" :src="hexImg(x,y)" height="80px" :style="gridProps"/> 
 								<img :class="pieceClasses(col.owner, x, y)" :src="col.img" :style="gridProps"/>
@@ -107,14 +107,14 @@
 							<span :myTurn="!isMyTurn" class="info-card-energy">-{{spaceshipStats.moveCost}}</span>
 							<img :myTurn="!isMyTurn" class="info-card-energy-icon" src="/energy.svg" width="23px"/>
 					</div>
-					<div v-if="spaceshipStats.type !== 'carrier' && spaceshipStats.type !== 'base'" class="info-card">
+					<div v-if="spaceshipStats.type !== 'salvation' && spaceshipStats.type !== 'base'" class="info-card">
 							<img class="info-card-icon" :src="attackInfoIcon" />
 							<p class="info-card-attack-number">{{ spaceshipStats.attack }}</p>
 							<h1 class="info-card-text"> Attack </h1>
 							<span :myTurn="!isMyTurn" class="info-card-energy">-{{spaceshipStats.attackCost}}</span>
 							<img :myTurn="!isMyTurn" class="info-card-energy-icon" src="/energy.svg" width="23px"/>
 					</div>
-					<div v-if="spaceshipStats.type === 'carrier' && spaceshipStats.type !== 'base'" class="info-card">
+					<div v-if="spaceshipStats.type === 'salvation' && spaceshipStats.type !== 'base'" class="info-card">
 							<img class="info-card-icon" :src="repairInfoIcon" />
 							<p class="info-card-repair-number">25%</p>
 							<h1 class="info-card-text"> Repair </h1>
@@ -127,13 +127,13 @@
 						<span class="energy-ability">{{spaceshipStats.moveCost}}</span>
 						<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
 					</div>
-					<div v-if="spaceshipStats.type !== 'carrier' && spaceshipStats.type !== 'base'" class="ability attack">
+					<div v-if="spaceshipStats.type !== 'salvation' && spaceshipStats.type !== 'base'" class="ability attack">
 						<img class="ability-icon" :src="attackIcon"/>
 						<div class="ability-text" style="color: #FF4949">Attack {{spaceshipStats.attack}}</div>
 						<span class="attack-ability">{{spaceshipStats.attackCost}}</span>
 						<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
 					</div>
-					<div v-if="spaceshipStats.type === 'carrier' && spaceshipStats.type !== 'base'" class="ability repair">
+					<div v-if="spaceshipStats.type === 'salvation' && spaceshipStats.type !== 'base'" class="ability repair">
 						<img class="ability-icon" :src="repairIcon"/>
 						<div class="ability-text" style="color: #348227">Repair 25%</div>
 						<span class="attack-ability">{{spaceshipStats.repairCost}}</span>
@@ -178,7 +178,7 @@
 													<img :myTurn="!isMyTurn" class="info-card-energy-icon" src="/energy.svg" width="23px"/>
 												</center>
 											</div>
-											<div v-if="spaceshipStats.type !== 'carrier' && spaceshipStats.type !== 'base'" class="info-card">
+											<div v-if="spaceshipStats.type !== 'salvation' && spaceshipStats.type !== 'base'" class="info-card">
 												<center>
 													<img class="info-card-icon" :src="attackInfoIcon" />
 													<p class="info-card-attack-number">{{ spaceshipStats.attack }}</p>
@@ -187,7 +187,7 @@
 													<img :myTurn="!isMyTurn" class="info-card-energy-icon" src="/energy.svg" width="23px"/>
 												</center>
 											</div>
-											<div v-if="spaceshipStats.type === 'carrier' && spaceshipStats.type !== 'base'" class="info-card">
+											<div v-if="spaceshipStats.type === 'salvation' && spaceshipStats.type !== 'base'" class="info-card">
 												<center>
 													<img class="info-card-icon" :src="repairInfoIcon" />
 													<p class="info-card-repair-number">25%</p>
@@ -359,7 +359,7 @@ export default {
 		  piece.maxHp = CONSTANTS.spaceshipsAttributes[piece.type].hp
 		  piece.attack = CONSTANTS.spaceshipsAttributes[piece.type].attack
 		  piece.moveCost = CONSTANTS.spaceshipsAttributes[piece.type].moveFuelCost
-		  if(piece.type === 'carrier') piece.repairCost = CONSTANTS.spaceshipsAttributes[piece.type].repairFuelCost
+		  if(piece.type === 'salvation') piece.repairCost = CONSTANTS.spaceshipsAttributes[piece.type].repairFuelCost
 		  else piece.attackCost = CONSTANTS.spaceshipsAttributes[piece.type].attackFuelCost
 		  piece.hpPercentage = Math.floor(piece.hp / piece.maxHp * 100)
 		  piece.hpColor = 'is-success'
@@ -452,9 +452,9 @@ export default {
         },
 		hexImg(x, y) {
 			if(this.selected) {
-				if(this.ourState[this.selected.y][this.selected.x].type === "carrier" && this.isLegalRepair(x, y)) {
+				if(this.ourState[this.selected.y][this.selected.x].type === "salvation" && this.isLegalRepair(x, y)) {
 					return 'green-hex.png'
-				} else if(this.ourState[this.selected.y][this.selected.x].type !== "carrier" && this.isLegalAttack(x, y)) {
+				} else if(this.ourState[this.selected.y][this.selected.x].type !== "salvation" && this.isLegalAttack(x, y)) {
 					return 'red-hex.png'
 				} else {
 					return 'hex.png'
