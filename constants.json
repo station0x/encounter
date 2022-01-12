@@ -1,6 +1,6 @@
 {
   "initFuel": 10,
-  "turnTimeout": 30,
+  "turnTimeout": 120,
   "maxFuel": 15,
   "fuelPerTurn": 5,
   "initialBoardState": [
@@ -20,11 +20,11 @@
       ],
       [
         {
-          "type": "scout",
+          "type": "warpship",
           "owner": 1
         },
         {
-          "type": "destroyer",
+          "type": "scout",
           "owner": 1
         },
         {
@@ -113,11 +113,11 @@
       ],
       [
         {
-          "type": "scout",
+          "type": "warpship",
           "owner": 0
         },
         {
-          "type": "destroyer",
+          "type": "scout",
           "owner": 0
         },
         {
@@ -203,6 +203,14 @@
       "moveFuelCost": 2,
       "attackFuelCost": 3,
       "desc": "Destroyer frigates are the tankiest spaceship with the highest HP in the game. It's not mobile and have a moderately low attack damage."
+    },
+    "warpship": {
+      "attack": 20,
+      "hp": 45,
+      "moveFuelCost": 2,
+      "attackFuelCost": 3,
+      "warp": true,
+      "desc": "Warpships can warp from one edge to another when placed adjacent to the left or right edges of the board."
     }
   }
 }

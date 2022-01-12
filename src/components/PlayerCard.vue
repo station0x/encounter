@@ -130,7 +130,7 @@ section.modal-card-body.is-flex {
     background: black !important;
 }
 .player-card {
-    /* height: 53.7%; */
+    height: 50%;
     /* width: 100%; */
     /* bottom: 0;
     position: absolute; */
@@ -175,11 +175,11 @@ section.modal-card-body.is-flex {
 .you {
     font-size: 27px;
     color: #416BFF;
-    padding-top: -10px;
+    margin-top: -15px;
 }
 .your-address {
     color: white;
-    margin-bottom: 20px;
+    margin-bottom: 5px;
     cursor: pointer;
 }
 .your-address:hover {
@@ -188,7 +188,7 @@ section.modal-card-body.is-flex {
 .btn-group {
     display: inline-block;
     width: 100%;
-    margin-top: 20px;
+    margin-top: 15px;
 }
 .end-turn {
     background: #416BFF !important;

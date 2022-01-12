@@ -38,7 +38,8 @@ module.exports = async (req, res) => {
    
            col.lastAttackTurn = 0
            col.lastRepairTurn = 0
-   
+           col.lastWarpTurn = 0
+
            col.hp = CONSTANTS.spaceshipsAttributes[col.type].hp
            return col
        }))
