@@ -67,7 +67,6 @@ new Vue({
           signature:this.$store.state.signature
         }
       })
-      console.log(res)
     },
     nativeBrowserHandler(e, msg) {
       e.preventDefault()    

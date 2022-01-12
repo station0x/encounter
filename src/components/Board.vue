@@ -256,6 +256,7 @@ import PlayerCard from "@/components/PlayerCard.vue"
 import EnemyCard from "@/components/EnemyCard.vue"
 import GameGuide from '@/components/GameGuide.vue'
 import arraySort from 'array-sort'
+import {legalAttacks, legalMoves, legalRepairs} from '../../common/board'
 
 export default {
   name: 'Board',
@@ -374,7 +375,6 @@ export default {
 		} else return 'You'
 	},
 	enemyAlias() {
-		console.log(this.enemyProfile)
 		if(this.enemyProfile !== undefined) {
 			if (this.enemyProfile.playerAlias === undefined) return 'Enemy'
 			else return this.enemyProfile.playerAlias > 0 ?  this.enemyProfile.playerAlias : 'Enemy'
@@ -425,112 +425,6 @@ export default {
 		if(this.state[this.selected.y][this.selected.x].lastRepairTurn === this.turnNum) return false
 		const attributes = CONSTANTS.spaceshipsAttributes[type]
 		return this.myFuel >= attributes.repairFuelCost
-	  },
-	  legalMoves() {
-		  if(!this.selected || !this.isMyTurn || !this.canMove) {
-			  return []
-		  } else {
-			  let x = this.selected.x
-			  let y = this.selected.y
-			  const isEven = y % 2  == 0
-			  let legalMoves = [
-				  { x, y: y - 1 },
-				  { x: x + 1, y: y - 1 },
-				  { x: x + 1, y },
-				  { x: x + 1, y: y + 1 },
-				  { x, y: y + 1 },
-				  { x: x - 1, y } 
-			  ]
-			  if(isEven) {
-				  legalMoves[0].x -= 1;
-				  legalMoves[1].x -= 1;
-				  legalMoves[3].x -= 1;
-				  legalMoves[4].x -= 1;
-			  }
-			  return legalMoves
-			  	.filter(move => {
-				  const minX = 0
-				  const minY = 0
-				  const maxY = this.state.length-1
-				  const maxX = this.state[0].length-1
-				  return move.x >= minX && move.x <= maxX && move.y >= minY && move.y <= maxY
-			  	})
-				.filter(move => !this.isOccupied(move.x, move.y))
-		  }
-	  },
-	  legalAttacks() {
-		if(!this.selected || !this.isMyTurn || !this.canAttack) {
-				return []
-			} else {
-				let x = this.selected.x
-				let y = this.selected.y
-				const type = this.state[y][x].type
-				const attack = CONSTANTS.spaceshipsAttributes[type].attack
-				if(!attack) return []
-				const isEven = y % 2  == 0
-				let legalMoves = [
-					{ x, y: y - 1 },
-					{ x: x + 1, y: y - 1 },
-					{ x: x + 1, y },
-					{ x: x + 1, y: y + 1 },
-					{ x, y: y + 1 },
-					{ x: x - 1, y } 
-				]
-				if(isEven) {
-					legalMoves[0].x -= 1;
-					legalMoves[1].x -= 1;
-					legalMoves[3].x -= 1;
-					legalMoves[4].x -= 1;
-				}
-				return legalMoves
-				.filter(move => {
-					const minX = 0
-					const minY = 0
-					const maxY = this.state.length-1
-					const maxX = this.state[0].length-1
-					return move.x >= minX && move.x <= maxX && move.y >= minY && move.y <= maxY
-				})
-				.filter(move => this.isOccupied(move.x, move.y))
-				.filter(move => this.isEnemyPiece(move.x, move.y))
-			}
-	  },
-	  legalRepairs() {
-		if(!this.selected || !this.isMyTurn || !this.canRepair) {
-				return []
-			} else {
-				let x = this.selected.x
-				let y = this.selected.y
-				const type = this.state[y][x].type
-				const repairPercent = CONSTANTS.spaceshipsAttributes[type].repairPercent
-				if(!repairPercent) return []
-				const isEven = y % 2  == 0
-				let legalMoves = [
-					{ x, y: y - 1 },
-					{ x: x + 1, y: y - 1 },
-					{ x: x + 1, y },
-					{ x: x + 1, y: y + 1 },
-					{ x, y: y + 1 },
-					{ x: x - 1, y } 
-				]
-				if(isEven) {
-					legalMoves[0].x -= 1;
-					legalMoves[1].x -= 1;
-					legalMoves[3].x -= 1;
-					legalMoves[4].x -= 1;
-				}
-				return legalMoves
-				.filter(move => {
-					const minX = 0
-					const minY = 0
-					const maxY = this.state.length-1
-					const maxX = this.state[0].length-1
-					return move.x >= minX && move.x <= maxX && move.y >= minY && move.y <= maxY
-				})
-				.filter(move => this.isOccupied(move.x, move.y))
-				.filter(move => this.ourState[move.y][move.x].type !== "base")
-				.filter(move => this.isMyPiece(move.x, move.y))
-				.filter(move => this.ourState[move.y][move.x].hp < CONSTANTS.spaceshipsAttributes[this.ourState[move.y][move.x].type].hp)
-			}
 	  },
 	  isMyTurn () {
 		  return this.playerTurn === this.playerIs
@@ -625,26 +519,39 @@ export default {
 		formatAction(actionObj) {
 			let message = ''
 			if(actionObj.playerNo === this.playerIs) {
-				if(actionObj.action === 'attack') {
-					if(actionObj.toPiece.type) {
-						message = 'Your ' + this.capitalize(actionObj.fromPiece.type) + ' attacked the enemy\'s ' + this.capitalize(actionObj.toPiece.type)
-					} else if(!actionObj.toPiece.type && actionObj.fromPiece.type){
-						message = 'Your '+ this.capitalize(actionObj.fromPiece.type) + ' destroyed the enemy\'s unit'
-					}
-				} else if(actionObj.action === 'repair') {
-					message = 'Your ' + this.capitalize(actionObj.fromPiece.type) + ' repaired your ' + this.capitalize(actionObj.toPiece.type)
-				}
+				message += 'Your '
 			} else {
-				if(actionObj.action === 'attack') {
-					if(actionObj.toPiece.type) {
-						message = 'Your ' + this.capitalize(actionObj.toPiece.type) + ' was attacked by the enemy\'s ' + this.capitalize(actionObj.fromPiece.type)
-					} else if(!actionObj.toPiece.type && actionObj.fromPiece.type) {
-						message = 'Your unit was destroyed by the enemy\'s '  + this.capitalize(actionObj.fromPiece.type)
-					}
-				} else if(actionObj.action === 'repair') {
-					message = 'Your enemy\'s ' + this.capitalize(actionObj.toPiece.type) + ' was repaired by their ' + this.capitalize(actionObj.fromPiece.type)
+				message += "The enemy's "
+			}
+
+			message += this.capitalize(actionObj.fromPiece.type)
+
+			if(actionObj.action === 'attack') {
+				if(actionObj.toPiece.type) {
+					message += " attacked "
+				} else if(!actionObj.toPiece.type && actionObj.fromPiece.type){
+					message += " destroyed "
+				}
+			} else if(actionObj.action === 'repair') {
+				message += " repaired "
+			}
+
+			if(actionObj.action === 'attack') {
+				if(actionObj.playerNo === this.playerIs) {
+					message += "the enemy's "
+				} else {
+					message += "your "
+				}
+			} else if(actionObj.action === 'repair') {
+				if(actionObj.playerNo === this.playerIs) {
+					message += "your "
+				} else {
+					message += "his "
 				}
 			}
+
+			message += actionObj.toPiece.type ? this.capitalize(actionObj.toPiece.type) : 'unit'
+
 			return message
 		},
 		capitalize(str) {
@@ -703,13 +610,16 @@ export default {
 			}
 		},
 	  isLegalMove(x,y) {
-		  return this.legalMoves.filter(move => move.x === x && move.y === y).length > 0
+			if(!this.selected || !this.isMyTurn || !this.canMove) return false
+			return legalMoves(this.state, this.selected.x, this.selected.y).filter(move => move.x === x && move.y === y).length > 0
 	  },
 	  isLegalAttack(x,y) {
-		   return this.legalAttacks.filter(move => move.x === x && move.y === y).length > 0
+		  	if(!this.selected || !this.isMyTurn || !this.canAttack) return false
+			return legalAttacks(this.state, this.selected.x, this.selected.y).filter(move => move.x === x && move.y === y).length > 0
 	  },
 	  isLegalRepair(x,y) {
-		   return this.legalRepairs.filter(move => move.x === x && move.y === y).length > 0
+			if(!this.selected || !this.isMyTurn || !this.canRepair) return false
+			return legalRepairs(this.state, this.selected.x, this.selected.y).filter(move => move.x === x && move.y === y).length > 0
 	  },
 	  pieceClasses(owner, x, y) {
 		  let classes = "col-piece "
@@ -759,32 +669,7 @@ export default {
 					this.selected = undefined // unselect
 				} else { // if piece is not selected
 					if(this.isLegalRepair(x,y) && piece.type != "base") { // if piece is a legal repair (except base)
-						const newState = [...this.state]
-						const repairPercent = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].repairPercent
-						const maxHp = CONSTANTS.spaceshipsAttributes[newState[y][x].type].hp
-						if(!repairPercent) return
-						const hp = newState[y][x].hp
-						const newHp = Math.min(Math.floor(hp + (maxHp / 100 * repairPercent)), maxHp);
-						newState[y][x].hp = newHp
-						const fuelCost = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].repairFuelCost
-						this.$store.commit('setMyFuel', this.myFuel - fuelCost)
-						newState[this.selected.y][this.selected.x].lastRepairTurn = this.turnNum
-						this.$store.commit('setBoard', newState)
-						if(this.myFuel - fuelCost === 0) {
-							// this.playSound(this.turnSfx)
-							this.$store.commit('endTurn')
-						}
-						const from = {...this.selected}
-						this.$store.dispatch('enqueue', () => axios.get('/api/match/boardAction', {
-							params:{
-								signature:this.$store.state.signature,
-								matchId: this.$store.state.matchId,
-								action: 'repair',
-								from,
-								to: {x,y}
-							}
-						}))
-						this.playSound(this.repairSfx)
+						this.repairPiece(x, y)
 					} else if(piece.type != "base") { // if not base
 						this.selected = { // select piece
 							x,
@@ -793,41 +678,15 @@ export default {
 					}
 				}
 			  } else if(this.isLegalAttack(x,y)) { // if piece is not mine but is a legal attack
-				const newState = [...this.state]
-				const attack = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].attack
-				if(!attack) return
-				const hp = newState[y][x].hp
-				const newHp = hp - attack;
-				if(newHp > 0) {
-					newState[y][x].hp = newHp
-				} else {
-					if(newState[y][x].type === "base") {
-						this.$store.commit('setWinner', this.playerIs)
-					}
-					newState[y][x] = {}
-				}
-				const fuelCost = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].attackFuelCost
-				this.$store.commit('setMyFuel', this.myFuel - fuelCost)
-				newState[this.selected.y][this.selected.x].lastAttackTurn = this.turnNum
-				this.$store.commit('setBoard', newState)
-				if(this.myFuel - fuelCost === 0) {
-					// this.playSound(this.turnSfx)
-					this.$store.commit('endTurn')
-				}
-				const from = {...this.selected}
-				this.$store.dispatch('enqueue', () => axios.get('/api/match/boardAction', {
-					params:{
-						signature:this.$store.state.signature,
-						matchId: this.$store.state.matchId,
-						action: 'attack',
-						from,
-						to: {x,y}
-					}
-				}))
-				this.playSound(this.shotSfx)
+				this.attackPiece(x, y)
 			}
 		} else {
 			if(this.isLegalMove(x,y)) {
+				this.movePiece(x, y)
+			}
+		}
+	  },
+	  movePiece(x, y) {
 				const newState = [...this.state]
 				const fuelCost = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].moveFuelCost
 				newState[y][x] = newState[this.selected.y][this.selected.x]
@@ -849,17 +708,68 @@ export default {
 					}
 				}))
 				this.selected = {x,y}
+	  },
+	  attackPiece(x, y) {
+		const newState = [...this.state]
+		const attack = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].attack
+		if(!attack) return
+		const hp = newState[y][x].hp
+		const newHp = hp - attack;
+		if(newHp > 0) {
+			newState[y][x].hp = newHp
+		} else {
+			if(newState[y][x].type === "base") {
+				this.$store.commit('setWinner', this.playerIs)
 			}
+			newState[y][x] = {}
 		}
+		const fuelCost = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].attackFuelCost
+		this.$store.commit('setMyFuel', this.myFuel - fuelCost)
+		newState[this.selected.y][this.selected.x].lastAttackTurn = this.turnNum
+		this.$store.commit('setBoard', newState)
+		if(this.myFuel - fuelCost === 0) {
+			// this.playSound(this.turnSfx)
+			this.$store.commit('endTurn')
+		}
+		const from = {...this.selected}
+		this.$store.dispatch('enqueue', () => axios.get('/api/match/boardAction', {
+			params:{
+				signature:this.$store.state.signature,
+				matchId: this.$store.state.matchId,
+				action: 'attack',
+				from,
+				to: {x,y}
+			}
+		}))
+		this.playSound(this.shotSfx)
 	  },
-	  isOccupied(x,y) {
-		return this.ourState[y][x].type ? true : false
-	  },
-	  isEnemyPiece(x,y) {
-		return this.ourState[y][x].owner !== this.playerIs
-	  },
-	  isMyPiece(x,y) {
-		return this.ourState[y][x].owner === this.playerIs
+	  repairPiece(x,y) {
+		const newState = [...this.state]
+		const repairPercent = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].repairPercent
+		const maxHp = CONSTANTS.spaceshipsAttributes[newState[y][x].type].hp
+		if(!repairPercent) return
+		const hp = newState[y][x].hp
+		const newHp = Math.min(Math.floor(hp + (maxHp / 100 * repairPercent)), maxHp);
+		newState[y][x].hp = newHp
+		const fuelCost = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].repairFuelCost
+		this.$store.commit('setMyFuel', this.myFuel - fuelCost)
+		newState[this.selected.y][this.selected.x].lastRepairTurn = this.turnNum
+		this.$store.commit('setBoard', newState)
+		if(this.myFuel - fuelCost === 0) {
+			// this.playSound(this.turnSfx)
+			this.$store.commit('endTurn')
+		}
+		const from = {...this.selected}
+		this.$store.dispatch('enqueue', () => axios.get('/api/match/boardAction', {
+			params:{
+				signature:this.$store.state.signature,
+				matchId: this.$store.state.matchId,
+				action: 'repair',
+				from,
+				to: {x,y}
+			}
+		}))
+		this.playSound(this.repairSfx)
 	  },
 	  getSpaceshipAttributes (piece) {
 		let attributes = {

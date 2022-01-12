@@ -4,7 +4,7 @@ const clientPromise = require('../../api-utils/mongodb-client');
 const getAddress = require('../../api-utils/getAddress');
 const { ObjectId } = require('mongodb');
 const CONSTANTS = require('../../constants.json');
-
+const {endTurn} = require('../../api-utils/match')
 
 module.exports = async (req, res) => {
     const client = await clientPromise;
@@ -20,21 +20,7 @@ module.exports = async (req, res) => {
     if(playerNumber !== 0 && playerNumber !== 1) throw new Error("You are not a player in this match")
     if(matchDoc.playerTurn !== playerNumber) throw new Error("Not your turn")
 
-    let newMatchStats = {...matchDoc}
-    newMatchStats.playerTurn = newMatchStats.playerTurn === 0 ? 1 : 0
-    if(playerNumber === 0) {
-        newMatchStats.fuel1 = Math.min(newMatchStats.fuel1 + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
-    } else if(playerNumber === 1) {
-        newMatchStats.fuel0 = Math.min(newMatchStats.fuel0 + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
-    }
-    // Update Match History
-    newMatchStats.history.push({from: {}, to: {}, action: 'endTurn', playerNumber})
-
-    // Increment Turn Number
-    newMatchStats.turnNum = newMatchStats.turnNum + 1
-
-    // Update last turn timestamp
-    newMatchStats.lastTurnTimestamp = Date.now()
+    const newMatchStats = endTurn(matchDoc, playerNumber)
 
     await matches.updateOne({_id:matchDoc._id}, {
         $set:newMatchStats
