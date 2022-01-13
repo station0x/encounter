@@ -2,7 +2,7 @@
 	<div class="main-wrapper">
 		<div class="columns m-0 board-grid">
 			<div class="column left p-0" :class="{'no-right-border': $store.getters.isMobile}">
-				<EnemyCard @endEnemyTurn="endEnemyTurn" :playerAddress="enemyAddress" :fuel="enemyFuel" :lastTurnTimestamp="lastTurnTimestamp" :isEnemyTurn="!isMyTurn" :playerAlias="enemyAlias"/>
+				<EnemyCard @endEnemyTurn="endEnemyTurn" :playerAddress="enemyAddress" :fuel="enemyFuel" :lastTurnTimestamp="lastTurnTimestamp" :isEnemyTurn="!isMyTurn" :playerAlias="enemyAlias" :playerElo="enemyElo"/>
 				<div v-if="!$store.getters.isMobile" class="chat-wrapper">					
 					<div class="logs-tab-wrapper">
 						<b-tabs v-model="tabsModel" @input="tabClicked" expanded class="logs-tabs">
@@ -99,7 +99,7 @@
 						show-value>
 						<h1 class="progressbar-text">HP:  {{spaceshipStats.hp}} / {{ spaceshipStats.maxHp}}</h1>
 					</b-progress>
-					<p class="spaceships-desc">{{spaceshipStats.desc}}</p>
+					<p class="spaceships-desc">{{ spaceshipStats.desc }}</p>
 					<h1 v-if="spaceshipStats.type !== 'base'" style="color: white; font-size: 17px; text-align: left; margin: 0px 20px 10px 20px;font-family: 'ClashDisplay-Variable';">Abilities</h1>
 					<div v-if="spaceshipStats.type !== 'base'" class="info-card">
 							<img class="info-card-icon" :src="moveInfoIcon" />
@@ -140,7 +140,7 @@
 						<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
 					</div> -->
 				</div>
-				<PlayerCard @endTurn="endTurn" @surrender="surrender" :playerAddress="$store.state.address" :fuel="myFuel" :lastTurnTimestamp="lastTurnTimestamp" :isMyTurn="isMyTurn" :playerAlias="playerAlias"/>
+				<PlayerCard @endTurn="endTurn" @surrender="surrender" :playerAddress="$store.state.address" :fuel="myFuel" :lastTurnTimestamp="lastTurnTimestamp" :isMyTurn="isMyTurn" :playerAlias="playerAlias" :playerElo="playerElo"/>
 				<div v-if="$store.getters.isMobile">
 					<b-tabs v-model="tabsModel" @input="tabClicked" expanded size="is-small" position="is-centered" class="block mobile-tabs">
 						<b-tab-item value="radar">
@@ -343,10 +343,17 @@ export default {
 	},
 	enemyAlias() {
 		if(this.enemyProfile !== undefined) {
-			if (this.enemyProfile.playerAlias === undefined) {console.log(this.enemyProfile.playerAlias);return 'Enemy'
-			}
-			else return this.enemyProfile.playerAlias > 0 ?  this.enemyProfile.playerAlias : 'Enemy'
+			if (this.enemyProfile.playerAlias === undefined) return 'Enemy'
+			else return this.enemyProfile.playerAlias.length > 0 ?  this.enemyProfile.playerAlias : 'Enemysss'
 		} else return 'Enemy'
+	},
+	playerElo() {
+		if(this.playerProfile !== undefined) return this.playerProfile.elo
+		else return 0
+	},
+	enemyElo() {
+		if(this.enemyProfile !== undefined) return this.enemyProfile.elo
+		else return 0
 	},
 	spaceshipStats() {
 		let piece
@@ -357,8 +364,9 @@ export default {
 		  }
 		  if(!piece.type) piece = this.ourState[8][4]
 		  piece.maxHp = CONSTANTS.spaceshipsAttributes[piece.type].hp
-		  piece.attack = CONSTANTS.spaceshipsAttributes[piece.type].attack
+		  piece.attack = CONSTANTS.spaceshipsAttributes[piece.type].attack + (piece.bonusAttack || 0)
 		  piece.moveCost = CONSTANTS.spaceshipsAttributes[piece.type].moveFuelCost
+		  piece.desc = CONSTANTS.spaceshipsAttributes[piece.type].desc
 		  if(piece.type === 'salvation') piece.repairCost = CONSTANTS.spaceshipsAttributes[piece.type].repairFuelCost
 		  else piece.attackCost = CONSTANTS.spaceshipsAttributes[piece.type].attackFuelCost
 		  piece.hpPercentage = Math.floor(piece.hp / piece.maxHp * 100)
@@ -653,34 +661,37 @@ export default {
 		}
 	  },
 	  movePiece(x, y) {
-				const newState = [...this.state]
-				const fuelCost = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].moveFuelCost
-				newState[y][x] = newState[this.selected.y][this.selected.x]
-				newState[this.selected.y][this.selected.x] = {}
-				if((this.selected.x === 0 && x === 8) || (this.selected.x === 8 && x === 0)) newState[y][x].lastWarpTurn = this.turnNum
-				this.$store.commit('setMyFuel', this.myFuel - fuelCost)
-				if(this.myFuel - fuelCost === 0) {
-					// this.playSound(this.turnSfx)
-					this.$store.commit('endTurn')
-				}
-				this.$store.commit('setBoard', newState)
-				const from = {...this.selected}
-				this.$store.dispatch('enqueue', () => axios.get('/api/match/boardAction', {
-					params:{
-						signature:this.$store.state.signature,
-						matchId: this.$store.state.matchId,
-						action: 'move',
-						from,
-						to: {x,y}
-					}
-				}))
-				this.selected = {x,y}
+		const newState = [...this.state]
+		const fuelCost = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].moveFuelCost
+		newState[y][x] = newState[this.selected.y][this.selected.x]
+		newState[this.selected.y][this.selected.x] = {}
+		if((this.selected.x === 0 && x === 8) || (this.selected.x === 8 && x === 0)) newState[y][x].lastWarpTurn = this.turnNum
+		this.$store.commit('setMyFuel', this.myFuel - fuelCost)
+		if(this.myFuel - fuelCost === 0) {
+			// this.playSound(this.turnSfx)
+			this.$store.commit('endTurn')
+		}
+		this.$store.commit('setBoard', newState)
+		const from = {...this.selected}
+		this.$store.dispatch('enqueue', () => axios.get('/api/match/boardAction', {
+			params:{
+				signature:this.$store.state.signature,
+				matchId: this.$store.state.matchId,
+				action: 'move',
+				from,
+				to: {x,y}
+			}
+		}))
+		this.selected = {x,y}
 	  },
 	  attackPiece(x, y) {
 		const newState = [...this.state]
-		const attack = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].attack
+		let attack = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].attack
+		const bonusAttack = newState[this.selected.y][this.selected.x].bonusAttack || 0
+		
 		if(!attack) return
 		const hp = newState[y][x].hp
+		attack += bonusAttack;
 		const newHp = hp - attack;
 		if(newHp > 0) {
 			newState[y][x].hp = newHp
@@ -693,6 +704,8 @@ export default {
 		const fuelCost = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].attackFuelCost
 		this.$store.commit('setMyFuel', this.myFuel - fuelCost)
 		newState[this.selected.y][this.selected.x].lastAttackTurn = this.turnNum
+		// Update Bonus Attack
+    	newState[this.selected.y][this.selected.x].bonusAttack = (CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].bonusAttackOnAttack || 0) + bonusAttack
 		this.$store.commit('setBoard', newState)
 		if(this.myFuel - fuelCost === 0) {
 			// this.playSound(this.turnSfx)
@@ -708,7 +721,8 @@ export default {
 				to: {x,y}
 			}
 		}))
-		this.playSound(this.shotSfx)
+		// this.playSound(this.shotSfx)
+
 	  },
 	  repairPiece(x,y) {
 		const newState = [...this.state]
@@ -729,7 +743,7 @@ export default {
 		const from = {...this.selected}
 		this.$store.dispatch('enqueue', () => axios.get('/api/match/boardAction', {
 			params:{
-				signature:this.$store.state.signature,
+				signature: this.$store.state.signature,
 				matchId: this.$store.state.matchId,
 				action: 'repair',
 				from,
@@ -762,13 +776,14 @@ export default {
 			if(newChats.length > oldChats.length) this.playRandomRadioSfx()
 		},
 	  "$store.state.matchState" (newState, oldState) {
-		if(newState.log.length !== oldState.log.length) {
-			if(newState.log[newState.log.length - 1].action === 'attack') {
-				this.playSound(this.shotSfx)
-			} else if(newState.log[newState.log.length - 1].action === 'repair') {
-				this.playSound(this.repairSfx)
-			}
-		}
+		// if(newState.log.length !== oldState.log.length) {
+		// 	if(newState.log[newState.log.length - 1].action === 'attack') {
+		// 		console.log('attacked')
+		// 		this.playSound(this.shotSfx)
+		// 	} else if(newState.log[newState.log.length - 1].action === 'repair') {
+		// 		this.playSound(this.repairSfx)
+		// 	}
+		// }
 		if(oldState.playerTurn !== newState.playerTurn) {
 			this.selected = undefined
 			this.playSound(this.turnSfx)
@@ -938,7 +953,7 @@ h1 {
 .col-piece {
 	position: absolute;
 	opacity: 1 !important;
-	left: calc(20px * var(--factor));
+	left: calc(22px * var(--factor));
 	bottom: calc(32.25px * var(--factor));
 	height: calc(60.5px * var(--factor));
 }
@@ -985,6 +1000,7 @@ h1 {
 }
 .chat-input {
 	height: 55px;
+	margin-top: -14px;
 }
 .chat-btn {
 	background: black !important;
@@ -1036,7 +1052,7 @@ input[placeholder], [placeholder], *[placeholder] {
     padding-bottom: 10px;
 	overflow: scroll;
 	padding-top: 10px;
-	height: 400px;
+	height: 390px;
 }
 .logs-tabs {
 	height: 395px;

@@ -1,7 +1,7 @@
 <template>
   <b-navbar :mobile-burger="false" spaced>
     <template #brand>
-      <b-navbar-item tag="router-link" :to="{ path: '/' }">
+      <b-navbar-item :href="$router.resolve({name: 'Home'}).href">
         <img
           :src="require('../assets/img/widelogo.png')"
           class="nav-logo"
