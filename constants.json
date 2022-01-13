@@ -24,7 +24,7 @@
           "owner": 1
         },
         {
-          "type": "scout",
+          "type": "thunderbird",
           "owner": 1
         },
         {
@@ -48,11 +48,11 @@
           "owner": 1
         },
         {
-          "type": "destroyer",
+          "type": "colossus",
           "owner": 1
         },
         {
-          "type": "scout",
+          "type": "thunderbird",
           "owner": 1
         }
       ],
@@ -117,7 +117,7 @@
           "owner": 0
         },
         {
-          "type": "scout",
+          "type": "thunderbird",
           "owner": 0
         },
         {
@@ -141,11 +141,11 @@
           "owner": 0
         },
         {
-          "type": "destroyer",
+          "type": "colossus",
           "owner": 0
         },
         {
-          "type": "scout",
+          "type": "thunderbird",
           "owner": 0
         }
       ],
@@ -176,12 +176,12 @@
       "attackFuelCost": 3,
       "desc": "Battlestar is tough and have moderately high damage. It's balanced. It have 25 attack damage, 65 hp and consumes 2 fuel per turn."
     },
-    "scout": {
+    "thunderbird": {
       "attack": 10,
       "hp": 50,
       "moveFuelCost": 1,
       "attackFuelCost": 3,
-      "desc": "Scouts are the most mobile spaceships but also squishy. It consumes only 1 fuel per move but have the lowest attack damage. It's undoubtly the most unpredicted spaceship that can surprise your enemy."
+      "desc": "Thunderbirds are the most mobile spaceships but also squishy. It consumes only 1 fuel per move but have the lowest attack damage. It's undoubtly the most unpredicted spaceship that can surprise your enemy."
     },
     "salvation": {
       "repairPercent": 25,
@@ -197,12 +197,12 @@
       "attackFuelCost": 3,
       "desc": "Gunships have the highest damage but is fairly damagable. Don't solo it unless you know what are you doing."
     },
-    "destroyer": {
+    "colossus": {
       "attack": 15,
       "hp": 90,
       "moveFuelCost": 2,
       "attackFuelCost": 3,
-      "desc": "Destroyer frigates are the tankiest spaceship with the highest HP in the game. It's not mobile and have a moderately low attack damage."
+      "desc": "Colossus is the tankiest spaceship with the highest HP in the game. It's not very mobile and has a relatively low attack damage."
     },
     "ubiquity": {
       "attack": 20,
