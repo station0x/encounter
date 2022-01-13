@@ -20,27 +20,11 @@
       ],
       [
         {
-          "type": "warpship",
+          "type": "ubiquity",
           "owner": 1
         },
         {
-          "type": "scout",
-          "owner": 1
-        },
-        {
-          "type": "gunship",
-          "owner": 1
-        },
-        {
-          "type": "fighter",
-          "owner": 1
-        },
-        {
-          "type": "carrier",
-          "owner": 1
-        },
-        {
-          "type": "fighter",
+          "type": "thunderbird",
           "owner": 1
         },
         {
@@ -48,11 +32,27 @@
           "owner": 1
         },
         {
-          "type": "destroyer",
+          "type": "battlestar",
           "owner": 1
         },
         {
-          "type": "scout",
+          "type": "salvation",
+          "owner": 1
+        },
+        {
+          "type": "battlestar",
+          "owner": 1
+        },
+        {
+          "type": "gunship",
+          "owner": 1
+        },
+        {
+          "type": "colossus",
+          "owner": 1
+        },
+        {
+          "type": "thunderbird",
           "owner": 1
         }
       ],
@@ -113,27 +113,11 @@
       ],
       [
         {
-          "type": "warpship",
+          "type": "ubiquity",
           "owner": 0
         },
         {
-          "type": "scout",
-          "owner": 0
-        },
-        {
-          "type": "gunship",
-          "owner": 0
-        },
-        {
-          "type": "fighter",
-          "owner": 0
-        },
-        {
-          "type": "carrier",
-          "owner": 0
-        },
-        {
-          "type": "fighter",
+          "type": "thunderbird",
           "owner": 0
         },
         {
@@ -141,11 +125,27 @@
           "owner": 0
         },
         {
-          "type": "destroyer",
+          "type": "battlestar",
           "owner": 0
         },
         {
-          "type": "scout",
+          "type": "salvation",
+          "owner": 0
+        },
+        {
+          "type": "battlestar",
+          "owner": 0
+        },
+        {
+          "type": "gunship",
+          "owner": 0
+        },
+        {
+          "type": "colossus",
+          "owner": 0
+        },
+        {
+          "type": "thunderbird",
           "owner": 0
         }
       ],
@@ -169,26 +169,26 @@
       "hp": 100,
       "desc": "Base is the bumping heart of the spaceships fleet. It's an immobile spacecraft that control and command all of your spaceships. Your mission is to defend yours and destroy the enemy's."
     },
-    "fighter": {
+    "battlestar": {
       "attack": 25,
       "hp": 65,
       "moveFuelCost": 2,
       "attackFuelCost": 3,
-      "desc": "Fighter is tough and have moderately high damage. It's balanced. It have 25 attack damage, 65 hp and consumes 2 fuel per turn."
+      "desc": "Battlestar is tough and have moderately high damage. It's balanced. It have 25 attack damage, 65 hp and consumes 2 fuel per turn."
     },
-    "scout": {
+    "thunderbird": {
       "attack": 10,
       "hp": 50,
       "moveFuelCost": 1,
       "attackFuelCost": 3,
-      "desc": "Scouts are the most mobile spaceships but also squishy. It consumes only 1 fuel per move but have the lowest attack damage. It's undoubtly the most unpredicted spaceship that can surprise your enemy."
+      "desc": "Thunderbirds are the most mobile spaceships but also squishy. It consumes only 1 fuel per move but have the lowest attack damage. It's undoubtly the most unpredicted spaceship that can surprise your enemy."
     },
-    "carrier": {
+    "salvation": {
       "repairPercent": 25,
       "hp": 50,
       "moveFuelCost": 2,
       "repairFuelCost": 2,
-      "desc": "Carrierships are healers. It cannot attack other spaceships but can repair your own. If you lose it, you cannot repair your spaceships forever! You can only heal one spaceship per turn, use it wisely."
+      "desc": "Salvation is a healer. It cannot attack other spaceships but can repair your own. If you lose it, you cannot repair your spaceships anymore! You can only heal one spaceship per turn, use it wisely."
     },
     "gunship": {
       "attack": 30,
@@ -197,20 +197,20 @@
       "attackFuelCost": 3,
       "desc": "Gunships have the highest damage but is fairly damagable. Don't solo it unless you know what are you doing."
     },
-    "destroyer": {
+    "colossus": {
       "attack": 15,
       "hp": 90,
       "moveFuelCost": 2,
       "attackFuelCost": 3,
-      "desc": "Destroyer frigates are the tankiest spaceship with the highest HP in the game. It's not mobile and have a moderately low attack damage."
+      "desc": "Colossus is the tankiest spaceship with the highest HP in the game. It's not very mobile and has a relatively low attack damage."
     },
-    "warpship": {
+    "ubiquity": {
       "attack": 20,
       "hp": 45,
       "moveFuelCost": 2,
       "attackFuelCost": 3,
       "warp": true,
-      "desc": "Warpships can warp from one edge to another when placed adjacent to the left or right edges of the board."
+      "desc": "Ubiquity spaceships can warp from one edge to another when placed adjacent to the left or right edges of the board."
     }
   }
 }

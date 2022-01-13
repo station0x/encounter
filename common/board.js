@@ -155,7 +155,7 @@ function checkPlayerUnarmed(board, playerNo) {
     for(let i = 0; i<board.length; i++) {
         for(let j = 0; j<board[i].length; j++) {
             const piece = board[i][j]
-            if(piece.type && piece.owner !== playerNo && piece.type !== 'base' && piece.type !== 'carrier') {
+            if(piece.type && piece.owner !== playerNo && piece.type !== 'base' && piece.type !== 'salvation') {
                 return false
             }
         }
