@@ -25,20 +25,4 @@ export default {
 .loader-wrapper {
     transition: 400ms ease-in-out;
 }
-.elementToFadeInAndOut {
-    background: black;
-    -webkit-animation: fadeinout 1.5s linear forwards;
-    animation: fadeinout 1.5s linear forwards;
-    animation-iteration-count: infinite;
-}
-
-@-webkit-keyframes fadeinout {
-  0%,100% { opacity: 0; }
-  50% { opacity: 1; }
-}
-
-@keyframes fadeinout {
-  0%,100% { opacity: 0; }
-  50% { opacity: 1; }
-}
 </style>

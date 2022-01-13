@@ -66,9 +66,14 @@ module.exports = async (req, res) => {
     if(!fromAttributes.attackFuelCost || fuel < fromAttributes.attackFuelCost) throw new Error("Insufficient fuel to attack")
 
     let newMatchStats = {...matchDoc}
-    const attack = CONSTANTS.spaceshipsAttributes[newMatchStats.board[from.y][from.x].type].attack
+    let attack = CONSTANTS.spaceshipsAttributes[newMatchStats.board[from.y][from.x].type].attack
+    const bonusAttack = newMatchStats.board[from.y][from.x].bonusAttack || 0
+    
     if(!attack) return
     const hp = newMatchStats.board[to.y][to.x].hp
+
+    // Bonus Attack Calculation
+    attack += bonusAttack
     const newHp = hp - attack;
     if(newHp > 0) {
         newMatchStats.board[to.y][to.x].hp = newHp
@@ -88,6 +93,9 @@ module.exports = async (req, res) => {
     
     // Update fuel
     ;[newMatchStats, fuel] = updateFuel(newMatchStats, playerNumber, fromAttributes.attackFuelCost)
+
+    // Update Bonus Attack
+    newMatchStats.board[from.y][from.x].bonusAttack = (CONSTANTS.spaceshipsAttributes[newMatchStats.board[from.y][from.x].type].bonusAttackOnAttack || 0) + bonusAttack
 
     // Update Last turn Attack used
     newMatchStats.board[from.y][from.x].lastAttackTurn = newMatchStats.turnNum

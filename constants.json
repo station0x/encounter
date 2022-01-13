@@ -40,7 +40,7 @@
           "owner": 1
         },
         {
-          "type": "battlestar",
+          "type": "nightstalker",
           "owner": 1
         },
         {
@@ -133,7 +133,7 @@
           "owner": 0
         },
         {
-          "type": "battlestar",
+          "type": "nightstalker",
           "owner": 0
         },
         {
@@ -211,6 +211,14 @@
       "attackFuelCost": 3,
       "warp": true,
       "desc": "Ubiquity spaceships can warp from one edge to another when placed adjacent to the left or right edges of the board."
+    },
+    "nightstalker": {
+      "attack": 15,
+      "hp": 50,
+      "moveFuelCost": 2,
+      "attackFuelCost": 3,
+      "bonusAttackOnAttack": 2,
+      "desc": ""
     }
   }
 }
