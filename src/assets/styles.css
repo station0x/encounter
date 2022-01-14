@@ -364,6 +364,7 @@ button.button.secondary-btn[disabled] {
         transition: 200ms ease-in;
         margin: 5px !important;
         margin-top: 2px !important;
+        height: 60px;
     }
     .primary-btn:hover {
         width: 230px !important;

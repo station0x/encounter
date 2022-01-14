@@ -48,11 +48,11 @@
           "owner": 1
         },
         {
-          "type": "colossus",
+          "type": "thunderbird",
           "owner": 1
         },
         {
-          "type": "thunderbird",
+          "type": "colossus",
           "owner": 1
         }
       ],
@@ -141,11 +141,11 @@
           "owner": 0
         },
         {
-          "type": "colossus",
+          "type": "thunderbird",
           "owner": 0
         },
         {
-          "type": "thunderbird",
+          "type": "colossus",
           "owner": 0
         }
       ],
@@ -218,7 +218,7 @@
       "moveFuelCost": 2,
       "attackFuelCost": 3,
       "bonusAttackOnAttack": 2,
-      "desc": ""
+      "desc": "Nightstalker gain 2 attack damage if it lands an attack to any other spaceship with unlimited stack amount. It's squishy with a base attack of 15."
     }
   }
 }
