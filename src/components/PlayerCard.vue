@@ -6,7 +6,7 @@
                     <img class="gravatar" :src="gravatar">
                 </div>
             </div>
-            <div style="width: fit-content; margin-bottom: 10px; margin-top: -10px">
+            <div style="width: fit-content; margin-bottom: 10px; margin-top: -10px; height: 32px">
                 <b-taglist v-if="playerElo > 0" attached>
                     <b-tag type="is-light-gray">Elo</b-tag>
                     <b-tag  type="is-info">{{ playerElo }}</b-tag>

@@ -43,7 +43,6 @@
 				</div>
 				<div v-if="tabsModel === 'chat'" class="chat-input">
 					<b-field>
-						<!-- <b-input @focus="chatMessage = ''" v-model="chatMessage" :custom-class="{'chat-textarea': true, 'chat-placeholder-color': chatMessage === 'Please be nice in chat!'}" size="is-small" expanded></b-input> -->
 						<b-input v-on:keyup.native.enter="sendMessage" v-model="chatMessage" custom-class="chat-textarea" size="is-small" expanded></b-input>
 						<p class="control">
 							<b-button class="chat-btn" @click="sendMessage" label="Send"></b-button>
@@ -62,18 +61,9 @@
 								'hoverable-repairabe': isLegalRepair(x,y),
 								'hoverable-approachable': isLegalMove(x,y)
 								}" v-for="(col, x) in row" :key="x" :style="gridProps">
-								<!-- <img v-if="selected !== undefined && ourState[selected.y][selected.x].type === 'salvation' && isLegalRepair(x,y)" :class="hexClasses(x,y)" src="green-hex.png" height="80px"/>
-								<img v-else-if="selected !== undefined && ourState[selected.y][selected.x].type !== 'salvation' && isLegalAttack(x,y)" :class="hexClasses(x,y)" src="red-hex.png" height="80px"/>
-								<img v-else :class="hexClasses(x,y)" src="hex.png" height="80px"/> -->
-								<img :class="hexClasses(x,y)" :src="hexImg(x,y)" height="80px" :style="gridProps"/> 
-								<img :class="pieceClasses(col.owner, x, y)" :src="col.img" :style="gridProps"/>
+								<img :ref="parseHexID(x,y)" :class="hexClasses(x,y)" :src="hexImg(x,y)" height="80px" :style="gridProps"/> 
+								<img :ref="parseEleID(x,y)" :class="pieceClasses(col.owner, x, y)" :src="col.img" :style="gridProps"/>
 								<img v-if="isLegalMove(x,y)" class="move-circle" src="circle.png"/>
-								<!-- <div v-if="col.type" class="tooltip">
-									<div class="spaceship-type">{{ col.type }}</div>
-									<span class="attribute" v-for="(value, key) in getSpaceshipAttributes(col)" :key="key">
-									{{key}}: {{value}}
-									</span>
-								</div> -->
 							</div>
 						</div>
 					</div>
@@ -121,24 +111,6 @@
 							<span :myTurn="!isMyTurn" class="info-card-energy">-{{spaceshipStats.repairCost}}</span>
 							<img :myTurn="!isMyTurn" class="info-card-energy-icon" src="/energy.svg" width="23px"/>
 					</div>
-					<!-- <div v-if="spaceshipStats.type !== 'base'" class="ability move">
-						<img class="ability-icon" :src="moveIcon"/>
-						<div class="ability-text" style="color: #EFC97F">Move</div>
-						<span class="energy-ability">{{spaceshipStats.moveCost}}</span>
-						<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
-					</div>
-					<div v-if="spaceshipStats.type !== 'salvation' && spaceshipStats.type !== 'base'" class="ability attack">
-						<img class="ability-icon" :src="attackIcon"/>
-						<div class="ability-text" style="color: #FF4949">Attack {{spaceshipStats.attack}}</div>
-						<span class="attack-ability">{{spaceshipStats.attackCost}}</span>
-						<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
-					</div>
-					<div v-if="spaceshipStats.type === 'salvation' && spaceshipStats.type !== 'base'" class="ability repair">
-						<img class="ability-icon" :src="repairIcon"/>
-						<div class="ability-text" style="color: #348227">Repair 25%</div>
-						<span class="attack-ability">{{spaceshipStats.repairCost}}</span>
-						<img class="energy-icon-ability" src="/energy.svg" width="23px"/>
-					</div> -->
 				</div>
 				<PlayerCard @endTurn="endTurn" @surrender="surrender" :playerAddress="$store.state.address" :fuel="myFuel" :lastTurnTimestamp="lastTurnTimestamp" :isMyTurn="isMyTurn" :playerAlias="playerAlias" :playerElo="playerElo"/>
 				<div v-if="$store.getters.isMobile">
@@ -255,7 +227,6 @@
 					</b-tabs>
 					<div v-if="tabsModel === 'chat'" class="chat-input">
 						<b-field>
-							<!-- <b-input @focus="chatMessage = ''" v-model="chatMessage" :custom-class="{'chat-textarea': true, 'chat-placeholder-color': chatMessage === 'Please be nice in chat!'}" size="is-small" expanded></b-input> -->
 							<b-input v-on:keyup.native.enter="sendMessage" v-model="chatMessage" custom-class="chat-textarea" size="is-small" expanded></b-input>
 							<p class="control">
 								<b-button class="chat-btn" @click="sendMessage" label="Send"></b-button>
@@ -266,8 +237,7 @@
 			</div>
 		</div>
 	</div>
-	<!-- <b-button v-if="isMyTurn" @click="endTurn">End Turn</b-button>
-	{{isMyTurn}} {{myFuel}} {{enemyFuel}} -->
+
 </template>
 
 <script>
@@ -629,6 +599,12 @@ export default {
 
 		return classes
 	  },
+	  parseEleID(x,y) {
+		  return y.toString() + x.toString()
+	  },
+	  parseHexID(x,y) {
+		  return 'hex' + y.toString() + x.toString()
+	  },
 	  select(piece, x, y) {
 		  if(this.$store.getters.isMobile) {
 			if(piece.type) {
@@ -721,7 +697,7 @@ export default {
 				to: {x,y}
 			}
 		}))
-		// this.playSound(this.shotSfx)
+		this.playSound(this.shotSfx)
 
 	  },
 	  repairPiece(x,y) {
@@ -762,6 +738,53 @@ export default {
 		if(constantAttributes.repairPercent) attributes.repair = `${constantAttributes.repairPercent}%`
 		return attributes
 	  }
+	//   startAttackedFX(i,j) {
+	// 	  console.log('attacked')
+	// 	this.playSound(this.shotSfx)
+	// 	// const targets = this.parseEleID(j,i)
+	// 	// const eleTarget = this.$refs[ele]
+	// 	// const eleHexTarget = this.$refs[eleHex]
+	// 	// this.$refs[ele].classList.value = this.$refs[ele].$el.classList.value + 'under-action'
+	// 	const eleHex = this.parseHexID(j,i)
+	// 	this.$refs[eleHex][0].src = "/red-hex.png"
+	// 	this.$refs[eleHex][0].classList.add('under-action')
+	// 	setTimeout(() => {
+	// 		this.$refs[eleHex][0].src = "/hex.png"
+	// 		this.$refs[eleHex][0].classList.remove('under-action')
+	// 	}, 2500)
+	//   },
+	//   startRepairedFX(i,j) {
+	// 	  console.log('repaired')
+	// 	this.playSound(this.repairSfx)
+	// 	const eleHex = this.parseHexID(j,i)
+	// 	this.$refs[eleHex][0].src = "/green-hex.png"
+	// 	this.$refs[eleHex][0].classList.add('under-action')
+	// 	setTimeout(() => {
+	// 		this.$refs[eleHex][0].src = "/hex.png"
+	// 		this.$refs[eleHex][0].classList.remove('under-action')
+	// 	}, 2500)
+	//   },
+	//   startMovementFromFX(i,j) {
+	// 	console.log('Moved from ', i,j)
+	//   },
+	//   startMovementToFX(i,j) {
+	// 	console.log('Moved to ', i,j)
+	//   },
+	//   checkBoardActions(newBoard, oldBoard) {
+	// 	newBoard = newBoard.state
+	// 	oldBoard = oldBoard.state
+	// 	for(let i=0; i<oldBoard.length; i++) {
+	// 		for(let j=0; j<oldBoard[i].length; j++) {
+	// 			if(newBoard[i][j].hp < oldBoard[i][j].hp) {
+	// 				console.log(newBoard[i][j].hp, oldBoard[i][j].hp)
+	// 				this.startAttackedFX(i,j)
+	// 				}
+	// 			if(newBoard[i][j].hp > oldBoard[i][j].hp) this.startRepairedFX(i,j)
+	// 			if(newBoard[i][j] !== {} && oldBoard[i][j] === {}) this.startMovementToFX(i,j)
+	// 			if(newBoard[i][j] === {} && oldBoard[i][j] !== {}) this.startMovementFromFX(i,j)
+	// 		}
+	// 	}
+	//   }
   },
   watch: {
 		sortedLogs (newLogs, oldLogs) {
@@ -776,14 +799,14 @@ export default {
 			if(newChats.length > oldChats.length) this.playRandomRadioSfx()
 		},
 	  "$store.state.matchState" (newState, oldState) {
-		// if(newState.log.length !== oldState.log.length) {
-		// 	if(newState.log[newState.log.length - 1].action === 'attack') {
-		// 		console.log('attacked')
-		// 		this.playSound(this.shotSfx)
-		// 	} else if(newState.log[newState.log.length - 1].action === 'repair') {
-		// 		this.playSound(this.repairSfx)
-		// 	}
-		// }
+		if(newState.log.length !== oldState.log.length) {
+			if(newState.log[newState.log.length - 1].action === 'attack') {
+				this.playSound(this.shotSfx)
+			} else if(newState.log[newState.log.length - 1].action === 'repair') {
+				this.playSound(this.repairSfx)
+			}
+		}
+		// this.checkBoardActions(newState, oldState)
 		if(oldState.playerTurn !== newState.playerTurn) {
 			this.selected = undefined
 			this.playSound(this.turnSfx)
@@ -791,15 +814,10 @@ export default {
 	}
   },
   async created() {
-	// this.boardLoading = true
-	// try {
 	await Promise.all([
 		this.fetchProfile(this.$store.state.address, false),
 		this.fetchProfile(this.enemyAddress, true)
 	])
-	// } finally {
-	// 	this.boardLoading = false
-	// }
   }
 }
 </script>
