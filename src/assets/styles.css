@@ -192,6 +192,39 @@ button.button.secondary-btn[disabled] {
     margin: 0px !important;
     margin-top: 10px !important;
 }
+.elementToFadeInAndOut {
+    background: black;
+    -webkit-animation: fadeinout 1.5s linear forwards;
+    animation: fadeinout 1.5s linear forwards;
+    animation-iteration-count: infinite;
+}
+.under-action {
+    -webkit-animation: fadeinout 0.5 linear forwards;
+    animation: fadeinout 0.5s linear forwards;
+    animation-iteration-count: 5;
+}
+.page-title {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: bold;
+    font-size: 34px;
+    line-height: 40px;
+    text-align: center;
+    text-transform: capitalize;
+    color: #FFFFFF;
+    margin-bottom: 50px;
+}
+
+@-webkit-keyframes fadeinout {
+  0%,100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+@keyframes fadeinout {
+  0%,100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
 
 /* Mobile styles */
 @media screen and (max-width: 769px) {
@@ -331,6 +364,7 @@ button.button.secondary-btn[disabled] {
         transition: 200ms ease-in;
         margin: 5px !important;
         margin-top: 2px !important;
+        height: 60px;
     }
     .primary-btn:hover {
         width: 230px !important;

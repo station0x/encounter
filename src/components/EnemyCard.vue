@@ -6,8 +6,14 @@
                     <img class="gravatar" :src="gravatar">
                 </div>
             </div>
+            <div style="width: fit-content">
+                <b-taglist v-if="playerElo > 0" attached>
+                    <b-tag type="is-light-gray">Elo</b-tag>
+                    <b-tag  type="is-danger">{{ playerElo }}</b-tag>
+                </b-taglist>
+            </div>
             <h1 class="you">{{ playerAlias }}</h1>
-            <h1 @click="$router.push({ name: 'Player Profile', params: { playerAddress: playerAddress } })"  class="your-address">{{ formattedAddress }}</h1>
+            <h1 @click="openProfile(playerAddress)"  class="your-address">{{ formattedAddress }}</h1>
             <img class="energy-icon" src="/energy.svg" width="23px"/>
             <span class="energy">{{fuel}}</span>
             <div :disabled="!isEnemyTurn" class="turn-timer">Ends in: <strong style="color: #F88C09; margin-left: 10px">{{ lastTurnTimestamp === undefined ? turnTimeout : countdown }}</strong></div>
@@ -37,7 +43,7 @@
 <script>
 import CONSTANTS from '../../constants'
 export default {
-    props:['playerAddress', 'fuel', 'isEnemyTurn', 'lastTurnTimestamp', 'playerAlias'],
+    props:['playerAddress', 'fuel', 'isEnemyTurn', 'lastTurnTimestamp', 'playerAlias', 'playerElo'],
     data () {
         return {
             gravatar: null,
@@ -76,6 +82,10 @@ export default {
         endEnemyTurn() {
             this.$emit('endEnemyTurn')
         },
+        openProfile(address) {
+          let routeData = this.$router.resolve({ name: 'Player Profile', params: { playerAddress: address } })
+          window.open(routeData.href, '_blank')
+        },
     },
     mounted: function() {
         this.gravatar = this.$refs.gravatar.url
@@ -107,7 +117,7 @@ export default {
 
 <style scoped>
 .player-card {
-    height: 46.4%;
+    height: 48%;
     /* height: 48%;
     width: 100%;
     top: 0;
@@ -135,7 +145,7 @@ export default {
 }
 .your-address {
     color: white;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     cursor: pointer;
 }
 .your-address:hover {

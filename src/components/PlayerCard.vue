@@ -6,8 +6,14 @@
                     <img class="gravatar" :src="gravatar">
                 </div>
             </div>
+            <div style="width: fit-content; margin-bottom: 10px; margin-top: -10px; height: 32px">
+                <b-taglist v-if="playerElo > 0" attached>
+                    <b-tag type="is-light-gray">Elo</b-tag>
+                    <b-tag  type="is-info">{{ playerElo }}</b-tag>
+                </b-taglist>
+            </div>
             <h1 class="you">{{ playerAlias }}</h1>
-            <h1 @click="$router.push({ name: 'Player Profile', params: { playerAddress: playerAddress } })" class="your-address">{{ formattedAddress }}</h1>
+            <h1 @click="openProfile(playerAddress)" class="your-address">{{ formattedAddress }}</h1>
             <img class="energy-icon" src="/energy.svg" width="23px"/>
             <span class="energy">{{fuel}}</span>
             <div class="btn-group">
@@ -41,9 +47,8 @@
 
 <script>
 import CONSTANTS from '../../constants'
-import axios from 'axios'
 export default {
-    props:['playerAddress', 'fuel', 'lastTurnTimestamp', 'isMyTurn', 'playerAlias'],
+    props:['playerAddress', 'fuel', 'lastTurnTimestamp', 'isMyTurn', 'playerAlias', 'playerElo'],
     data () {
         return {
             gravatar: null,
@@ -92,6 +97,10 @@ export default {
                 hasIcon: true,
                 onConfirm: () => this.surrender()
             })
+        },
+        openProfile(address) {
+          let routeData = this.$router.resolve({ name: 'Player Profile', params: { playerAddress: address } })
+          window.open(routeData.href, '_blank')
         },
         surrender() {
             this.$emit('surrender')
@@ -151,7 +160,7 @@ section.modal-card-body.is-flex {
     transition: all ease-in-out 600ms;
 }
 .surrender {
-    margin-top: 2.2rem !important;
+    margin-top: 1rem !important;
     bottom: 0;
     width: 100%;
     border-radius: 0px;
@@ -188,7 +197,7 @@ section.modal-card-body.is-flex {
 .btn-group {
     display: inline-block;
     width: 100%;
-    margin-top: 15px;
+    margin-top: 5px;
 }
 .end-turn {
     background: #416BFF !important;

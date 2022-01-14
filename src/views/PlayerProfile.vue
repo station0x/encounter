@@ -3,30 +3,22 @@
         <div class="loader-wrapper" v-if="fetchingProfileLoader">
             <Loader v-model="fetchingProfileLoader"/>
         </div>
-        <h1 class="profile-title">Captain Profile</h1>
+        <h1 class="page-title">Captain Profile</h1>
         <div class="profile-wrapper">
             <div class="hex">
                 <div class="hex-background">
                     <img class="gravatar" :src="gravatar">
                 </div>
             </div>
-            <!-- <div v-if="playerInfo.playerAlias.length !== 0" class="name">Name</div> -->
-            <!-- <b-input v-if="playerAddress === $store.state.address"></b-input> -->
-            <!-- <b-field v-if="playerAddress === $store.state.address">
-                <b-input expanded custom-class="name-input" placeholder="Name"></b-input>
-                <p class="control">
-                    <b-button class="submit-btn">Save name</b-button>
-                </p>
-            </b-field> -->
-            <div class="name">{{playerInfo? playerInfo.playerAlias: ""}}</div>
             <center>
                 <div style="width: fit-content">
                     <b-taglist attached>
-                        <b-tag type="is-dark">Elo</b-tag>
+                        <b-tag type="is-light-gray">Elo</b-tag>
                         <b-tag v-if="playerInfo" type="is-info">{{ playerInfo.elo }}</b-tag>
                     </b-taglist>
                 </div>
             </center>
+            <div class="name">{{playerInfo? playerInfo.playerAlias: ""}}</div>
             <div class="address">{{ playerAddress }}</div>
             <b-field v-if="playerAddress === $store.state.address">
                 <b-input v-model="newName" custom-class="name-textarea" size="is-small" expanded></b-input>
@@ -119,12 +111,11 @@ export default {
 
 <style>
 .page-container {
-    height: 100vh;
-    padding-top: 170px;
+    padding-top: 20px;
 }
 .profile-wrapper {
     height: 700px;
-    width: 700px;
+    max-width: 700px;
     padding: 50px;
     background: #01040D;
     backdrop-filter: blur(6px);
@@ -162,7 +153,7 @@ export default {
     height: fit-content;
     width: fit-content;
     margin: 0 auto;
-    font-size: 21px;
+    font-size: 2rem;
     color: white;
     font-family: 'ClashDisplay-Variable';
     font-weight: 500;
@@ -172,25 +163,16 @@ export default {
 .address {
     height: fit-content;
     width: fit-content;
-    background: rgba(34, 34, 37, 0.11);
     margin: 0 auto;
+    margin-top: -40px;
+    margin-bottom: 20px;
     font-size: 17px;
     font-family: 'ClashDisplay-Variable';
     font-weight: 300;
     letter-spacing: 1.1px;
     color: rgba(255,255,255,.7);
     padding: 20px 25px;
-}
-.profile-title {
-    font-family: 'Roboto';
-    font-style: normal;
-    font-weight: bold;
-    font-size: 34px;
-    line-height: 40px;
-    text-align: center;
-    text-transform: capitalize;
-    color: #FFFFFF;
-    margin-bottom: 50px;
+    overflow-wrap: anywhere;
 }
 .submit-btn {
   height: 50px !important;
