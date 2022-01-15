@@ -13,6 +13,7 @@ module.exports = async (req, res) => {
             const player = {}
             player.elo = v.elo === undefined ? 1200 : v.elo
             player.player = v.playerAlias && v.playerAlias.length > 0 ? v.playerAlias: v.address
+            player.address = v.address
             player.gm = v.gm
             return player
         })

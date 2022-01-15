@@ -213,11 +213,11 @@
       "desc": "Ubiquity spaceships can warp from one edge to another when placed adjacent to the left or right edges of the board."
     },
     "nightstalker": {
-      "attack": 15,
+      "attack": 10,
       "hp": 50,
       "moveFuelCost": 2,
       "attackFuelCost": 3,
-      "bonusAttackOnAttack": 2,
+      "bonusAttackOnAttack": 5,
       "desc": "Nightstalker gain 2 attack damage if it lands an attack to any other spaceship with unlimited stack amount. It's squishy with a base attack of 15."
     }
   }

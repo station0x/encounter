@@ -59,15 +59,12 @@ export default {
             } catch {
                 this.fetchLeaderboard()
             }
-            const res = await axios.get('/api/player/fetchPlayerProfile', {
-                params:{
-                    address: this.$store.state.address
-                }
-            })
-            this.playerInfo = res.data.playerDoc
-            const playerId = this.data.find(o => o.player === this.playerInfo.playerAlias || this.playerInfo.address)
-            const playerIndex = this.data.indexOf(playerId)
-            this.selected = this.data[playerIndex]
+            if(this.$store.state.address) {
+                const playerId = this.data.find(o => o.address === this.$store.state.address)
+                const playerIndex = this.data.indexOf(playerId)
+                this.selected = this.data[playerIndex]
+            }
+
         }
     },
     async created() {
