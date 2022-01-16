@@ -13,10 +13,10 @@
 								</template>
 								<div id="action-logs">
 									<div v-for="(msg, key) in sortedLogs" :key="key">
-										<div v-if="msg.playerNo === playerIs && msg.action !== 'move'" class="chat-message" :style="{'color': (sortedLogs.length - 1) - key < newLogs ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.5)'}">
+										<div v-if="msg.playerNo === playerIs" class="chat-message" :style="{'color': (sortedLogs.length - 1) - key < newLogs ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.5)'}">
 											{{formatAction(msg)}}
 										</div>
-										<div v-else-if="msg.playerNo !== playerIs && msg.action !== 'move'" class="chat-message" :style="{'color': (sortedLogs.length - 1) - key < newLogs ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.5)'}">
+										<div v-else-if="msg.playerNo !== playerIs" class="chat-message" :style="{'color': (sortedLogs.length - 1) - key < newLogs ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.5)'}">
 											{{formatAction(msg)}}
 										</div>
 									</div>
@@ -295,7 +295,7 @@ export default {
 		})
 	},
 	sortedLogs() {
-		return arraySort([...this.log], 'index')
+		return arraySort([...this.log], 'index').filter((log) => log.action !== 'move')
 	},
 	sortedChats() {
 		return arraySort([...this.chat], 'index')
@@ -314,7 +314,7 @@ export default {
 	enemyAlias() {
 		if(this.enemyProfile !== undefined) {
 			if (this.enemyProfile.playerAlias === undefined) return 'Enemy'
-			else return this.enemyProfile.playerAlias.length > 0 ?  this.enemyProfile.playerAlias : 'Enemysss'
+			else return this.enemyProfile.playerAlias.length > 0 ?  this.enemyProfile.playerAlias : 'Enemys'
 		} else return 'Enemy'
 	},
 	playerElo() {
