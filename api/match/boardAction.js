@@ -48,6 +48,12 @@ module.exports = async (req, res) => {
     // Update Match History
     newMatchStats.history.push({from: {x: from.x, y: from.y}, to: {x: to.x, y: to.y}, action, playerNumber})
 
+    // Update game log
+    newMatchStats.log.push({index: matchDoc.logsIndex, playerNo: playerNumber, action, from: {x: from.x, y: from.y}, to: {x: to.x, y: to.y}, fromPiece: newMatchStats.board[from.y][from.x], toPiece: newMatchStats.board[to.y][to.x]})
+
+    // Increase Logs Index
+    newMatchStats.logsIndex++
+
     // Update Last turn Warp used
     if((from.x === 0 && to.x === 8) || (from.x === 8 && to.x === 0)) {
         if(!canMakeAction("warp", newMatchStats.board, to.x, to.y, matchDoc.turnNum)) throw new Error('Piece already made an action in this turn')
@@ -77,9 +83,13 @@ module.exports = async (req, res) => {
     const newHp = hp - attack;
     if(newHp > 0) {
         newMatchStats.board[to.y][to.x].hp = newHp
+        // Update game log
+        newMatchStats.log.push({index: matchDoc.logsIndex, playerNo: playerNumber, action, from: {x: from.x, y: from.y}, to: {x: to.x, y: to.y}, fromPiece: newMatchStats.board[from.y][from.x], toPiece: newMatchStats.board[to.y][to.x]})
     } else {
         const type = newMatchStats.board[to.y][to.x].type
         newMatchStats.board[to.y][to.x] = {}
+        // Update game log
+        newMatchStats.log.push({index: matchDoc.logsIndex, playerNo: playerNumber, action, from: {x: from.x, y: from.y}, to: {x: to.x, y: to.y}, fromPiece: newMatchStats.board[from.y][from.x], toPiece: newMatchStats.board[to.y][to.x], destroyed: type})
         // if base is destroyed, end game
         if(type === "base") { // game ended
             newMatchStats = await endMatch(newMatchStats, db.collection("players"), playerNumber)
@@ -102,9 +112,6 @@ module.exports = async (req, res) => {
 
     // Update Match History
     newMatchStats.history.push({from: {x: from.x, y: from.y}, to, action, playerNumber})
-
-    // Update game log
-    newMatchStats.log.push({index: matchDoc.logsIndex, playerNo: playerNumber, action: 'attack', fromPiece: newMatchStats.board[from.y][from.x], toPiece: newMatchStats.board[to.y][to.x]})
 
     // Increase Logs Index
     newMatchStats.logsIndex++
@@ -139,7 +146,7 @@ module.exports = async (req, res) => {
     newMatchStats.history.push({from: {x: from.x, y: from.y}, to: {x: to.x, y: to.y}, action, playerNumber})
 
     // Update game log
-    newMatchStats.log.push({index: matchDoc.logsIndex, playerNo: playerNumber, action: 'repair', fromPiece: newMatchStats.board[from.y][from.x], toPiece: newMatchStats.board[to.y][to.x]})
+    newMatchStats.log.push({index: matchDoc.logsIndex, playerNo: playerNumber, action, from: {x: from.x, y: from.y}, to: {x: to.x, y: to.y}, fromPiece: newMatchStats.board[from.y][from.x], toPiece: newMatchStats.board[to.y][to.x]})
 
     // Increase Logs Index
     newMatchStats.logsIndex++
