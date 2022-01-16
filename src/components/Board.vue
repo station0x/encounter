@@ -295,7 +295,7 @@ export default {
 		})
 	},
 	sortedLogs() {
-		return arraySort([...this.log], 'index')
+		return arraySort([...this.log], 'index').filter((log) => log.action !== 'move')
 	},
 	sortedChats() {
 		return arraySort([...this.chat], 'index')
@@ -314,7 +314,7 @@ export default {
 	enemyAlias() {
 		if(this.enemyProfile !== undefined) {
 			if (this.enemyProfile.playerAlias === undefined) return 'Enemy'
-			else return this.enemyProfile.playerAlias.length > 0 ?  this.enemyProfile.playerAlias : 'Enemysss'
+			else return this.enemyProfile.playerAlias.length > 0 ?  this.enemyProfile.playerAlias : 'Enemys'
 		} else return 'Enemy'
 	},
 	playerElo() {
@@ -493,9 +493,7 @@ export default {
 					message += "his "
 				}
 			}
-
-			message += actionObj.toPiece.type ? this.capitalize(actionObj.toPiece.type) : 'unit'
-
+			message += actionObj.toPiece.type ? this.capitalize(actionObj.toPiece.type) : this.capitalize(actionObj.destroyed)
 			return message
 		},
 		capitalize(str) {
@@ -505,6 +503,20 @@ export default {
 			}
 			return str
 		},
+		// formASentence(words) {
+		// 	if(words.length === 1) return `${this.capitalize(words[0])}.`
+		// 	else {
+		// 		let sentence = ''
+		// 		for(let i=0; i<words.length; i++) {
+		// 			if(i === words.length - 1) {
+		// 				sentence += `and ${this.capitalize(words[i])}.`
+		// 			} else {
+		// 				sentence += `${this.capitalize(words[i])}, `
+		// 			}
+		// 		}
+		// 		return sentence
+		// 	}
+		// },
 	    playSound(sfx) {
 			var audio = new Audio(sfx)
 			try {
@@ -697,7 +709,7 @@ export default {
 				to: {x,y}
 			}
 		}))
-		this.playSound(this.shotSfx)
+		// this.playSound(this.shotSfx)
 
 	  },
 	  repairPiece(x,y) {
@@ -726,7 +738,7 @@ export default {
 				to: {x,y}
 			}
 		}))
-		this.playSound(this.repairSfx)
+		// this.playSound(this.repairSfx)
 	  },
 	  getSpaceshipAttributes (piece) {
 		let attributes = {
@@ -737,39 +749,37 @@ export default {
 		if(constantAttributes.attack) attributes.attack = constantAttributes.attack
 		if(constantAttributes.repairPercent) attributes.repair = `${constantAttributes.repairPercent}%`
 		return attributes
+	  },
+	  startAttackedFX(to) {
+		this.playSound(this.shotSfx)
+		// const targets = this.parseEleID(j,i)
+		// const eleTarget = this.$refs[ele]
+		// const eleHexTarget = this.$refs[eleHex]
+		// this.$refs[ele].classList.value = this.$refs[ele].$el.classList.value + 'under-action'
+		const eleHex = this.parseHexID(to.x, to.y)
+		this.$refs[eleHex][0].src = "/red-hex.png"
+		this.$refs[eleHex][0].classList.add('under-action','unhoverable')
+		setTimeout(() => {
+			this.$refs[eleHex][0].src = "/hex.png"
+			this.$refs[eleHex][0].classList.remove('under-action','unhoverable')
+		}, 2500)
+	  },
+	  startRepairedFX(to) {
+		this.playSound(this.repairSfx)
+		const eleHex = this.parseHexID(to.x, to.y)
+		this.$refs[eleHex][0].src = "/green-hex.png"
+		this.$refs[eleHex][0].classList.add('under-action','unhoverable')
+		setTimeout(() => {
+			this.$refs[eleHex][0].src = "/hex.png"
+			this.$refs[eleHex][0].classList.remove('under-action','unhoverable')
+		}, 2500)
+	  },
+	  startMovementFromFX(to) {
+		console.log('Moved from ', to)
+	  },
+	  startMovementToFX(to) {
+		console.log('Moved to ', to)
 	  }
-	//   startAttackedFX(i,j) {
-	// 	  console.log('attacked')
-	// 	this.playSound(this.shotSfx)
-	// 	// const targets = this.parseEleID(j,i)
-	// 	// const eleTarget = this.$refs[ele]
-	// 	// const eleHexTarget = this.$refs[eleHex]
-	// 	// this.$refs[ele].classList.value = this.$refs[ele].$el.classList.value + 'under-action'
-	// 	const eleHex = this.parseHexID(j,i)
-	// 	this.$refs[eleHex][0].src = "/red-hex.png"
-	// 	this.$refs[eleHex][0].classList.add('under-action')
-	// 	setTimeout(() => {
-	// 		this.$refs[eleHex][0].src = "/hex.png"
-	// 		this.$refs[eleHex][0].classList.remove('under-action')
-	// 	}, 2500)
-	//   },
-	//   startRepairedFX(i,j) {
-	// 	  console.log('repaired')
-	// 	this.playSound(this.repairSfx)
-	// 	const eleHex = this.parseHexID(j,i)
-	// 	this.$refs[eleHex][0].src = "/green-hex.png"
-	// 	this.$refs[eleHex][0].classList.add('under-action')
-	// 	setTimeout(() => {
-	// 		this.$refs[eleHex][0].src = "/hex.png"
-	// 		this.$refs[eleHex][0].classList.remove('under-action')
-	// 	}, 2500)
-	//   },
-	//   startMovementFromFX(i,j) {
-	// 	console.log('Moved from ', i,j)
-	//   },
-	//   startMovementToFX(i,j) {
-	// 	console.log('Moved to ', i,j)
-	//   },
 	//   checkBoardActions(newBoard, oldBoard) {
 	// 	newBoard = newBoard.state
 	// 	oldBoard = oldBoard.state
@@ -800,10 +810,11 @@ export default {
 		},
 	  "$store.state.matchState" (newState, oldState) {
 		if(newState.log.length !== oldState.log.length) {
-			if(newState.log[newState.log.length - 1].action === 'attack') {
-				this.playSound(this.shotSfx)
-			} else if(newState.log[newState.log.length - 1].action === 'repair') {
-				this.playSound(this.repairSfx)
+			const lastAction = newState.log.length - 1
+			if(newState.log[lastAction].action === 'attack') {
+				this.startAttackedFX(newState.log[lastAction].to)
+			} else if(newState.log[lastAction].action === 'repair') {
+				this.startRepairedFX(newState.log[lastAction].to)
 			}
 		}
 		// this.checkBoardActions(newState, oldState)
@@ -864,6 +875,9 @@ h1 {
 .hoverable-movable:hover .hex-parcel {
 	filter: invert();
 	opacity: 1;
+}
+.unhoverable {
+	filter: none;
 }
 /* .hoverable-attackable {
 	filter:invert();
