@@ -54,7 +54,7 @@
 				<div class="hex-grid-container">
 					<div id="hex-grid" :style="gridProps" :class="{rotate: playerIs === 1}">
 						<div class="row" v-for="(row, y) in ourState" :key="y">
-							<div @mouseover="hoverPiece(x,y)" @click="select(col, x, y)" :class="{
+							<div @mouseover="hoverPiece(x,y)" @click="confirmFriendlyFire(col, x, y)" :class="{
 								'col': true, 
 								'hoverable-movable': col.type !== 'base' && col.owner === playerIs && !isLegalRepair(x,y),
 								'hoverable-attackable': isLegalAttack(x,y),
@@ -425,6 +425,21 @@ export default {
                 onConfirm: () => this.surrender()
             })
         },
+		confirmFriendlyFire(piece, x, y) {
+			let state = this.state
+			if(this.selected !== undefined && (this.selected.x !== x || this.selected.y !== y) && CONSTANTS.spaceshipsAttributes[state[this.selected.y][this.selected.x].type].shock && state[y][x].owner === this.playerIs) {
+				this.$buefy.dialog.confirm({
+					title: 'Friendly Fire!',
+					message: `Are you sure you want to attack your own ${piece.type}?`,
+					confirmText: 'Yes, attack!',
+					type: 'is-danger',
+					hasIcon: true,
+					onConfirm: () => this.select(piece, x, y)
+				})
+			} else {
+				this.select(piece, x, y)
+			}
+        },
 	  	surrender() {
 			const winner = this.playerIs === 0 ? 1 : 0
 			this.$store.commit('setWinner', winner)
@@ -661,10 +676,6 @@ export default {
 					this.selected = undefined // unselect
 				} else {
 					if(this.isLegalAttack(x,y)) {
-						// let targets = new Set()
-						// ;[...legalShockable(this.state, targets, parseHexID(this.selected.x, this.selected.y), parseHexID(x, y), this.playerIs)]
-						// .map((target) => { return { x: parseInt(target[1]), y: parseInt(target[0]) } })
-						// .forEach(target => console.log(this.state[target.y][target.x].type))
 						this.attackPiece(x, y)
 					} else {	
 						if(piece.type != "base" &&  this.isLegalAttack(x,y) || piece.owner === this.playerIs) { // if not base
