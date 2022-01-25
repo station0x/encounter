@@ -1,3 +1,4 @@
+// TO-DO: Board initialization needs to be modular and imported from one file to here and create match by inviation
 "use strict";
 const CONSTANTS = require('../../constants.json')
 // Import the dependency.
@@ -35,7 +36,7 @@ module.exports = async (req, res) => {
            if(!col.type) {
                return col
            }
-   
+           
            col.lastAttackTurn = 0
            col.lastRepairTurn = 0
            col.lastWarpTurn = 0
