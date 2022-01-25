@@ -54,15 +54,15 @@
 				<div class="hex-grid-container">
 					<div id="hex-grid" :style="gridProps" :class="{rotate: playerIs === 1}">
 						<div class="row" v-for="(row, y) in ourState" :key="y">
-							<div @mouseover="hovered = {x,y}" @click="select(col, x, y)" :class="{
+							<div @mouseover="hoverPiece(x,y)" @click="select(col, x, y)" :class="{
 								'col': true, 
 								'hoverable-movable': col.type !== 'base' && col.owner === playerIs && !isLegalRepair(x,y),
 								'hoverable-attackable': isLegalAttack(x,y),
-								'hoverable-repairabe': isLegalRepair(x,y),
+								'hoverable-repairable': isLegalRepair(x,y),
 								'hoverable-approachable': isLegalMove(x,y)
 								}" v-for="(col, x) in row" :key="x" :style="gridProps">
 								<img :ref="parseHexID(x,y)" :class="hexClasses(x,y)" :src="hexImg(x,y)" height="80px" :style="gridProps"/> 
-								<img :ref="parseEleID(x,y)" :class="pieceClasses(col.owner, x, y)" :src="col.img" :style="gridProps"/>
+								<img :class="pieceClasses(col.owner, x, y)" :src="col.img" :style="gridProps"/>
 								<img v-if="isLegalMove(x,y)" class="move-circle" src="circle.png"/>
 							</div>
 						</div>
@@ -247,7 +247,7 @@ import PlayerCard from "@/components/PlayerCard.vue"
 import EnemyCard from "@/components/EnemyCard.vue"
 import GameGuide from '@/components/GameGuide.vue'
 import arraySort from 'array-sort'
-import {legalAttacks, legalMoves, legalRepairs} from '../../common/board'
+import { isOccupied, legalAttacks, legalMoves, legalRepairs, legalShockable, parseHexID } from '../../common/board'
 
 export default {
   name: 'Board',
@@ -314,7 +314,7 @@ export default {
 	enemyAlias() {
 		if(this.enemyProfile !== undefined) {
 			if (this.enemyProfile.playerAlias === undefined) return 'Enemy'
-			else return this.enemyProfile.playerAlias.length > 0 ?  this.enemyProfile.playerAlias : 'Enemys'
+			else return this.enemyProfile.playerAlias.length > 0 ?  this.enemyProfile.playerAlias : 'Enemy'
 		} else return 'Enemy'
 	},
 	playerElo() {
@@ -381,14 +381,29 @@ export default {
 	  },
 	  gridProps() {
 		let styles = {}
-		if(this.$store.getters.innerWidth > 769) {
+		if(this.$store.getters.innerWidth > 1500) {
 			styles['--scale'] = 1.03
+		}
+		else if(this.$store.getters.innerWidth < 1500 &&  this.$store.getters.innerWidth > 769) {
+			styles['--scale'] = 0.8
 		}
 		else {
 			styles['--scale'] = this.$store.getters.innerWidth / 895
 		}
 		styles['--factor'] = 0.9 * styles['--scale']
 		return styles
+	  },
+	  shockablePieces () {
+		  if(this.hovered !== undefined && this.selected !== undefined) {
+			if(CONSTANTS.spaceshipsAttributes[this.state[this.selected.y][this.selected.x].type].shock) {
+				if(this.isLegalAttack(this.hovered.x, this.hovered.y)) {
+						let targets = new Set()
+						let shockable = legalShockable(this.state, targets, parseHexID(this.selected.x, this.selected.y), parseHexID(this.hovered.x, this.hovered.y), this.playerIs)
+						let legalTargets = [...shockable].map((target) => { return { x: parseInt(target[1]), y: parseInt(target[0]) } })
+						return legalTargets
+					} else return {}
+				} else return {}
+		   } else return {}
 	  }
   },
   methods: {
@@ -428,7 +443,16 @@ export default {
           let routeData = this.$router.resolve({ name: 'Leaderboard' })
           window.open(routeData.href, '_blank')
         },
+		hoverPiece(x,y) {
+			this.hovered = { x,y }
+		},
 		hexImg(x, y) {
+			if(this.shockablePieces.length > 0) {
+				if(this.shockablePieces.some(target => target.x === x && target.y === y)) {
+					if(this.hovered.x === x && this.hovered.y === y) return 'red-hex.png'
+					else return 'electro.png'
+				}
+			}
 			if(this.selected) {
 				if(this.ourState[this.selected.y][this.selected.x].type === "salvation" && this.isLegalRepair(x, y)) {
 					return 'green-hex.png'
@@ -577,6 +601,14 @@ export default {
 			if(!this.selected || !this.isMyTurn || !this.canRepair) return false
 			return legalRepairs(this.state, this.selected.x, this.selected.y, this.turnNum).filter(move => move.x === x && move.y === y).length > 0
 	  },
+	  isLegalShockable(x, y) {
+		  	if(!this.selected || !this.isMyTurn || !this.canAttack) return false
+			if(isOccupied(this.state, x, y)) {
+				let targets = new Set()
+				let shockable = legalShockable(this.state, targets, parseHexID(this.selected.x, this.selected.y), parseHexID(x, y), this.playerIs)
+				return [...shockable].map((target) => { return { x: parseInt(target[1]), y: parseInt(target[0]) } }).filter(target => target.x === x && target.y === y).length > 0
+			} else return false
+	  },
 	  pieceClasses(owner, x, y) {
 		  let classes = "col-piece "
 
@@ -611,13 +643,11 @@ export default {
 
 		return classes
 	  },
-	  parseEleID(x,y) {
-		  return y.toString() + x.toString()
-	  },
 	  parseHexID(x,y) {
-		  return 'hex' + y.toString() + x.toString()
+		  return parseHexID(x, y)
 	  },
 	  select(piece, x, y) {
+		  const newState = [...this.state]
 		  if(this.$store.getters.isMobile) {
 			if(piece.type) {
 				this.tabsModel = undefined
@@ -626,21 +656,42 @@ export default {
 		  }
 		  if(!this.isMyTurn) return
 		  if(piece.type) { // if column contains a piece
-			  if(piece.owner === this.playerIs){ // if piece is mine
+			if(this.selected && CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].shock) {
 				if(this.selected && this.selected.x === x && this.selected.y === y) { // if this is the selected piece
 					this.selected = undefined // unselect
-				} else { // if piece is not selected
-					if(this.isLegalRepair(x,y) && piece.type != "base") { // if piece is a legal repair (except base)
-						this.repairPiece(x, y)
-					} else if(piece.type != "base") { // if not base
-						this.selected = { // select piece
-							x,
-							y
+				} else {
+					if(this.isLegalAttack(x,y)) {
+						// let targets = new Set()
+						// ;[...legalShockable(this.state, targets, parseHexID(this.selected.x, this.selected.y), parseHexID(x, y), this.playerIs)]
+						// .map((target) => { return { x: parseInt(target[1]), y: parseInt(target[0]) } })
+						// .forEach(target => console.log(this.state[target.y][target.x].type))
+						this.attackPiece(x, y)
+					} else {	
+						if(piece.type != "base" &&  this.isLegalAttack(x,y) || piece.owner === this.playerIs) { // if not base
+							this.selected = { // select piece
+								x,
+								y
+							}
 						}
 					}
 				}
-			  } else if(this.isLegalAttack(x,y)) { // if piece is not mine but is a legal attack
-				this.attackPiece(x, y)
+			} else {
+				if(piece.owner === this.playerIs){ // if piece is mine
+					if(this.selected && this.selected.x === x && this.selected.y === y) { // if this is the selected piece
+						this.selected = undefined // unselect
+					} else { // if piece is not selected
+						if(this.isLegalRepair(x,y) && piece.type != "base") { // if piece is a legal repair (except base)
+							this.repairPiece(x, y)
+						} else if(piece.type != "base") { // if not base
+							this.selected = { // select piece
+								x,
+								y
+							}
+						}
+					}
+				} else if(this.isLegalAttack(x,y)) { // if piece is not mine but is a legal attack
+					this.attackPiece(x, y)
+				}
 			}
 		} else {
 			if(this.isLegalMove(x,y)) {
@@ -675,20 +726,41 @@ export default {
 	  attackPiece(x, y) {
 		const newState = [...this.state]
 		let attack = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].attack
+		let shock = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].shock || false
 		const bonusAttack = newState[this.selected.y][this.selected.x].bonusAttack || 0
+		attack += bonusAttack;
 		
 		if(!attack) return
-		const hp = newState[y][x].hp
-		attack += bonusAttack;
-		const newHp = hp - attack;
-		if(newHp > 0) {
-			newState[y][x].hp = newHp
+		if(shock) {
+			let targets = new Set()
+			;[...legalShockable(this.state, targets, parseHexID(this.selected.x, this.selected.y), parseHexID(x, y), this.playerIs)]
+			.map((target) => { return { x: parseInt(target[1]), y: parseInt(target[0]) } })
+			.forEach((target) => {
+				const hp = newState[target.y][target.x].hp
+				const newHp = hp - attack;
+				if(newHp > 0) {
+					newState[target.y][target.x].hp = newHp
+				} else {
+					if(newState[target.y][target.x].type === "base") {
+						this.$store.commit('setWinner', this.playerIs)
+					}
+					newState[target.y][target.x] = {}
+				}
+			})
 		} else {
-			if(newState[y][x].type === "base") {
-				this.$store.commit('setWinner', this.playerIs)
+			const hp = newState[y][x].hp
+			attack += bonusAttack;
+			const newHp = hp - attack;
+			if(newHp > 0) {
+				newState[y][x].hp = newHp
+			} else {
+				if(newState[y][x].type === "base") {
+					this.$store.commit('setWinner', this.playerIs)
+				}
+				newState[y][x] = {}
 			}
-			newState[y][x] = {}
 		}
+
 		const fuelCost = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].attackFuelCost
 		this.$store.commit('setMyFuel', this.myFuel - fuelCost)
 		newState[this.selected.y][this.selected.x].lastAttackTurn = this.turnNum
@@ -810,11 +882,12 @@ export default {
 		},
 	  "$store.state.matchState" (newState, oldState) {
 		if(newState.log.length !== oldState.log.length) {
-			const lastAction = newState.log.length - 1
-			if(newState.log[lastAction].action === 'attack') {
-				this.startAttackedFX(newState.log[lastAction].to)
-			} else if(newState.log[lastAction].action === 'repair') {
-				this.startRepairedFX(newState.log[lastAction].to)
+			for(let lastAction = newState.log.length - 1; lastAction >= oldState.log.length; lastAction--) {
+				if(newState.log[lastAction].action === 'attack') {
+					this.startAttackedFX(newState.log[lastAction].to)
+				} else if(newState.log[lastAction].action === 'repair') {
+					this.startRepairedFX(newState.log[lastAction].to)
+				}
 			}
 		}
 		// this.checkBoardActions(newState, oldState)
@@ -834,32 +907,8 @@ export default {
 </script>
 
 <style>
-:root {
-	--factor: calc(0.9 * var(--scale));
-	--board-to-window-ratio: 0.575;
-	--parcel-height: 120px;
-	--parcel-number: 9;
-	--parcel-width: calc(0.85 * var(--parcel-height));
-	--parcel-pyramid-height: calc((var(--parcel-height) - 46px) / 2); 
-}
-h1 {
-	margin: 0;
-}
-#hex-grid {
-    width: calc(var(--parcel-width) * var(--parcel-number));
-    margin: auto;
-}
-.hex-grid-container {
-	transform: translate(calc(((var(--factor) * (var(--parcel-width))) / 2.2)));
-	width: calc(var(--parcel-width) * var(--parcel-number));
-}
 .row {
 	display: block;
-}
-.row:nth-child(even) {
-	transform:translateX(calc((var(--parcel-width) / 2) * var(--factor) + ((0.7px * var(--scale)) / var(--factor)) ));
-	margin-top: calc((var(--parcel-pyramid-height) * var(--factor) * -1) - ((1.8px * var(--scale)) / var(--factor))  );
-	margin-bottom: calc((var(--parcel-pyramid-height) * var(--factor) * -1) - ((1.5px * var(--scale)) / var(--factor))  );
 }
 .col {
 	display: inline;
@@ -879,18 +928,25 @@ h1 {
 .unhoverable {
 	filter: none;
 }
-/* .hoverable-attackable {
-	filter:invert();
-	opacity: 1;
+.hoverable-attackable {
+	cursor:url(/attack-cursor.png), auto;
 }
-*/
-.hoverable-repairable {
-	filter:invert();
-	opacity: 1;
+.hoverable-attackable:hover .hex-parcel {
+	opacity: .9;
+	filter: none;
+}
+.hoverable-repairable:hover .hex-parcel  {
+	opacity: .9;
+	filter: none;
 }
 .hoverable-approachable {
 	filter: brightness(2);
 	opacity: 1;
+}
+.hoverable-approachable:hover .hex-parcel {
+	opacity: 1;
+	-webkit-filter: drop-shadow(0 0 7px rgb(90, 90, 90));
+  	filter: drop-shadow(0 0 7px rgb(90, 90, 90));
 }
 .spaceship-stats {
 	/* margin: 0 auto; */
@@ -981,13 +1037,6 @@ h1 {
 /* Show the tooltip text when you mouse over the tooltip container */
 .col:hover .tooltip {
   visibility: visible;
-}
-.col-piece {
-	position: absolute;
-	opacity: 1 !important;
-	left: calc(22px * var(--factor));
-	bottom: calc(32.25px * var(--factor));
-	height: calc(60.5px * var(--factor));
 }
 .move-circle {
 	position: absolute;

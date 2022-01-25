@@ -4,6 +4,50 @@ function isOccupied(board, x, y) {
     return board[y][x].type ? true : false
 }
 
+function isOurPiece(board, playerNumber, x, y) {
+    return board[y][x].owner === playerNumber;
+}
+
+function isEnemyPiece(board, playerNumber, x ,y) {
+    return board[y][x].owner !== playerNumber
+}
+
+function isMyPiece(board, playerNumber, x ,y) {
+    return board[y][x].owner === playerNumber
+}
+
+function isMyBase(board, x, y, playerNumber) {
+    return board[y][x].type === "base" && board[y][x].owner === playerNumber ? true : false
+}
+
+function fromTarget(x, y, fromX, fromY) {
+    return parseHexID(x,y) === parseHexID(fromX, fromY) ? true : false
+}
+
+function parseHexID(x,y) {
+    return y.toString() + x.toString()
+}
+
+function unparseHexID(id) {
+    return { x: parseInt(id[1]), y: parseInt(id[0]) }
+}
+
+function isAdjacent(from, to) {
+    (Math.abs(parseInt(from[0]) - parseInt(to[0])) <= 1 && Math.abs(parseInt(from[1]) - parseInt(to[1])) <= 1) ? true : false
+}
+
+
+function canMakeAction(action, board, x, y, turnNum) {
+    if(action === 'attack') {
+        return board[y][x].lastAttackTurn !== turnNum
+    } else if(action === 'repair') {
+        return board[y][x].lastRepairTurn !== turnNum
+    } else if(action === 'warp') {
+        return board[y][x].lastWarpTurn !== turnNum
+    }
+    return false
+}
+
 function legalMoves(board, x, y, turnNum) {
     const isEven = y % 2  == 0
     let legalMoves = [
@@ -50,39 +94,12 @@ function legalMoves(board, x, y, turnNum) {
       .filter(move => !isOccupied(board, move.x, move.y))
 }
 
-function isLegalMove(board, selectedX, selectedY, moveX, moveY, turnNum) {
-    return legalMoves(board, selectedX, selectedY, turnNum).filter(move => move.x === moveX && move.y === moveY).length > 0
-}
-
-function isOurPiece(board, playerNumber, x, y) {
-    return board[y][x].owner === playerNumber;
-}
-
-function isEnemyPiece(board, playerNumber, x ,y) {
-    return board[y][x].owner !== playerNumber
-}
-
-function isMyPiece(board, playerNumber, x ,y) {
-    return board[y][x].owner === playerNumber
-}
-
-function canMakeAction(action, board, x, y, turnNum) {
-    if(action === 'attack') {
-        return board[y][x].lastAttackTurn !== turnNum
-    } else if(action === 'repair') {
-        return board[y][x].lastRepairTurn !== turnNum
-    } else if(action === 'warp') {
-        return board[y][x].lastWarpTurn !== turnNum
-    }
-    return false
-}
-
 function legalAttacks(board, x, y, turnNum) {
     const type = board[y][x].type
     const attack = CONSTANTS.spaceshipsAttributes[type].attack
     if(!attack || !canMakeAction("attack", board, x, y, turnNum)) return []
     const isEven = y % 2  == 0
-    let legalMoves = [
+    let legalTargets = [
         { x, y: y - 1 },
         { x: x + 1, y: y - 1 },
         { x: x + 1, y },
@@ -91,22 +108,72 @@ function legalAttacks(board, x, y, turnNum) {
         { x: x - 1, y } 
     ]
     if(isEven) {
-        legalMoves[0].x -= 1;
-        legalMoves[1].x -= 1;
-        legalMoves[3].x -= 1;
-        legalMoves[4].x -= 1;
+        legalTargets[0].x -= 1;
+        legalTargets[1].x -= 1;
+        legalTargets[3].x -= 1;
+        legalTargets[4].x -= 1;
     }
     const playerNumber = board[y][x].owner;
-    return legalMoves
-    .filter(move => {
+    
+    legalTargets = legalTargets
+    .filter(target => {
         const minX = 0
         const minY = 0
         const maxY = board.length-1
         const maxX = board[0].length-1
-        return move.x >= minX && move.x <= maxX && move.y >= minY && move.y <= maxY
+        return target.x >= minX && target.x <= maxX && target.y >= minY && target.y <= maxY
     })
-    .filter(move => isOccupied(board, move.x, move.y))
-    .filter(move => isEnemyPiece(board, playerNumber, move.x, move.y))
+    .filter(target => isOccupied(board, target.x, target.y));
+
+    if(CONSTANTS.spaceshipsAttributes[board[y][x].type].shock !== true) legalTargets = legalTargets.filter(target => isEnemyPiece(board, playerNumber, target.x, target.y))
+    return legalTargets
+}   
+
+function legalShockable(board, targetsSet, fromID, toID, playerNumber) {
+    let targets = new Set(targetsSet)
+    let { x, y } = unparseHexID(toID)
+    targets.add(fromID)
+    targets.add(toID)
+
+    const isEven = y % 2  == 0
+
+    let legalTargets = [
+        { x, y: y - 1 },
+        { x: x + 1, y: y - 1 },
+        { x: x + 1, y },
+        { x: x + 1, y: y + 1 },
+        { x, y: y + 1 },
+        { x: x - 1, y } 
+    ]
+    if(isEven) {
+        legalTargets[0].x -= 1;
+        legalTargets[1].x -= 1;
+        legalTargets[3].x -= 1;
+        legalTargets[4].x -= 1;
+    }
+    let legalTargetsSet = legalTargets
+    .filter(target => {
+        const minX = 0
+        const minY = 0
+        const maxY = board.length-1
+        const maxX = board[0].length-1
+        return target.x >= minX && target.x <= maxX && target.y >= minY && target.y <= maxY
+    })
+    .filter(target => isOccupied(board, target.x, target.y))
+    .filter(target => !isMyBase(board, target.x, target.y, playerNumber))
+    .map(target => parseHexID(target.x, target.y))
+    .filter(target => !targets.has(target))
+    .reduce((set, target) => set.add(target), new Set())    
+
+    if(legalTargetsSet.size === 0) return legalTargetsSet
+    else {
+        legalTargetsSet.forEach((target) => {
+            let newTargets = legalShockable(board, targets, toID, target, playerNumber)
+            newTargets.forEach(target => legalTargetsSet.add(target))
+        })
+        legalTargetsSet.add(toID)
+        return legalTargetsSet
+    }
 }
 
 function legalRepairs(board, x, y, turnNum) {
@@ -114,7 +181,7 @@ function legalRepairs(board, x, y, turnNum) {
     const repairPercent = CONSTANTS.spaceshipsAttributes[type].repairPercent
     if(!repairPercent || !canMakeAction("repair", board, x, y, turnNum)) return []
     const isEven = y % 2  == 0
-    let legalMoves = [
+    let legalAllies = [
         { x, y: y - 1 },
         { x: x + 1, y: y - 1 },
         { x: x + 1, y },
@@ -123,28 +190,32 @@ function legalRepairs(board, x, y, turnNum) {
         { x: x - 1, y } 
     ]
     if(isEven) {
-        legalMoves[0].x -= 1;
-        legalMoves[1].x -= 1;
-        legalMoves[3].x -= 1;
-        legalMoves[4].x -= 1;
+        legalAllies[0].x -= 1;
+        legalAllies[1].x -= 1;
+        legalAllies[3].x -= 1;
+        legalAllies[4].x -= 1;
     }
     const playerNumber = board[y][x].owner;
-    return legalMoves
-    .filter(move => {
+    return legalAllies
+    .filter(ally => {
         const minX = 0
         const minY = 0
         const maxY = board.length-1
         const maxX = board[0].length-1
-        return move.x >= minX && move.x <= maxX && move.y >= minY && move.y <= maxY
+        return ally.x >= minX && ally.x <= maxX && ally.y >= minY && ally.y <= maxY
     })
-    .filter(move => isOccupied(board, move.x, move.y))
-    .filter(move => board[move.y][move.x].type !== "base")
-    .filter(move => isMyPiece(board, playerNumber, move.x, move.y))
-    .filter(move => board[move.y][move.x].hp < CONSTANTS.spaceshipsAttributes[board[move.y][move.x].type].hp)
+    .filter(ally => isOccupied(board, ally.x, ally.y))
+    .filter(ally => board[ally.y][ally.x].type !== "base")
+    .filter(ally => isMyPiece(board, playerNumber, ally.x, ally.y))
+    .filter(ally => board[ally.y][ally.x].hp < CONSTANTS.spaceshipsAttributes[board[ally.y][ally.x].type].hp)
 }
 
 function isLegalAttack(board, selectedX, selectedY, x, y, turnNum) {
     return legalAttacks(board, selectedX, selectedY, turnNum).filter(move => move.x === x && move.y === y).length > 0
+}
+
+function isLegalMove(board, selectedX, selectedY, moveX, moveY, turnNum) {
+    return legalMoves(board, selectedX, selectedY, turnNum).filter(move => move.x === moveX && move.y === moveY).length > 0
 }
 
 function isLegalRepair(board, selectedX, selectedY, x, y, turnNum) {
@@ -170,8 +241,10 @@ module.exports = {
     isOurPiece,
     isEnemyPiece,
     canMakeAction,
+    parseHexID,
     legalAttacks,
     legalRepairs,
+    legalShockable,
     isLegalAttack,
     isLegalRepair,
     checkPlayerUnarmed

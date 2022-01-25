@@ -1,3 +1,4 @@
+// TO-DO: Board initialization needs to be modular and imported from one file to here and join queue
 "use strict";
 const CONSTANTS = require('../../constants.json')
 // Import the dependency.
@@ -43,6 +44,10 @@ module.exports = async (req, res) => {
             return col
         }
 
+        // if(CONSTANTS.spaceshipsAttributes[col.type].attack) col.lastAttackTurn = 0
+        // else if(CONSTANTS.spaceshipsAttributes[col.type].repairPercent) col.lastRepairTurn = 0
+        // else if(CONSTANTS.spaceshipsAttributes[col.type].shock) col.lastShockTurn = 0
+        // else if(CONSTANTS.spaceshipsAttributes[col.type].warp) col.lastWarpTurn = 0
         col.lastAttackTurn = 0
         col.lastRepairTurn = 0
         col.lastWarpTurn = 0
