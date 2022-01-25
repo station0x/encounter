@@ -81,7 +81,7 @@ module.exports = async (req, res) => {
     
     if(shock) {
         let targetsAcc = new Set()
-        let targets = [...legalShockable(newMatchStats.board, targetsAcc, parseHexID(from.x, from.y), parseHexID(to.x, to.y), this.playerIs)]
+        let targets = [...legalShockable(newMatchStats.board, targetsAcc, parseHexID(from.x, from.y), parseHexID(to.x, to.y), playerNumber)]
         .map((target) => { return { x: parseInt(target[1]), y: parseInt(target[0]) } })
 
         for(const target of targets) {
