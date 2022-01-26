@@ -48,7 +48,7 @@
           "owner": 1
         },
         {
-          "type": "thunderbird",
+          "type": "orkocraft",
           "owner": 1
         },
         {
@@ -141,7 +141,7 @@
           "owner": 0
         },
         {
-          "type": "thunderbird",
+          "type": "orkocraft",
           "owner": 0
         },
         {
@@ -219,6 +219,14 @@
       "attackFuelCost": 3,
       "bonusAttackOnAttack": 5,
       "desc": "Nightstalker gain 2 attack damage if it lands an attack to any other spaceship with unlimited stack amount. It's squishy with a base attack of 15."
+    },
+    "orkocraft": {
+      "attack": 10,
+      "hp": 65,
+      "moveFuelCost": 2,
+      "attackFuelCost": 3,
+      "shock": true,
+      "desc": "Orkocraft attack is a an electromagnetic shockwave that can propogate through all of the units adjacent to it or to another including your fleet (Except your base). It's very effecient against defensive structures."
     }
   }
 }

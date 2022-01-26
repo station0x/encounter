@@ -4,8 +4,8 @@ const clientPromise = require('../../api-utils/mongodb-client');
 const getAddress = require('../../api-utils/getAddress');
 const { ObjectId } = require('mongodb');
 const CONSTANTS = require('../../constants.json');
-const {endMatch, updateFuel, endTurn} = require('../../api-utils/match')
-const {isOccupied, isLegalMove, isOurPiece, isLegalAttack, isLegalRepair, canMakeAction, checkPlayerUnarmed} = require('../../common/board')
+const { endMatch, updateFuel, endTurn } = require('../../api-utils/match')
+const { isOccupied, isLegalMove, isOurPiece, isLegalAttack, isLegalRepair, canMakeAction, checkPlayerUnarmed, legalShockable, parseHexID } = require('../../common/board')
 
 
 module.exports = async (req, res) => {
@@ -67,36 +67,66 @@ module.exports = async (req, res) => {
         $set:newMatchStats
     })
    } else if(action === "attack") {
+    let newMatchStats = {...matchDoc}
+    let shock = CONSTANTS.spaceshipsAttributes[newMatchStats.board[from.y][from.x].type].shock || false
     if(!isOccupied(board, to.x, to.y)) throw new Error("Destination is not occupied")
-    if(!isLegalAttack(board, from.x, from.y, to.x, to.y, matchDoc.turnNum)) throw new Error("Illegal attack")
+    if(!shock) { if(!isLegalAttack(board, from.x, from.y, to.x, to.y, matchDoc.turnNum)) throw new Error("Illegal attack") }
     if(!fromAttributes.attackFuelCost || fuel < fromAttributes.attackFuelCost) throw new Error("Insufficient fuel to attack")
 
-    let newMatchStats = {...matchDoc}
     let attack = CONSTANTS.spaceshipsAttributes[newMatchStats.board[from.y][from.x].type].attack
-    const bonusAttack = newMatchStats.board[from.y][from.x].bonusAttack || 0
-    
     if(!attack) return
-    const hp = newMatchStats.board[to.y][to.x].hp
-
+    const bonusAttack = newMatchStats.board[from.y][from.x].bonusAttack || 0
     // Bonus Attack Calculation
     attack += bonusAttack
-    const newHp = hp - attack;
-    if(newHp > 0) {
-        newMatchStats.board[to.y][to.x].hp = newHp
-        // Update game log
-        newMatchStats.log.push({index: matchDoc.logsIndex, playerNo: playerNumber, action, from: {x: from.x, y: from.y}, to: {x: to.x, y: to.y}, fromPiece: newMatchStats.board[from.y][from.x], toPiece: newMatchStats.board[to.y][to.x]})
+    
+    if(shock) {
+        let targetsAcc = new Set()
+        let targets = [...legalShockable(newMatchStats.board, targetsAcc, parseHexID(from.x, from.y), parseHexID(to.x, to.y), playerNumber)]
+        .map((target) => { return { x: parseInt(target[1]), y: parseInt(target[0]) } })
+
+        for(const target of targets) {
+            const hp = newMatchStats.board[target.y][target.x].hp
+            const newHp = hp - attack;
+            if(newHp > 0) {
+                newMatchStats.board[target.y][target.x].hp = newHp
+                // Update game log
+                newMatchStats.log.push({index: matchDoc.logsIndex, playerNo: playerNumber, action, from: {x: from.x, y: from.y}, to: {x: target.x, y: target.y}, fromPiece: newMatchStats.board[from.y][from.x], toPiece: newMatchStats.board[target.y][target.x]})
+            } else {
+                const type = newMatchStats.board[target.y][target.x].type
+                newMatchStats.board[target.y][target.x] = {}
+                // Update game log
+                newMatchStats.log.push({index: matchDoc.logsIndex, playerNo: playerNumber, action, from: {x: from.x, y: from.y}, to: {x: target.x, y: target.y}, fromPiece: newMatchStats.board[from.y][from.x], toPiece: newMatchStats.board[target.y][target.x], destroyed: type})
+                // if base is destroyed, end game
+                if(type === "base") { // game ended
+                    newMatchStats = await endMatch(newMatchStats, db.collection("players"), playerNumber)
+                } else {
+                    // if all enemy spaceships are destroyed except the base (end the game)
+                    if(checkPlayerUnarmed(newMatchStats.board, playerNumber)) {
+                        newMatchStats = await endMatch(newMatchStats, db.collection("players"), playerNumber)
+                    }
+                }
+            }
+        }
     } else {
-        const type = newMatchStats.board[to.y][to.x].type
-        newMatchStats.board[to.y][to.x] = {}
-        // Update game log
-        newMatchStats.log.push({index: matchDoc.logsIndex, playerNo: playerNumber, action, from: {x: from.x, y: from.y}, to: {x: to.x, y: to.y}, fromPiece: newMatchStats.board[from.y][from.x], toPiece: newMatchStats.board[to.y][to.x], destroyed: type})
-        // if base is destroyed, end game
-        if(type === "base") { // game ended
-            newMatchStats = await endMatch(newMatchStats, db.collection("players"), playerNumber)
+        const hp = newMatchStats.board[to.y][to.x].hp
+        const newHp = hp - attack;
+        if(newHp > 0) {
+            newMatchStats.board[to.y][to.x].hp = newHp
+            // Update game log
+            newMatchStats.log.push({index: matchDoc.logsIndex, playerNo: playerNumber, action, from: {x: from.x, y: from.y}, to: {x: to.x, y: to.y}, fromPiece: newMatchStats.board[from.y][from.x], toPiece: newMatchStats.board[to.y][to.x]})
         } else {
-            // if all enemy spaceships are destroyed except the base (end the game)
-            if(checkPlayerUnarmed(newMatchStats.board, playerNumber)) {
+            const type = newMatchStats.board[to.y][to.x].type
+            newMatchStats.board[to.y][to.x] = {}
+            // Update game log
+            newMatchStats.log.push({index: matchDoc.logsIndex, playerNo: playerNumber, action, from: {x: from.x, y: from.y}, to: {x: to.x, y: to.y}, fromPiece: newMatchStats.board[from.y][from.x], toPiece: newMatchStats.board[to.y][to.x], destroyed: type})
+            // if base is destroyed, end game
+            if(type === "base") { // game ended
                 newMatchStats = await endMatch(newMatchStats, db.collection("players"), playerNumber)
+            } else {
+                // if all enemy spaceships are destroyed except the base (end the game)
+                if(checkPlayerUnarmed(newMatchStats.board, playerNumber)) {
+                    newMatchStats = await endMatch(newMatchStats, db.collection("players"), playerNumber)
+                }
             }
         }
     }
