@@ -354,7 +354,14 @@ export default {
 		const type = this.state[this.selected.y][this.selected.x].type
 		if(!type) return false
 		const attributes = CONSTANTS.spaceshipsAttributes[type]
-		return this.myFuel >= attributes.moveFuelCost;
+		const moveHpCost = attributes.moveHpCost || false
+		if(moveHpCost) {
+			const hp = [...this.state][this.selected.y][this.selected.x].hp
+			const newHp = hp - moveHpCost;
+			return newHp > 0
+		} else {
+			return this.myFuel >= attributes.moveFuelCost;
+		}
 	  },
 	  canAttack() {
 		if(!this.selected || !this.isMyTurn) return false
@@ -712,13 +719,23 @@ export default {
 	  },
 	  movePiece(x, y) {
 		const newState = [...this.state]
-		const fuelCost = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].moveFuelCost
-		newState[y][x] = newState[this.selected.y][this.selected.x]
-		newState[this.selected.y][this.selected.x] = {}
-		if((this.selected.x === 0 && x === 8) || (this.selected.x === 8 && x === 0)) newState[y][x].lastWarpTurn = this.turnNum
+		const fuelCost = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].moveFuelCost || 0
+		const hpCost = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].moveHpCost || false
+        if((this.selected.x === 0 && x === 8) || (this.selected.x === 8 && x === 0)) newState[y][x].lastWarpTurn = this.turnNum
 		this.$store.commit('setMyFuel', this.myFuel - fuelCost)
+		if(hpCost) {
+			const hp = newState[this.selected.y][this.selected.x].hp
+			const newHp = hp - hpCost;
+			if(newHp > 0) {
+				newState[this.selected.y][this.selected.x].hp = newHp
+				newState[y][x] = newState[this.selected.y][this.selected.x]
+				newState[this.selected.y][this.selected.x] = {}
+			} else return
+		} else {
+			newState[y][x] = newState[this.selected.y][this.selected.x]
+			newState[this.selected.y][this.selected.x] = {}
+		}
 		if(this.myFuel - fuelCost === 0) {
-			// this.playSound(this.turnSfx)
 			this.$store.commit('endTurn')
 		}
 		this.$store.commit('setBoard', newState)
@@ -738,6 +755,8 @@ export default {
 		const newState = [...this.state]
 		let attack = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].attack
 		let shock = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].shock || false
+		let vamp = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].vamp || false
+		let onDestroyDamage = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].onDestroyDamage || false
 		const bonusAttack = newState[this.selected.y][this.selected.x].bonusAttack || 0
 		attack += bonusAttack;
 		
@@ -755,6 +774,13 @@ export default {
 					if(newState[target.y][target.x].type === "base") {
 						this.$store.commit('setWinner', this.playerIs)
 					}
+					if(onDestroyDamage) {
+						[...legalAttacks(this.state, this.selected.x, this.selected.y, this.turnNum)]
+						.forEach((target) => {
+							const hp = newState[target.y][target.x].hp
+							const newHp = hp - onDestroyDamage;
+						})
+					}
 					newState[target.y][target.x] = {}
 				}
 			})
@@ -768,16 +794,30 @@ export default {
 				if(newState[y][x].type === "base") {
 					this.$store.commit('setWinner', this.playerIs)
 				}
+				if(onDestroyDamage) {
+					[...legalAttacks(this.state, this.selected.x, this.selected.y, this.turnNum)]
+					.forEach((target) => {
+						const hp = newState[target.y][target.x].hp
+						const newHp = hp - onDestroyDamage;
+					})
+				}
 				newState[y][x] = {}
 			}
 		}
 
+		if(vamp) {
+			let maxHp = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].hp
+			let newHp = newState[this.selected.y][this.selected.x].hp + vamp
+			newState[this.selected.y][this.selected.x].hp = Math.min(newState[this.selected.y][this.selected.x].hp + vamp, maxHp)
+		}
 		const fuelCost = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].attackFuelCost
 		this.$store.commit('setMyFuel', this.myFuel - fuelCost)
 		newState[this.selected.y][this.selected.x].lastAttackTurn = this.turnNum
+
 		// Update Bonus Attack
     	newState[this.selected.y][this.selected.x].bonusAttack = (CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].bonusAttackOnAttack || 0) + bonusAttack
 		this.$store.commit('setBoard', newState)
+
 		if(this.myFuel - fuelCost === 0) {
 			// this.playSound(this.turnSfx)
 			this.$store.commit('endTurn')
@@ -793,7 +833,6 @@ export default {
 			}
 		}))
 		// this.playSound(this.shotSfx)
-
 	  },
 	  repairPiece(x,y) {
 		const newState = [...this.state]

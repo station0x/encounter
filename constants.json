@@ -1,6 +1,6 @@
 {
   "initFuel": 10,
-  "turnTimeout": 30,
+  "turnTimeout": 300,
   "maxFuel": 15,
   "fuelPerTurn": 5,
   "initialBoardState": [
@@ -44,7 +44,7 @@
           "owner": 1
         },
         {
-          "type": "gunship",
+          "type": "vampship",
           "owner": 1
         },
         {
@@ -57,18 +57,10 @@
         }
       ],
       [
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {}
-      ],
-      [
-        {},
+        {
+          "type": "divinewind",
+          "owner": 1
+        },
         {},
         {},
         {},
@@ -110,6 +102,20 @@
         {},
         {},
         {}
+      ],
+      [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {
+          "type": "divinewind",
+          "owner": 0
+        }
       ],
       [
         {
@@ -137,7 +143,7 @@
           "owner": 0
         },
         {
-          "type": "gunship",
+          "type": "vampship",
           "owner": 0
         },
         {
@@ -226,7 +232,24 @@
       "moveFuelCost": 2,
       "attackFuelCost": 3,
       "shock": true,
-      "desc": "Orkocraft attack is a an electromagnetic shockwave that can propogate through all of the units adjacent to it or to another including your fleet (Except your base). It's very effecient against defensive structures."
+      "desc": "Orkocraft creates an electromagnetic shockwave that propogates through all adjacent units causing damage to it. (including your fleet, Except your base). It's very effecient against defensive structures."
+    },
+    "vampship": {
+      "attack": 15,
+      "hp": 50,
+      "vamp": 15,
+      "moveFuelCost": 0,
+      "attackFuelCost": 0,
+      "moveHpCost": 5,
+      "desc": "Vampship is a fuelless spaceship that doesn't need FUEL to move or attack. Moving only costs HP, that can be refunded by attacking other units (stealing their HP)."
+    },
+    "divinewind": {
+      "attack": 15,
+      "hp": 60,
+      "onDestroyDamage": 10,
+      "moveFuelCost": 2,
+      "attackFuelCost": 3,
+      "desc": "DivineWind spaceship have balanced stats between attack, defense and mobility. When it's destroyed it explodes dealing extra damage to the spaceships adjacent to it."
     }
   }
 }
