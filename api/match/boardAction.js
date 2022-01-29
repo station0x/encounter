@@ -33,14 +33,25 @@ module.exports = async (req, res) => {
    const fromAttributes = CONSTANTS.spaceshipsAttributes[board[from.y][from.x].type]
 
    if(action === "move") {
+    let newMatchStats = {...matchDoc}
+    const hpCost = fromAttributes.moveHpCost || false
     if(isOccupied(board, to.x, to.y)) throw new Error("Destination is already occupied")
     if(!isLegalMove(board, from.x, from.y, to.x, to.y, matchDoc.turnNum)) throw new Error("Illegal move")
-    if(!fromAttributes.moveFuelCost || fuel < fromAttributes.moveFuelCost) throw new Error("Insufficient fuel to move")
+    if(!hpCost) { if(!fromAttributes.moveFuelCost || fuel < fromAttributes.moveFuelCost) throw new Error("Insufficient fuel to move") }
 
     // Move Piece
-    let newMatchStats = {...matchDoc}
-    newMatchStats.board[to.y][to.x] = newMatchStats.board[from.y][from.x]
-    newMatchStats.board[from.y][from.x] = {}
+    if(hpCost) {
+        const hp = newMatchStats.board[from.y][from.x].hp
+        const newHp = hp - hpCost;
+        if(newHp > 0) {
+            newMatchStats.board[from.y][from.x].hp = newHp
+            newMatchStats.board[to.y][to.x] = newMatchStats.board[from.y][from.x]
+            newMatchStats.board[from.y][from.x] = {}
+        } else throw new Error("Insufficient HP to move")
+    } else {
+        newMatchStats.board[to.y][to.x] = newMatchStats.board[from.y][from.x]
+        newMatchStats.board[from.y][from.x] = {}
+    }
 
     // Update fuel
     ;[newMatchStats, fuel] = updateFuel(newMatchStats, playerNumber, fromAttributes.moveFuelCost)
@@ -68,12 +79,14 @@ module.exports = async (req, res) => {
     })
    } else if(action === "attack") {
     let newMatchStats = {...matchDoc}
-    let shock = CONSTANTS.spaceshipsAttributes[newMatchStats.board[from.y][from.x].type].shock || false
+    let shock = fromAttributes.shock || false
+    let vamp = fromAttributes.vamp || false
+    let onDestroyDamage = fromAttributes.onDestroyDamage || false
     if(!isOccupied(board, to.x, to.y)) throw new Error("Destination is not occupied")
     if(!shock) { if(!isLegalAttack(board, from.x, from.y, to.x, to.y, matchDoc.turnNum)) throw new Error("Illegal attack") }
-    if(!fromAttributes.attackFuelCost || fuel < fromAttributes.attackFuelCost) throw new Error("Insufficient fuel to attack")
+    if(!vamp) { if(!fromAttributes.attackFuelCost || fuel < fromAttributes.attackFuelCost) throw new Error("Insufficient fuel to attack") }
 
-    let attack = CONSTANTS.spaceshipsAttributes[newMatchStats.board[from.y][from.x].type].attack
+    let attack = fromAttributes.attack
     if(!attack) return
     const bonusAttack = newMatchStats.board[from.y][from.x].bonusAttack || 0
     // Bonus Attack Calculation
@@ -117,6 +130,32 @@ module.exports = async (req, res) => {
         } else {
             const type = newMatchStats.board[to.y][to.x].type
             newMatchStats.board[to.y][to.x] = {}
+            if(onDestroyDamage) {
+                [...legalAttacks(newMatchStats.board, from.x, from.y, playerNumber)]
+                for(const target of targets) {
+                    const hp = newMatchStats.board[target.y][target.x].hp
+                    const newHp = hp - attack;
+                    if(newHp > 0) {
+                        newMatchStats.board[target.y][target.x].hp = newHp
+                        // Update game log
+                        newMatchStats.log.push({index: matchDoc.logsIndex, playerNo: playerNumber, action, from: {x: from.x, y: from.y}, to: {x: target.x, y: target.y}, fromPiece: newMatchStats.board[from.y][from.x], toPiece: newMatchStats.board[target.y][target.x]})
+                    } else {
+                        const type = newMatchStats.board[target.y][target.x].type
+                        newMatchStats.board[target.y][target.x] = {}
+                        // Update game log
+                        newMatchStats.log.push({index: matchDoc.logsIndex, playerNo: playerNumber, action, from: {x: from.x, y: from.y}, to: {x: target.x, y: target.y}, fromPiece: newMatchStats.board[from.y][from.x], toPiece: newMatchStats.board[target.y][target.x], destroyed: type})
+                        // if base is destroyed, end game
+                        if(type === "base") { // game ended
+                            newMatchStats = await endMatch(newMatchStats, db.collection("players"), playerNumber)
+                        } else {
+                            // if all enemy spaceships are destroyed except the base (end the game)
+                            if(checkPlayerUnarmed(newMatchStats.board, playerNumber)) {
+                                newMatchStats = await endMatch(newMatchStats, db.collection("players"), playerNumber)
+                            }
+                        }
+                    }
+                }
+            }
             // Update game log
             newMatchStats.log.push({index: matchDoc.logsIndex, playerNo: playerNumber, action, from: {x: from.x, y: from.y}, to: {x: to.x, y: to.y}, fromPiece: newMatchStats.board[from.y][from.x], toPiece: newMatchStats.board[to.y][to.x], destroyed: type})
             // if base is destroyed, end game
@@ -130,7 +169,12 @@ module.exports = async (req, res) => {
             }
         }
     }
-    
+
+    if(vamp) {
+        let maxHp = fromAttributes.hp
+        let newHp = newMatchStats.board[from.y][from.x].hp + vamp
+        newMatchStats.board[from.y][from.x].hp = Math.min(newHp, maxHp)
+    }
     // Update fuel
     ;[newMatchStats, fuel] = updateFuel(newMatchStats, playerNumber, fromAttributes.attackFuelCost)
 
