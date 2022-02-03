@@ -237,7 +237,7 @@
     "vampship": {
       "attack": 15,
       "hp": 50,
-      "vamp": 15,
+      "vamp": 10,
       "moveFuelCost": 0,
       "attackFuelCost": 0,
       "moveHpCost": 5,

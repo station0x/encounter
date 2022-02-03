@@ -5,7 +5,7 @@ const getAddress = require('../../api-utils/getAddress');
 const { ObjectId } = require('mongodb');
 const CONSTANTS = require('../../constants.json');
 const { endMatch, updateFuel, endTurn } = require('../../api-utils/match')
-const { isOccupied, isLegalMove, isOurPiece, isLegalAttack, isLegalRepair, canMakeAction, checkPlayerUnarmed, legalShockable, parseHexID } = require('../../common/board')
+const { isOccupied, isLegalMove, isOurPiece, isLegalAttack, isLegalRepair, canMakeAction, checkPlayerUnarmed, legalShockable, parseHexID, getAdjacentPieces } = require('../../common/board')
 
 
 module.exports = async (req, res) => {
@@ -31,6 +31,7 @@ module.exports = async (req, res) => {
 
    let fuel = playerNumber === 0? matchDoc.fuel0: matchDoc.fuel1
    const fromAttributes = CONSTANTS.spaceshipsAttributes[board[from.y][from.x].type]
+   const toAttributes = CONSTANTS.spaceshipsAttributes[board[to.y][to.x].type]
 
    if(action === "move") {
     let newMatchStats = {...matchDoc}
@@ -81,7 +82,7 @@ module.exports = async (req, res) => {
     let newMatchStats = {...matchDoc}
     let shock = fromAttributes.shock || false
     let vamp = fromAttributes.vamp || false
-    let onDestroyDamage = fromAttributes.onDestroyDamage || false
+    let onDestroyDamage = toAttributes.onDestroyDamage || false
     if(!isOccupied(board, to.x, to.y)) throw new Error("Destination is not occupied")
     if(!shock) { if(!isLegalAttack(board, from.x, from.y, to.x, to.y, matchDoc.turnNum)) throw new Error("Illegal attack") }
     if(!vamp) { if(!fromAttributes.attackFuelCost || fuel < fromAttributes.attackFuelCost) throw new Error("Insufficient fuel to attack") }
@@ -105,6 +106,35 @@ module.exports = async (req, res) => {
                 // Update game log
                 newMatchStats.log.push({index: matchDoc.logsIndex, playerNo: playerNumber, action, from: {x: from.x, y: from.y}, to: {x: target.x, y: target.y}, fromPiece: newMatchStats.board[from.y][from.x], toPiece: newMatchStats.board[target.y][target.x]})
             } else {
+                onDestroyDamage = CONSTANTS.spaceshipsAttributes[board[target.y][target.x].type].onDestroyDamage
+                if(onDestroyDamage) {
+                    let targets = [...getAdjacentPieces(newMatchStats.board, target.x, target.y, playerNumber)]
+                    for(const target of targets) {
+                        const hp = newMatchStats.board[target.y][target.x].hp
+                        const newHp = hp - onDestroyDamage;
+                        if(newHp > 0) {
+                            newMatchStats.board[target.y][target.x].hp = newHp
+                            // Update game log
+                            newMatchStats.log.push({index: matchDoc.logsIndex, playerNo: playerNumber, action, from: {x: to.x, y: to.y}, to: {x: target.x, y: target.y}, fromPiece: newMatchStats.board[to.y][to.x], toPiece: newMatchStats.board[target.y][target.x]})
+                        } else {
+                            const type = newMatchStats.board[target.y][target.x].type
+                            newMatchStats.board[target.y][target.x] = {}
+                            // Update game log
+                            newMatchStats.log.push({index: matchDoc.logsIndex, playerNo: playerNumber, action, from: {x: to.x, y: to.y}, to: {x: target.x, y: target.y}, fromPiece: newMatchStats.board[to.y][to.x], toPiece: newMatchStats.board[target.y][target.x], destroyed: newMatchStats.board[target.y][target.x].type})
+                            // if base is destroyed, end game
+                            let playerUnderExplosion = newMatchStats.board[target.y][target.x].owner
+                            let winner = playerUnderExplosion === 0 ? 1 : 0
+                            if(type === "base") { // game ended
+                                newMatchStats = await endMatch(newMatchStats, db.collection("players"), winner)
+                            } else {
+                                // if all enemy spaceships are destroyed except the base (end the game)
+                                if(checkPlayerUnarmed(newMatchStats.board, playerUnderExplosion)) {
+                                    newMatchStats = await endMatch(newMatchStats, db.collection("players"), winner)
+                                }
+                            }
+                        }
+                    }
+                }
                 const type = newMatchStats.board[target.y][target.x].type
                 newMatchStats.board[target.y][target.x] = {}
                 // Update game log
@@ -128,34 +158,36 @@ module.exports = async (req, res) => {
             // Update game log
             newMatchStats.log.push({index: matchDoc.logsIndex, playerNo: playerNumber, action, from: {x: from.x, y: from.y}, to: {x: to.x, y: to.y}, fromPiece: newMatchStats.board[from.y][from.x], toPiece: newMatchStats.board[to.y][to.x]})
         } else {
-            const type = newMatchStats.board[to.y][to.x].type
-            newMatchStats.board[to.y][to.x] = {}
             if(onDestroyDamage) {
-                [...legalAttacks(newMatchStats.board, from.x, from.y, playerNumber)]
+                let targets = [...getAdjacentPieces(newMatchStats.board, to.x, to.y, playerNumber)]
                 for(const target of targets) {
                     const hp = newMatchStats.board[target.y][target.x].hp
-                    const newHp = hp - attack;
+                    const newHp = hp - onDestroyDamage;
                     if(newHp > 0) {
                         newMatchStats.board[target.y][target.x].hp = newHp
                         // Update game log
-                        newMatchStats.log.push({index: matchDoc.logsIndex, playerNo: playerNumber, action, from: {x: from.x, y: from.y}, to: {x: target.x, y: target.y}, fromPiece: newMatchStats.board[from.y][from.x], toPiece: newMatchStats.board[target.y][target.x]})
+                        newMatchStats.log.push({index: matchDoc.logsIndex, playerNo: playerNumber, action, from: {x: to.x, y: to.y}, to: {x: target.x, y: target.y}, fromPiece: newMatchStats.board[to.y][to.x], toPiece: newMatchStats.board[target.y][target.x]})
                     } else {
                         const type = newMatchStats.board[target.y][target.x].type
                         newMatchStats.board[target.y][target.x] = {}
                         // Update game log
-                        newMatchStats.log.push({index: matchDoc.logsIndex, playerNo: playerNumber, action, from: {x: from.x, y: from.y}, to: {x: target.x, y: target.y}, fromPiece: newMatchStats.board[from.y][from.x], toPiece: newMatchStats.board[target.y][target.x], destroyed: type})
+                        newMatchStats.log.push({index: matchDoc.logsIndex, playerNo: playerNumber, action, from: {x: to.x, y: to.y}, to: {x: target.x, y: target.y}, fromPiece: newMatchStats.board[to.y][to.x], toPiece: newMatchStats.board[target.y][target.x], destroyed: newMatchStats.board[target.y][target.x].type})
                         // if base is destroyed, end game
+                        let playerUnderExplosion = newMatchStats.board[target.y][target.x].owner
+                        let winner = playerUnderExplosion === 0 ? 1 : 0
                         if(type === "base") { // game ended
-                            newMatchStats = await endMatch(newMatchStats, db.collection("players"), playerNumber)
+                            newMatchStats = await endMatch(newMatchStats, db.collection("players"), winner)
                         } else {
                             // if all enemy spaceships are destroyed except the base (end the game)
-                            if(checkPlayerUnarmed(newMatchStats.board, playerNumber)) {
-                                newMatchStats = await endMatch(newMatchStats, db.collection("players"), playerNumber)
+                            if(checkPlayerUnarmed(newMatchStats.board, playerUnderExplosion)) {
+                                newMatchStats = await endMatch(newMatchStats, db.collection("players"), winner)
                             }
                         }
                     }
                 }
             }
+            const type = newMatchStats.board[to.y][to.x].type
+            newMatchStats.board[to.y][to.x] = {}
             // Update game log
             newMatchStats.log.push({index: matchDoc.logsIndex, playerNo: playerNumber, action, from: {x: from.x, y: from.y}, to: {x: to.x, y: to.y}, fromPiece: newMatchStats.board[from.y][from.x], toPiece: newMatchStats.board[to.y][to.x], destroyed: type})
             // if base is destroyed, end game

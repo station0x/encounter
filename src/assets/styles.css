@@ -41,9 +41,9 @@ h1 {
 .col-piece {
 	position: absolute;
 	opacity: 1 !important;
-	left: calc(22px * var(--factor));
-	bottom: calc(32.25px * var(--factor));
-	height: calc(60.5px * var(--factor));
+	left: calc(18px * var(--factor));
+	bottom: calc(28px * var(--factor));
+	height: calc(70.5px * var(--factor));
 }
 body {
     background-color: black !important;
