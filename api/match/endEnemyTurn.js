@@ -4,7 +4,7 @@ const clientPromise = require('../../api-utils/mongodb-client');
 const getAddress = require('../../api-utils/getAddress');
 const { ObjectId } = require('mongodb');
 const CONSTANTS = require('../../constants.json');
-
+const {endMatch} = require('../../api-utils/match')
 
 module.exports = async (req, res) => {
     const client = await clientPromise;
@@ -37,9 +37,14 @@ module.exports = async (req, res) => {
     // Update last turn timestamp
     newMatchStats.lastTurnTimestamp = Date.now()
 
-    await matches.updateOne({_id:matchDoc._id}, {
-        $set:newMatchStats
-    })
+    if(matchDoc.picking && matchDoc.pickingInsertionsAllowedRemaining > 0) {
+        let newMatchStats = {...matchDoc}
+        newMatchStats = await endMatch(newMatchStats, db.collection("players"), playerNumber)
+    } else {
+        await matches.updateOne({_id:matchDoc._id}, {
+            $set:newMatchStats
+        })
+    }
 
     res.status(200).json({ success: true });
 }
