@@ -1,6 +1,5 @@
 <template>
-    <div>
-        <div v-if="onboarding && this.$store.state.matchState.turnNum === 1 && this.$store.state.matchState.winner === null" class="onboarding-animation">
+        <!-- <div v-if="onboarding && this.$store.state.matchState.turnNum === 1 && this.$store.state.matchState.winner === null" class="onboarding-animation">
             <div class="hero is-fullheight">
                 <div class="hero-body">
                     <div class="container has-text-centered">
@@ -14,43 +13,50 @@
                     </div>
                 </div>
             </div>
+        </div> -->
+    <div class="match-wrapper">
+        <!-- <b-button v-if="soundisOn" @click="soundOff" class="sound-btn" icon-right="volume-high"></b-button>
+        <b-button v-else-if="!soundisOn" @click="soundOn" class="sound-btn" icon-right="volume-off"></b-button> -->
+        <PickingView v-if="$store.state.matchState.picking"
+            :state="$store.state.matchState.state"
+            :playerIs="$store.state.matchState.playerIs"
+            :playerTurn="$store.state.matchState.playerTurn"
+            :lastTurnTimestamp="$store.state.matchState.lastTurnTimestamp"
+        />
+        <Board
+            v-else
+            :state="$store.state.matchState.state"
+            :playerIs="$store.state.matchState.playerIs"
+            :playerTurn="$store.state.matchState.playerTurn"
+            :fuel0="$store.state.matchState.fuel0"    
+            :fuel1="$store.state.matchState.fuel1"    
+            :turnNum="$store.state.matchState.turnNum"
+            :chat="$store.state.matchState.chat"
+            :log="$store.state.matchState.log"
+            :lastTurnTimestamp="$store.state.matchState.lastTurnTimestamp"
+        />
+        <div class="end-wrapper" v-if="$store.state.matchState.playerIs === $store.state.matchState.winner">
+            <center>
+                <img class="result-vector" :src="victory"/>
+                <b-button class="primary-btn" @click="continueBtn" :loading="loading">Continue</b-button>
+            </center>
         </div>
-        <div class="match-wrapper">
-            <!-- <b-button v-if="soundisOn" @click="soundOff" class="sound-btn" icon-right="volume-high"></b-button>
-            <b-button v-else-if="!soundisOn" @click="soundOn" class="sound-btn" icon-right="volume-off"></b-button> -->
-            <Board
-                :state="$store.state.matchState.state"
-                :playerIs="$store.state.matchState.playerIs"
-                :playerTurn="$store.state.matchState.playerTurn"
-                :fuel0="$store.state.matchState.fuel0"    
-                :fuel1="$store.state.matchState.fuel1"    
-                :turnNum="$store.state.matchState.turnNum"
-                :chat="$store.state.matchState.chat"
-                :log="$store.state.matchState.log"
-                :lastTurnTimestamp="$store.state.matchState.lastTurnTimestamp"
-            />
-            <div class="end-wrapper" v-if="$store.state.matchState.playerIs === $store.state.matchState.winner">
-                <center>
-                    <img class="result-vector" :src="victory"/>
-                    <b-button class="primary-btn" @click="continueBtn" :loading="loading">Continue</b-button>
-                </center>
-            </div>
-            <div class="end-wrapper" v-if="($store.state.matchState.playerIs === 0 ? 1 : 0) === $store.state.matchState.winner">
-                <center>
-                    <img class="result-vector" :src="defeat"/>
-                    <b-button class="primary-btn" @click="continueBtn" :loading="loading">Continue</b-button>
-                </center>
-            </div>
+        <div class="end-wrapper" v-if="($store.state.matchState.playerIs === 0 ? 1 : 0) === $store.state.matchState.winner">
+            <center>
+                <img class="result-vector" :src="defeat"/>
+                <b-button class="primary-btn" @click="continueBtn" :loading="loading">Continue</b-button>
+            </center>
         </div>
     </div>
 </template>
 
 <script>
 import Board from '@/components/Board.vue'
+import PickingView from '@/components/PickingView.vue'
 export default {
     data() {
         return {
-            onboarding: true,
+            onboarding: false,
             logo: require('../assets/img/widelogo.png'),
             victory: require('../assets/img/victory.png'),
             defeat: require('../assets/img/defeat.png'),
@@ -60,7 +66,8 @@ export default {
         }
     },
     components: {
-        Board
+        Board,
+        PickingView
     },
     methods: {
         async continueBtn () {

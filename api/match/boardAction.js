@@ -18,8 +18,9 @@ module.exports = async (req, res) => {
    const matches = db.collection("matches")
    const matchDoc = (await matches.find({_id:ObjectId(req.query.matchId)}).limit(1).toArray())[0];
    if(!matchDoc) throw new Error("Match does not exist")
-   const board = matchDoc.board
+   if(matchDoc.picking) throw new Error("Match is in picking mode!")
    if(matchDoc.winner) throw new Error("Match already ended")
+   const board = matchDoc.board
    let playerNumber;
    if(matchDoc.player0 === address) playerNumber = 0
    if(matchDoc.player1 === address) playerNumber = 1

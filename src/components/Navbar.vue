@@ -1,5 +1,5 @@
 <template>
-  <b-navbar :mobile-burger="false" spaced>
+  <b-navbar :mobile-burger="false" spaced transparent>
     <template #brand>
       <b-navbar-item :href="$router.resolve({name: 'Home'}).href">
         <img
@@ -97,9 +97,6 @@ export default {
 }
 .nav-logo {
     height: 500px !important;
-}
-.navbar {
-    background: black !important;
 }
 .level {
   align-items: center !important;

@@ -808,7 +808,7 @@ export default {
 		if(vamp) {
 			let maxHp = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].hp
 			let newHp = newState[this.selected.y][this.selected.x].hp + vamp
-			newState[this.selected.y][this.selected.x].hp = Math.min(newState[this.selected.y][this.selected.x].hp + vamp, maxHp)
+			newState[this.selected.y][this.selected.x].hp = Math.min(newHp, maxHp)
 		}
 		const fuelCost = CONSTANTS.spaceshipsAttributes[newState[this.selected.y][this.selected.x].type].attackFuelCost
 		this.$store.commit('setMyFuel', this.myFuel - fuelCost)
