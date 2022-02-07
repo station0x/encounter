@@ -71,7 +71,9 @@ module.exports = async (req, res) => {
         logsIndex: 0,
         initialBoard: board,
         board,
-        picking: true
+        picking: true,
+        pickingInsertionsAllowedRemaining: CONSTANTS.pickingInsertionsAllowedPerTurn,
+        pickingRound: 0
     })
     const id = result.insertedId
 

@@ -102,7 +102,7 @@
                     </g>
                     <path v-if="!isMyTurn" id="my-countdown-holder" d="M427.437 490.009V492.768H420.54V490.009H427.437ZM437.301 490.009V492.768H430.404V490.009H437.301Z" fill="#515151"/>
                     <foreignObject v-if="isMyTurn" class="my-countdown" :x="countdown > 9? 413: 420" :y="insertionsAllowed === 0 ? 455 : 470" width="150" height="200">{{ countdown }}</foreignObject>
-                    <foreignObject @click="endTurn()" v-if="isMyTurn && insertionsAllowed === 0" class="my-countdown blinking-element" :x="413"  y="485" width="150" height="200" style="font-size: 16px; cursor: pointer">SKIP</foreignObject>
+                    <foreignObject @click="endTurn()" v-if="isMyTurn && insertionsAllowed === 0" class="my-countdown blinking-element" :x="413"  y="485" width="150" height="200" style="font-size: 16px; cursor: pointer">END</foreignObject>
                     <g v-if="!isMyTurn" id="enemy-picking">
                     <g id="Group 276">
                     <g id="Group 93">
@@ -267,7 +267,11 @@ export default {
             return classes
         },
         endTurn() {
-			this.playSound(this.turnSfx) 
+			this.playSound(this.turnSfx)
+            if(this.insertionsAllowed > 0) {
+                const winner = this.playerIs === 0 ? 1 : 0
+			    this.$store.commit('setWinner', winner)
+            }
             this.$store.commit('endTurn')
 			this.$store.dispatch('enqueue', () => axios.get('/api/match/endTurn', {
 				params:{
@@ -326,8 +330,8 @@ export default {
             else if(this.selected !== undefined && this.selected.type !== spaceshipObj.type) this.selected = spaceshipObj
             else this.selected = undefined
         },
-        insertSpaceship(spaceship, hexId) {
-            if(this.isMyTurn && this.insertionsAllowed > 0) {
+        insertSpaceship(spaceship, hexId, hex) {
+            if(this.isMyTurn && hex.type === undefined && this.insertionsAllowed > 0) {
                 let sameInserted = 0
                 this.myPicks.forEach((element) => {
                     if(element.type === spaceship.type) sameInserted++
@@ -362,7 +366,7 @@ export default {
         },
         selectHexPosition(hex, index) {
             if(this.selected !== undefined) {
-                this.insertSpaceship(this.selected, index)
+                this.insertSpaceship(this.selected, index, hex)
                 this.selected = undefined
             } else if(hex.type !== undefined) {
                 this.removeSpaceship(index)
