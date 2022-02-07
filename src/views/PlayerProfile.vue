@@ -117,7 +117,7 @@ export default {
     height: 700px;
     max-width: 700px;
     padding: 50px;
-    background: #01040D;
+    background: #090F15;
     backdrop-filter: blur(6px);
     display: block;
     margin: 0 auto;

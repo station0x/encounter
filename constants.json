@@ -1,9 +1,129 @@
 {
   "initFuel": 10,
-  "turnTimeout": 300,
+  "turnTimeout": 30,
+  "pickingTurnTimeout": 200,
   "maxFuel": 15,
   "fuelPerTurn": 5,
+  "freeSpaceshipsRotation": [
+    "thunderbird", 
+    "orkocraft",
+    "salvation",
+    "battlestar",
+    "nightstalker",
+    "gunship",
+    "ubiquity",
+    "vampship",
+    "divinewind",
+    "colossus"
+  ],
   "initialBoardState": [
+    [
+      {},
+      {},
+      {},
+      {},
+      {
+        "type": "base",
+        "owner": 1
+      },
+      {},
+      {},
+      {},
+      {}
+    ],
+    [
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {}
+    ],
+    [
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {}
+    ],
+    [
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {}
+    ],
+    [
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {}
+    ],
+    [
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {}
+    ],
+    [
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {}
+    ],
+    [
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {}
+    ],
+    [
+      {},
+      {},
+      {},
+      {},
+      {
+        "type": "base",
+        "owner": 0
+      },
+      {},
+      {},
+      {},
+      {}
+    ]
+  ],
+  "initialBoardStateDEBUGMODE": [
       [
         {},
         {},

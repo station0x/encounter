@@ -9,10 +9,15 @@
         font-style: normal;
 }
 
+
+
 /* Board Styles */
 .match-wrapper {
     margin: 0 auto;
     max-width: 1500px;
+}
+.is-fullheight-custom {
+    min-height: calc(100vh - 112px);
 }
 :root {
 	--factor: calc(0.9 * var(--scale));
@@ -46,7 +51,7 @@ h1 {
 	height: calc(70.5px * var(--factor));
 }
 body {
-    background-color: black !important;
+    background-color: #090F15 !important;
 }
 .main-logo {
     max-width: 390px;
@@ -55,7 +60,7 @@ body {
 }
 .onboarding {
     background-image: url('/bg.png');
-    background-color: black;
+    background-color: #090F15;
     padding: 0; 
 }
 .onboarding-wrapper {
@@ -414,7 +419,10 @@ button.button.secondary-btn[disabled] {
         padding: 0.5rem 0 !important;
     }
     .navbar-menu { 
-        background-color: black !important;
+        background-color: #090F15 !important;
+    }
+    nav.navbar.is-spaced {
+        background-color: #090F15 !important;
     }
     a.button.nav-btn {
         margin: 5px !important;

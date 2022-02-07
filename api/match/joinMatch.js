@@ -43,7 +43,6 @@ module.exports = async (req, res) => {
         if(!col.type) {
             return col
         }
-
         // if(CONSTANTS.spaceshipsAttributes[col.type].attack) col.lastAttackTurn = 0
         // else if(CONSTANTS.spaceshipsAttributes[col.type].repairPercent) col.lastRepairTurn = 0
         // else if(CONSTANTS.spaceshipsAttributes[col.type].shock) col.lastShockTurn = 0
@@ -57,7 +56,7 @@ module.exports = async (req, res) => {
         return col
     }))
     const result = await matches.insertOne({
-        type:"custom",
+        type: "custom",
         player0: enemyDoc.address,
         player1: playerDoc.address,
         fuel0: CONSTANTS.initFuel,
@@ -71,7 +70,8 @@ module.exports = async (req, res) => {
         log: [],
         logsIndex: 0,
         initialBoard: board,
-        board
+        board,
+        picking: true
     })
     const id = result.insertedId
 

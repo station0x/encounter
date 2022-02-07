@@ -33,10 +33,10 @@ body, html {
 	margin: 0;
 	padding: 0;
 	font-family: 'Roboto';
-	background-color: black !important;
+	background-color: #090F15;
 }
 #app {
-	background-color: black;
+	background-color: #090F15;
 	margin: 0px;
 	height: 100vh;
 	max-width: 1680px;

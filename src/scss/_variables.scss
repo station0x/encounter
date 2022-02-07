@@ -12,13 +12,13 @@ $darken-blue: #a8b6f025;
 // Update Bulma's global variables
 $grey-dark: $brown;
 $grey-light: $beige-light;
-$primary: $purple;
+$primary: $blue;
 $primary-invert: findColorInvert($primary);
 $danger: $red;
 $info: $blue;
 
 // dark 
-$dark: rgba(10,10,10,1);
+$dark: #090F15;
 $primary: rgba(255,255,255,0.92);
 $background: $dark;
 $beige-light: rgba(0,0,0,0.8);
@@ -115,3 +115,6 @@ $dropdown-item-hover-background-color: $highlight-white;
 // Table
 $table-row-active-background-color: $darken-blue;
 $table-cell-padding: 1em 0.75em 0.6em 0.75em;
+
+// Carousel
+$carousel-arrow-icon-spaced: 0em;
