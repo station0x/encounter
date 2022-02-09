@@ -100,7 +100,7 @@ export default {
         }
     },
     created () {
-        setTimeout(()=> this.onboarding = false , 22000)
+        // setTimeout(()=> this.onboarding = false , 22000)
         this.soundOn()
     },
     beforeDestroy() {
