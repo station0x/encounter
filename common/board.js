@@ -32,8 +32,16 @@ function unparseHexID(id) {
     return { x: parseInt(id[1]), y: parseInt(id[0]) }
 }
 
-function isAdjacent(from, to) {
-    (Math.abs(parseInt(from[0]) - parseInt(to[0])) <= 1 && Math.abs(parseInt(from[1]) - parseInt(to[1])) <= 1) ? true : false
+// function isAdjacent(from, to) {
+//     (Math.abs(parseInt(from[0]) - parseInt(to[0])) <= 1 && Math.abs(parseInt(from[1]) - parseInt(to[1])) <= 1) ? true : false
+// }
+
+function rowOccupied(row) {
+    let occ = true
+    row.forEach(element => {
+        if(element.type === undefined) occ = false
+    })
+    return occ
 }
 
 
@@ -345,5 +353,6 @@ module.exports = {
     checkPlayerUnarmed,
     getAdjacentPieces,
     getAdjacentEnemies,
-    getAdjacentAllies
+    getAdjacentAllies,
+    rowOccupied
 }

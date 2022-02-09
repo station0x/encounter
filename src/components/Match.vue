@@ -15,14 +15,23 @@
             </div>
         </div> -->
     <div class="match-wrapper">
-        <!-- <b-button v-if="soundisOn" @click="soundOff" class="sound-btn" icon-right="volume-high"></b-button>
-        <b-button v-else-if="!soundisOn" @click="soundOn" class="sound-btn" icon-right="volume-off"></b-button> -->
-        <PickingView v-if="$store.state.matchState.picking"
+        <b-button v-if="soundisOn" @click="soundOff" class="sound-btn" icon-right="volume-high"></b-button>
+        <b-button v-else-if="!soundisOn" @click="soundOn" class="sound-btn" icon-right="volume-off"></b-button>
+        <PickingView v-if="$store.state.matchState.picking && !$store.state.matchState.dodged"
             :state="$store.state.matchState.state"
             :playerIs="$store.state.matchState.playerIs"
             :playerTurn="$store.state.matchState.playerTurn"
             :lastTurnTimestamp="$store.state.matchState.lastTurnTimestamp"
+            :pickingRound="$store.state.matchState.pickingRound"
+            :player0PickingInsertions="$store.state.matchState.player0PickingInsertions"
+            :player1PickingInsertions="$store.state.matchState.player1PickingInsertions"
         />
+        <div v-else-if="$store.state.matchState.picking && $store.state.matchState.dodged">
+            <center>
+                <h1>Game Dodged!</h1>
+                <b-button class="primary-btn" @click="continueBtn" :loading="loading">Continue</b-button>
+            </center>
+        </div>
         <Board
             v-else
             :state="$store.state.matchState.state"
@@ -53,6 +62,8 @@
 <script>
 import Board from '@/components/Board.vue'
 import PickingView from '@/components/PickingView.vue'
+import {Howl} from 'howler'
+
 export default {
     data() {
         return {
@@ -60,7 +71,7 @@ export default {
             logo: require('../assets/img/widelogo.png'),
             victory: require('../assets/img/victory.png'),
             defeat: require('../assets/img/defeat.png'),
-            // audio: new Howl({src: [require('../assets/sfx/soundtrack.mp3')], loop: true}),
+            audio: new Howl({src: [require('../assets/sfx/background-music.mp3')], loop: true}),
             soundisOn: undefined,
             loading: false
         }
@@ -79,21 +90,21 @@ export default {
             max = Math.floor(max);
             return Math.floor(Math.random() * (max - min + 1)) + min;
         },
-        // soundOn() {
-        //     this.audio.play()
-        //     this.soundisOn = true
-        // },
-        // soundOff() {
-        //     this.audio.pause()
-        //     this.soundisOn = false
-        // }
+        soundOn() {
+            this.audio.play()
+            this.soundisOn = true
+        },
+        soundOff() {
+            this.audio.pause()
+            this.soundisOn = false
+        }
     },
     created () {
         setTimeout(()=> this.onboarding = false , 22000)
-        // this.soundOn()
+        this.soundOn()
     },
     beforeDestroy() {
-        // this.soundOff()
+        this.soundOff()
     }
 }
 </script>

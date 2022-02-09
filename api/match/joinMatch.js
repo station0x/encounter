@@ -43,16 +43,12 @@ module.exports = async (req, res) => {
         if(!col.type) {
             return col
         }
-        // if(CONSTANTS.spaceshipsAttributes[col.type].attack) col.lastAttackTurn = 0
-        // else if(CONSTANTS.spaceshipsAttributes[col.type].repairPercent) col.lastRepairTurn = 0
-        // else if(CONSTANTS.spaceshipsAttributes[col.type].shock) col.lastShockTurn = 0
-        // else if(CONSTANTS.spaceshipsAttributes[col.type].warp) col.lastWarpTurn = 0
+        
         col.lastAttackTurn = 0
         col.lastRepairTurn = 0
         col.lastWarpTurn = 0
 
         col.hp = CONSTANTS.spaceshipsAttributes[col.type].hp
-        col.desc = CONSTANTS.spaceshipsAttributes[col.type].desc
         return col
     }))
     const result = await matches.insertOne({
@@ -72,8 +68,10 @@ module.exports = async (req, res) => {
         initialBoard: board,
         board,
         picking: true,
-        pickingInsertionsAllowedRemaining: CONSTANTS.pickingInsertionsAllowedPerTurn,
-        pickingRound: 0
+        player0PickingInsertions: 0,
+        player1PickingInsertions: 0,
+        pickingRound: 0,
+        dodged: false
     })
     const id = result.insertedId
 
