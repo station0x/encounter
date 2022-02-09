@@ -1,13 +1,14 @@
 {
   "initFuel": 10,
   "turnTimeout": 30,
-  "pickingTurnTimeout": 30,
+  "pickingTurnTimeout": 60,
   "pickingInsertionsAllowedPerTurn": 3,
-  "pickingRemovingsAllowedPerTurn": 3,
   "pickingRounds": 3, 
   "maxFuel": 15,
   "fuelPerTurn": 5,
   "freeSpaceshipsRotation": [
+    "vampship", 
+    "divinewind",
     "thunderbird", 
     "orkocraft",
     "salvation",
@@ -15,8 +16,6 @@
     "nightstalker",
     "gunship",
     "ubiquity",
-    "vampship",
-    "divinewind",
     "colossus"
   ],
   "initialBoardState": [

@@ -9,6 +9,7 @@ import Gravatar from 'vue-gravatar'
 import VueGtag from 'vue-gtag'
 import Hotjar from 'vue-hotjar'
 import VueAnime from 'vue-animejs'
+
 require('../src/scss/main.scss')
 
 Vue.component('v-gravatar', Gravatar)

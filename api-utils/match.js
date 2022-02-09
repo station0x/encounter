@@ -73,6 +73,8 @@ function endTurn(matchDoc, playerNumber) {
     newMatchDoc.turnNum = newMatchDoc.turnNum + 1
     // Update last turn timestamp
     newMatchDoc.lastTurnTimestamp = Date.now()
+    // Update pick turn if in picking mode
+    if(matchDoc.picking) newMatchDoc.pickingRound = newMatchDoc.pickingRound + 1
     if(playerNumber === 0) {
         newMatchDoc.fuel1 = Math.min(newMatchDoc.fuel1 + CONSTANTS.fuelPerTurn, CONSTANTS.maxFuel)
     } else if(playerNumber === 1) {
@@ -81,8 +83,33 @@ function endTurn(matchDoc, playerNumber) {
     return newMatchDoc
 }
 
+async function dodgeMatch(matchDoc, matches) {
+    const newMatchDoc = {...matchDoc}
+    if(!newMatchDoc.dodged) {
+        newMatchDoc.dodged = true
+        newMatchDoc.board = newMatchDoc.board.map(row => row.map(col => {
+            if(!col.type) {
+                return col
+            }
+            
+            col.lastAttackTurn = 0
+            col.lastRepairTurn = 0
+            col.lastWarpTurn = 0
+    
+            col.hp = CONSTANTS.spaceshipsAttributes[col.type].hp
+            return col
+        }))
+    } 
+    await matches.updateOne({_id:matchDoc._id}, {
+        $set:newMatchDoc
+    })
+
+    return newMatchDoc
+}
+
 module.exports = {
     endMatch,
     updateFuel,
-    endTurn
+    endTurn,
+    dodgeMatch
 }
