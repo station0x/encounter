@@ -1,6 +1,7 @@
 <template>
     <div class="picking-bg">
         <div class="picking-hud-wrapper">
+            <!-- Picking HUD SVG -->
             <template>
                 <svg viewBox="0 0 858 615" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <g id="All-picking">
@@ -284,7 +285,7 @@
             </div>
         </div>
         <div :class="{'picker-carousel': true, 'disabled': !isMyTurn || insertionsAllowed === 0}">
-            <b-carousel-list v-model="cardsVal" :data="spaceshipsRotation" :items-to-show="8" :arrow-hover="false" :indicator-inside="false">
+            <b-carousel-list class="custom-carousel" v-model="cardsVal" :data="spaceshipsRotation" :items-to-show="8" :arrow-hover="false" :indicator-inside="false">
                     <template #item="spaceshipObj">
                         <div @mouseenter="hovered = spaceshipObj" @mouseleave="hovered = undefined" :class="{'card picker-card': true, 'selected-card': selected !== undefined && selected.type === spaceshipObj.type, 'unselected-card': selected !== undefined && selected.type !== spaceshipObj.type}">
                             <div class="card-image">
@@ -293,6 +294,47 @@
                                         <img class="spaceship-picker-img" :src="spaceshipObj.image">
                                     </a>
                                 </figure>
+                            </div>
+                            <div :class="{tooltip: true, left: leftiestEle(), right: rightiestEle()}">
+                                <div class="spaceship-stats">
+                                    <center>
+                                        <img width="85px" style="margin-top: -20px" :src="spaceshipObj.image"/>
+                                        <h1 class="spaceship-type" style="color: #416BFF">{{spaceshipObj.type}}</h1>
+                                        <h1 style="color: #29D403">HP: {{spaceshipObj.info.hp}}</h1>
+                                    </center>
+                                    <p class="spaceships-desc" style="text-align: left; color: rgba(255,255,255,.7)">{{ spaceshipObj.info.desc }}</p>
+                                    <h1  style="color: white; font-size: 17px; text-align: left; margin: 0px 20px 10px 30px;font-family: 'ClashDisplay-Variable';">Abilities</h1>
+                                    <div style="margin-left: 20px">
+                                        <div class="info-card">
+                                                <img class="info-card-icon" :src="moveInfoIcon" />
+                                                <p class="info-card-move-number">1</p>
+                                                <h1 class="info-card-text"> Move </h1>
+                                                <span class="info-card-energy">-{{spaceshipObj.info.moveFuelCost}}</span>
+                                                <img class="info-card-energy-icon" src="/energy.svg" width="23px"/>
+                                        </div>
+                                        <div v-if="spaceshipObj.type !== 'salvation'" class="info-card">
+                                                <img class="info-card-icon" :src="attackInfoIcon" />
+                                                <p class="info-card-attack-number">{{ spaceshipObj.info.attack }}</p>
+                                                <h1 class="info-card-text"> Attack </h1>
+                                                <span class="info-card-energy">-{{spaceshipObj.info.attackFuelCost}}</span>
+                                                <img class="info-card-energy-icon" src="/energy.svg" width="23px"/>
+                                        </div>
+                                        <div v-if="spaceshipObj.type === 'salvation'" class="info-card">
+                                                <img class="info-card-icon" :src="repairInfoIcon" />
+                                                <p class="info-card-repair-number">25%</p>
+                                                <h1 class="info-card-text"> Repair </h1>
+                                                <span class="info-card-energy">-{{spaceshipObj.info.repairFuelCost}}</span>
+                                                <img class="info-card-energy-icon" src="/energy.svg" width="23px"/>
+                                        </div>
+                                        <div v-if="spaceshipObj.info.shock" class="info-card">
+                                                <img class="info-card-icon" :src="shockInfoIcon" />
+                                                <p class="info-card-shock-number">{{spaceshipObj.info.attack}}</p>
+                                                <h1 class="info-card-text"> Shock </h1>
+                                                <span class="info-card-energy">-{{spaceshipObj.info.attackFuelCost}}</span>
+                                                <img class="info-card-energy-icon" src="/energy.svg" width="23px"/>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </template>
@@ -320,7 +362,11 @@ export default {
             turnSfx: require('../assets/sfx/turn.mp3'),
             selected: undefined,
             hovered: undefined,
-            playerProfile: undefined
+            playerProfile: undefined,
+            attackInfoIcon: 'https://res.cloudinary.com/station0x/image/upload/v1644548304/encouter/elements/icons/attack_kwg82o.svg',
+            moveInfoIcon: 'https://res.cloudinary.com/station0x/image/upload/v1644548304/encouter/elements/icons/move_hngi7m.svg',
+            repairInfoIcon: 'https://res.cloudinary.com/station0x/image/upload/v1644548304/encouter/elements/icons/repair_msp7vc.svg',
+            shockInfoIcon: 'https://res.cloudinary.com/station0x/image/upload/v1644548304/encouter/elements/icons/shock_fiygbi.svg'
         }
     },
     computed: {
@@ -541,6 +587,18 @@ export default {
                 }
             })
             this.playerProfile = res.data.playerDoc
+        },
+        leftiestEle() {
+            if(this.hovered === undefined) return false
+            else {
+                return this.hovered.index === this.cardsVal
+            }
+        },
+        rightiestEle() {
+            if(this.hovered === undefined) return false
+            else {
+                return this.hovered.index === this.cardsVal + 7
+            }
         }
     },
     watch: {
@@ -576,10 +634,10 @@ export default {
 <style scoped>
 .picking-bg {
     height: 100%;
-    padding-top: 40px;
-    background-image: url('/picking-bg.png');
-    background-repeat: no-repeat;
-    background-position: top;
+    padding-top: 20px;
+    background: #090F15;
+    background: radial-gradient(circle, rgb(20, 35, 49) 0%, rgba(9,15,21,1) 56%);
+
 }
 .my-picks-box {
     background-image: url('/blue-box.svg');
@@ -619,7 +677,7 @@ export default {
     opacity: 0.7;
 }
 .picker-carousel {
-    margin-top: 700px !important;
+    margin-top: 650px !important;
     width: 1100px;
     margin: 0 auto;
     z-index: 1;
@@ -643,9 +701,39 @@ export default {
 .card.picker-card {
   box-shadow: none;
   transition: all 250ms ease-in-out;
+  /* position: relative; */
 }
 .card.picker-card:hover {
   margin-top: -15px;
+}
+.tooltip {
+    visibility: hidden;
+    width: 330px;
+    height: 450px;
+    background-color: transparent;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+    position: absolute;
+    z-index: 1;
+    bottom: 150px;
+    left: -120px;
+    background-image: url('https://res.cloudinary.com/station0x/image/upload/v1644544967/encouter/elements/popover_o38vfl.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 320px;
+}
+.tooltip.left {
+    left: -10px;
+    border: none;
+}
+.tooltip.right {
+    left: -185px;
+    border: none;
+}
+/* Show the tooltip text when you mouse over the tooltip container */
+.card.picker-card:hover .tooltip {
+  visibility: visible;
 }
 .selected-card {
     margin-top: -15px;
@@ -653,8 +741,10 @@ export default {
 .unselected-card {
     opacity: 0.4;
 }
-.carousel-list.has-shadow {
-    box-shadow: none;
+.custom-carousel {
+    overflow-y: visible;
+    box-shadow: none !important;
+    overflow-x: clip;
 }
 .p-counter {
     padding: 25px 0px 25px 0px;
@@ -675,9 +765,12 @@ export default {
 .notColored * {
     fill: #515151;
 }
-.picker-carousel.disabled * {
+.picker-carousel.disabled .card-image * {
     cursor: not-allowed;
     opacity: 0.8;
+}
+.picker-carousel.disabled .picker-card {
+    cursor: not-allowed;
     filter: grayscale(1);
 }
 .my-countdown {
@@ -729,22 +822,15 @@ export default {
     text-transform: capitalize;
     color: #0050DB;
 }
-.col .tooltip {
-  visibility: hidden;
-  width: 120px;
-  background-color: black;
-  color: #fff;
-  text-align: center;
-  padding: 5px 0;
-  position: absolute;
-  z-index: 1;
-  top: 15px;
-  left: -25px;
+/* .clearfix:before,
+.clearfix:after {
+    content: ".";    
+    display: block;    
+    height: 0;    
+    overflow: hidden; 
 }
-/* Show the tooltip text when you mouse over the tooltip container */
-.col:hover .tooltip {
-  visibility: visible;
-}
+.clearfix:after { clear: both; }
+.clearfix { zoom: 1; }  */
 @keyframes blink {
   to {
     visibility: hidden;

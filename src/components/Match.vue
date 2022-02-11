@@ -68,9 +68,9 @@ export default {
     data() {
         return {
             onboarding: false,
-            logo: require('../assets/img/widelogo.png'),
-            victory: require('../assets/img/victory.png'),
-            defeat: require('../assets/img/defeat.png'),
+            logo: 'https://res.cloudinary.com/station0x/image/upload/v1644538655/encouter/widelogo_nog5zl.png',
+            victory: 'https://res.cloudinary.com/station0x/image/upload/v1644538830/encouter/victory_dsfqjx.png',
+            defeat: 'https://res.cloudinary.com/station0x/image/upload/v1644538829/encouter/defeat_zhhnus.png',
             audio: new Howl({src: [require('../assets/sfx/background-music.mp3')], loop: true}),
             soundisOn: undefined,
             loading: false

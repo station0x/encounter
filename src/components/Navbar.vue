@@ -3,7 +3,7 @@
     <template #brand>
       <b-navbar-item :href="$router.resolve({name: 'Home'}).href">
         <img
-          :src="require('../assets/img/widelogo.png')"
+          :src="'https://res.cloudinary.com/station0x/image/upload/v1644538655/encouter/widelogo_nog5zl.png'"
           class="nav-logo"
         >
       </b-navbar-item>
