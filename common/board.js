@@ -32,8 +32,16 @@ function unparseHexID(id) {
     return { x: parseInt(id[1]), y: parseInt(id[0]) }
 }
 
-function isAdjacent(from, to) {
-    (Math.abs(parseInt(from[0]) - parseInt(to[0])) <= 1 && Math.abs(parseInt(from[1]) - parseInt(to[1])) <= 1) ? true : false
+// function isAdjacent(from, to) {
+//     (Math.abs(parseInt(from[0]) - parseInt(to[0])) <= 1 && Math.abs(parseInt(from[1]) - parseInt(to[1])) <= 1) ? true : false
+// }
+
+function rowOccupied(row) {
+    let occ = true
+    row.forEach(element => {
+        if(element.type === undefined) occ = false
+    })
+    return occ
 }
 
 
@@ -127,7 +135,102 @@ function legalAttacks(board, x, y, turnNum) {
 
     if(CONSTANTS.spaceshipsAttributes[board[y][x].type].shock !== true) legalTargets = legalTargets.filter(target => isEnemyPiece(board, playerNumber, target.x, target.y))
     return legalTargets
-}   
+}
+
+function getAdjacentPieces(board, x, y) {
+    const type = board[y][x].type
+    const isEven = y % 2  == 0
+    let legalTargets = [
+        { x, y: y - 1 },
+        { x: x + 1, y: y - 1 },
+        { x: x + 1, y },
+        { x: x + 1, y: y + 1 },
+        { x, y: y + 1 },
+        { x: x - 1, y } 
+    ]
+    if(isEven) {
+        legalTargets[0].x -= 1;
+        legalTargets[1].x -= 1;
+        legalTargets[3].x -= 1;
+        legalTargets[4].x -= 1;
+    }
+    const playerNumber = board[y][x].owner;
+    
+    legalTargets = legalTargets
+    .filter(target => {
+        const minX = 0
+        const minY = 0
+        const maxY = board.length-1
+        const maxX = board[0].length-1
+        return target.x >= minX && target.x <= maxX && target.y >= minY && target.y <= maxY
+    })
+    .filter(target => isOccupied(board, target.x, target.y));
+    return legalTargets
+}
+
+function getAdjacentEnemies(board, x, y) {
+    const type = board[y][x].type
+    const isEven = y % 2  == 0
+    let legalTargets = [
+        { x, y: y - 1 },
+        { x: x + 1, y: y - 1 },
+        { x: x + 1, y },
+        { x: x + 1, y: y + 1 },
+        { x, y: y + 1 },
+        { x: x - 1, y } 
+    ]
+    if(isEven) {
+        legalTargets[0].x -= 1;
+        legalTargets[1].x -= 1;
+        legalTargets[3].x -= 1;
+        legalTargets[4].x -= 1;
+    }
+    const playerNumber = board[y][x].owner;
+    
+    legalTargets = legalTargets
+    .filter(target => {
+        const minX = 0
+        const minY = 0
+        const maxY = board.length-1
+        const maxX = board[0].length-1
+        return target.x >= minX && target.x <= maxX && target.y >= minY && target.y <= maxY
+    })
+    .filter(target => isOccupied(board, target.x, target.y))
+    .filter(target => isEnemyPiece(board, playerNumber, target.x, target.y))
+    return legalTargets
+}
+
+function getAdjacentAllies(board, x, y) {
+    const type = board[y][x].type
+    const isEven = y % 2  == 0
+    let legalTargets = [
+        { x, y: y - 1 },
+        { x: x + 1, y: y - 1 },
+        { x: x + 1, y },
+        { x: x + 1, y: y + 1 },
+        { x, y: y + 1 },
+        { x: x - 1, y } 
+    ]
+    if(isEven) {
+        legalTargets[0].x -= 1;
+        legalTargets[1].x -= 1;
+        legalTargets[3].x -= 1;
+        legalTargets[4].x -= 1;
+    }
+    const playerNumber = board[y][x].owner;
+    
+    legalTargets = legalTargets
+    .filter(target => {
+        const minX = 0
+        const minY = 0
+        const maxY = board.length-1
+        const maxX = board[0].length-1
+        return target.x >= minX && target.x <= maxX && target.y >= minY && target.y <= maxY
+    })
+    .filter(target => isOccupied(board, target.x, target.y))
+    .filter(target => isMyPiece(board, playerNumber, target.x, target.y))
+    return legalTargets
+}  
 
 function legalShockable(board, targetsSet, fromID, toID, playerNumber) {
     let targets = new Set(targetsSet)
@@ -247,5 +350,9 @@ module.exports = {
     legalShockable,
     isLegalAttack,
     isLegalRepair,
-    checkPlayerUnarmed
+    checkPlayerUnarmed,
+    getAdjacentPieces,
+    getAdjacentEnemies,
+    getAdjacentAllies,
+    rowOccupied
 }

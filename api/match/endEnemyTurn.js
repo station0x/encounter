@@ -4,13 +4,14 @@ const clientPromise = require('../../api-utils/mongodb-client');
 const getAddress = require('../../api-utils/getAddress');
 const { ObjectId } = require('mongodb');
 const CONSTANTS = require('../../constants.json');
-
+const {dodgeMatch} = require('../../api-utils/match')
 
 module.exports = async (req, res) => {
     const client = await clientPromise;
     const db = client.db()
     const address = getAddress(req.query.signature)
     const matches = db.collection("matches")
+    const players = db.collection("players")
     const matchDoc = (await matches.find({_id:ObjectId(req.query.matchId)}).limit(1).toArray())[0];
     if(!matchDoc) throw new Error("Match does not exist")
     if(matchDoc.winner) throw new Error("Match already ended")
@@ -37,9 +38,67 @@ module.exports = async (req, res) => {
     // Update last turn timestamp
     newMatchStats.lastTurnTimestamp = Date.now()
 
-    await matches.updateOne({_id:matchDoc._id}, {
-        $set:newMatchStats
-    })
+    // Update pick turn if in picking mode
+    if(matchDoc.picking) newMatchStats.pickingRound = newMatchStats.pickingRound + 1
+
+    const pickingRound = matchDoc.pickingRound
+    let playerInsertions = playerNumber === 0 ? matchDoc.player1PickingInsertions : matchDoc.player0PickingInsertions
+
+    if(matchDoc.picking && playerInsertions < CONSTANTS.pickingInsertionsAllowedPerTurn) {
+        // Dodge the game without penalty (for testing)
+        dodgeMatch(newMatchStats, matches)
+        await Promise.all([
+            players.updateOne({address:matchDoc.player0}, {
+                $unset:{activeMatch:""},
+            }),
+            players.updateOne({address:matchDoc.player1}, {
+                $unset:{activeMatch:""}
+            })
+        ])
+    } else {
+        if(matchDoc.picking) {
+            newMatchStats.pickingRound++
+            if(playerNumber === 0) {
+                newMatchStats.player0PickingInsertions = 0
+                matchDoc.board[7] = matchDoc.board[7].map(col => {
+                    if(!col.type) {
+                        return col
+                    }
+                    col.canRemove = false
+                    return col
+                })
+            } else {
+                newMatchStats.player1PickingInsertions = 0
+                matchDoc.board[1] = matchDoc.board[1].map(col => {
+                    if(!col.type) {
+                        return col
+                    }
+                    col.canRemove = false
+                    return col
+                })
+            }
+            if(rowOccupied(newMatchStats.board[1]) && rowOccupied(newMatchStats.board[7])) {
+                newMatchStats.board[1] = newMatchStats.board[1].map(col => {
+                    col.lastAttackTurn = 0
+                    col.lastRepairTurn = 0
+                    col.lastWarpTurn = 0
+                    col.hp = CONSTANTS.spaceshipsAttributes[col.type].hp
+                    return col
+                })
+                newMatchStats.board[7] = newMatchStats.board[7].map(col => {
+                    col.lastAttackTurn = 0
+                    col.lastRepairTurn = 0
+                    col.lastWarpTurn = 0
+                    col.hp = CONSTANTS.spaceshipsAttributes[col.type].hp
+                    return col
+                })
+                newMatchStats.picking = false
+            }
+        }
+        await matches.updateOne({_id:matchDoc._id}, {
+            $set:newMatchStats
+        })
+    }
 
     res.status(200).json({ success: true });
 }

@@ -20,6 +20,7 @@ export default new Vuex.Store({
         intervalId: undefined,
         matchId: undefined,
         matchState: undefined,
+        picking: false,
         loaded: false,
         registered: false,
         innerWidth: window.innerWidth
@@ -49,6 +50,18 @@ export default new Vuex.Store({
             matchState.state = board;
             state.matchState = matchState;
         },
+        incrementInsertionsCount(state, playerNum) {
+            const matchState = {...state.matchState}
+            if(playerNum === 0) matchState.player0PickingInsertions = matchState.player0PickingInsertions + 1
+            else matchState.player1PickingInsertions = matchState.player1PickingInsertions + 1
+            state.matchState = matchState;
+        },
+        decrementInsertionsCount(state, playerNum) {
+            const matchState = {...state.matchState}
+            if(playerNum === 0) matchState.player0PickingInsertions = matchState.player0PickingInsertions - 1
+            else matchState.player1PickingInsertions = matchState.player1PickingInsertions - 1
+            state.matchState = matchState;
+        },
         endTurn(state) {
             const matchState = {...state.matchState}
             matchState.playerTurn = matchState.playerTurn === 0 ? 1 : 0;
@@ -69,6 +82,9 @@ export default new Vuex.Store({
             const matchState = {...state.matchState}
             matchState.winner = playerNumber;
             state.matchState = matchState;
+        },
+        setPicking(state, boolVal) {
+            state.picking = boolVal
         },
         load (state) {
             state.loaded = true
@@ -123,6 +139,7 @@ export default new Vuex.Store({
             intervalFunc()
             const intervalId = setInterval(intervalFunc, 5000)
             commit('setIntervalId', intervalId)
+            commit('setPicking', false)
         },
         stopPolling({state, commit}) {
             clearInterval(state.intervalId)
@@ -136,10 +153,12 @@ export default new Vuex.Store({
             const intialMatchDoc = await matches.findOne({_id:Realm.BSON.ObjectId(state.matchId)})
 
             commit("setMatchState", intialMatchDoc)
+            commit("setPicking", intialMatchDoc.picking)
             commit('load')
             const watcher = matches.watch({ids:[Realm.BSON.ObjectId(state.matchId)]})
             for await (const change of watcher) {
                 const { fullDocument: matchDoc } = change
+                if(matchDoc.picking === state.picking) commit("setPicking", matchDoc.picking)
                 if(matchDoc.winner === 0 || matchDoc.winner === 1 || !state.signature) {
                     commit("setMatchState", matchDoc)
                     break
@@ -154,7 +173,20 @@ export default new Vuex.Store({
             axiosQueue.add(() => {
                 return axiosPromise()
             })
-        }
+        },
+        insertSpaceship({state, commit}, {spaceshipObj, to, playerIs}) {
+            const board = {...state.matchState.state}
+            board[to.y][to.x] = spaceshipObj
+            commit('setBoard', board)
+            commit('incrementInsertionsCount', playerIs)
+            
+        },
+        removeSpaceship({state, commit}, {from, playerIs}) {
+            const board = {...state.matchState.state}
+            board[from.y][from.x] = {}
+            commit('setBoard', board)
+            commit('decrementInsertionsCount', playerIs)
+        },
     },
     plugins: [
         function({state, dispatch}) {
@@ -169,6 +201,9 @@ export default new Vuex.Store({
         },
         isMobile: state => {
             return state.innerWidth > 769 ? false : true
+        },
+        isPicking: state => {
+            return state.picking
         }
     }
 })

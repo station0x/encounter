@@ -59,7 +59,12 @@ module.exports = async (req, res) => {
            log: [],
            logsIndex: 0,
            initialBoard: board,
-           board
+           board,
+           picking: true,
+           player0PickingInsertions: 0,
+           player1PickingInsertions: 0,
+           pickingRound: 0,
+           dodged: false
        })
        const id = result.insertedId
    

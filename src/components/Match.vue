@@ -1,6 +1,5 @@
 <template>
-    <div>
-        <div v-if="onboarding && this.$store.state.matchState.turnNum === 1 && this.$store.state.matchState.winner === null" class="onboarding-animation">
+        <!-- <div v-if="onboarding && this.$store.state.matchState.turnNum === 1 && this.$store.state.matchState.winner === null" class="onboarding-animation">
             <div class="hero is-fullheight">
                 <div class="hero-body">
                     <div class="container has-text-centered">
@@ -14,53 +13,72 @@
                     </div>
                 </div>
             </div>
+        </div> -->
+    <div class="match-wrapper">
+        <b-button v-if="soundisOn" @click="soundOff" class="sound-btn" icon-right="volume-high"></b-button>
+        <b-button v-else-if="!soundisOn" @click="soundOn" class="sound-btn" icon-right="volume-off"></b-button>
+        <PickingView v-if="$store.state.matchState.picking && !$store.state.matchState.dodged"
+            :state="$store.state.matchState.state"
+            :playerIs="$store.state.matchState.playerIs"
+            :playerTurn="$store.state.matchState.playerTurn"
+            :lastTurnTimestamp="$store.state.matchState.lastTurnTimestamp"
+            :pickingRound="$store.state.matchState.pickingRound"
+            :player0PickingInsertions="$store.state.matchState.player0PickingInsertions"
+            :player1PickingInsertions="$store.state.matchState.player1PickingInsertions"
+        />
+        <div v-else-if="$store.state.matchState.picking && $store.state.matchState.dodged">
+            <center>
+                <h1>Game Dodged!</h1>
+                <b-button class="primary-btn" @click="continueBtn" :loading="loading">Continue</b-button>
+            </center>
         </div>
-        <div class="match-wrapper">
-            <!-- <b-button v-if="soundisOn" @click="soundOff" class="sound-btn" icon-right="volume-high"></b-button>
-            <b-button v-else-if="!soundisOn" @click="soundOn" class="sound-btn" icon-right="volume-off"></b-button> -->
-            <Board
-                :state="$store.state.matchState.state"
-                :playerIs="$store.state.matchState.playerIs"
-                :playerTurn="$store.state.matchState.playerTurn"
-                :fuel0="$store.state.matchState.fuel0"    
-                :fuel1="$store.state.matchState.fuel1"    
-                :turnNum="$store.state.matchState.turnNum"
-                :chat="$store.state.matchState.chat"
-                :log="$store.state.matchState.log"
-                :lastTurnTimestamp="$store.state.matchState.lastTurnTimestamp"
-            />
-            <div class="end-wrapper" v-if="$store.state.matchState.playerIs === $store.state.matchState.winner">
-                <center>
-                    <img class="result-vector" :src="victory"/>
-                    <b-button class="primary-btn" @click="continueBtn" :loading="loading">Continue</b-button>
-                </center>
-            </div>
-            <div class="end-wrapper" v-if="($store.state.matchState.playerIs === 0 ? 1 : 0) === $store.state.matchState.winner">
-                <center>
-                    <img class="result-vector" :src="defeat"/>
-                    <b-button class="primary-btn" @click="continueBtn" :loading="loading">Continue</b-button>
-                </center>
-            </div>
+        <Board
+            v-else
+            :state="$store.state.matchState.state"
+            :playerIs="$store.state.matchState.playerIs"
+            :playerTurn="$store.state.matchState.playerTurn"
+            :fuel0="$store.state.matchState.fuel0"    
+            :fuel1="$store.state.matchState.fuel1"    
+            :turnNum="$store.state.matchState.turnNum"
+            :chat="$store.state.matchState.chat"
+            :log="$store.state.matchState.log"
+            :lastTurnTimestamp="$store.state.matchState.lastTurnTimestamp"
+        />
+        <div class="end-wrapper" v-if="$store.state.matchState.playerIs === $store.state.matchState.winner">
+            <center>
+                <img class="result-vector" :src="victory"/>
+                <b-button class="primary-btn" @click="continueBtn" :loading="loading">Continue</b-button>
+            </center>
+        </div>
+        <div class="end-wrapper" v-if="($store.state.matchState.playerIs === 0 ? 1 : 0) === $store.state.matchState.winner">
+            <center>
+                <img class="result-vector" :src="defeat"/>
+                <b-button class="primary-btn" @click="continueBtn" :loading="loading">Continue</b-button>
+            </center>
         </div>
     </div>
 </template>
 
 <script>
 import Board from '@/components/Board.vue'
+import PickingView from '@/components/PickingView.vue'
+import {Howl} from 'howler'
+
 export default {
     data() {
         return {
-            onboarding: true,
-            logo: require('../assets/img/widelogo.png'),
-            victory: require('../assets/img/victory.png'),
-            defeat: require('../assets/img/defeat.png'),
-            // audio: new Howl({src: [require('../assets/sfx/soundtrack.mp3')], loop: true}),
+            onboarding: false,
+            logo: 'https://res.cloudinary.com/station0x/image/upload/v1644538655/encouter/widelogo_nog5zl.png',
+            victory: 'https://res.cloudinary.com/station0x/image/upload/v1644538830/encouter/victory_dsfqjx.png',
+            defeat: 'https://res.cloudinary.com/station0x/image/upload/v1644538829/encouter/defeat_zhhnus.png',
+            audio: new Howl({src: [require('../assets/sfx/background-music.mp3')], loop: true}),
             soundisOn: undefined,
             loading: false
         }
     },
     components: {
-        Board
+        Board,
+        PickingView
     },
     methods: {
         async continueBtn () {
@@ -72,21 +90,29 @@ export default {
             max = Math.floor(max);
             return Math.floor(Math.random() * (max - min + 1)) + min;
         },
-        // soundOn() {
-        //     this.audio.play()
-        //     this.soundisOn = true
-        // },
-        // soundOff() {
-        //     this.audio.pause()
-        //     this.soundisOn = false
-        // }
+        soundOn() {
+            this.audio.play()
+            this.soundisOn = true
+        },
+        soundOff() {
+            this.audio.pause()
+            this.soundisOn = false
+        }
+    },
+    watch: {
+        "$store.state.matchState" (newState, oldState) {
+            if(newState.picking !== oldState.picking ) {
+                console.log('ran')
+                window.location.reload()
+            }
+        }
     },
     created () {
-        setTimeout(()=> this.onboarding = false , 22000)
-        // this.soundOn()
+        // setTimeout(()=> this.onboarding = false , 22000)
+        this.soundOn()
     },
     beforeDestroy() {
-        // this.soundOff()
+        this.soundOff()
     }
 }
 </script>
@@ -122,8 +148,9 @@ export default {
     border: none;
     color: white;
     font-size: 25px;
-    top: 2.8vh;
-    right: 17vw;
+    top: 2.6vh;
+    right: 29vw;
+    z-index: 30;
 }
 .sound-btn:hover {
     color: rgba(255,255,255,0.8);
