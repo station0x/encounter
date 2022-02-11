@@ -93,6 +93,7 @@
 					<h1 v-if="spaceshipStats.type !== 'base'" style="color: white; font-size: 17px; text-align: left; margin: 0px 20px 10px 20px;font-family: 'ClashDisplay-Variable';">Abilities</h1>
 					<div v-if="spaceshipStats.type !== 'base'" class="info-card">
 							<img class="info-card-icon" :src="moveInfoIcon" />
+							<p class="info-card-move-number">1</p>
 							<h1 class="info-card-text"> Move </h1>
 							<span :myTurn="!isMyTurn" class="info-card-energy">-{{spaceshipStats.moveCost}}</span>
 							<img :myTurn="!isMyTurn" class="info-card-energy-icon" src="/energy.svg" width="23px"/>
@@ -110,6 +111,13 @@
 							<h1 class="info-card-text"> Repair </h1>
 							<span :myTurn="!isMyTurn" class="info-card-energy">-{{spaceshipStats.repairCost}}</span>
 							<img :myTurn="!isMyTurn" class="info-card-energy-icon" src="/energy.svg" width="23px"/>
+					</div>
+					<div v-if="spaceshipStats.type === 'orkocraft'" class="info-card">
+						<img class="info-card-icon" :src="shockInfoIcon" />
+						<p class="info-card-shock-number">{{spaceshipStats.attack}}</p>
+						<h1 class="info-card-text"> Shock </h1>
+						<span class="info-card-energy">-{{spaceshipStats.attackCost}}</span>
+						<img class="info-card-energy-icon" src="/energy.svg" width="23px"/>
 					</div>
 				</div>
 				<PlayerCard @endTurn="endTurn" @surrender="surrender" :playerAddress="$store.state.address" :fuel="myFuel" :lastTurnTimestamp="lastTurnTimestamp" :isMyTurn="isMyTurn" :playerAlias="playerAlias" :playerElo="playerElo"/>
@@ -145,7 +153,6 @@
 											<div v-if="spaceshipStats.type !== 'base'" class="info-card">
 												<center>
 													<img class="info-card-icon" :src="moveInfoIcon" />
-													<p class="info-card-move-number">1</p>
 													<h1 class="info-card-text"> Move </h1>
 													<span :myTurn="!isMyTurn" class="info-card-energy">-{{spaceshipStats.moveCost}}</span>
 													<img :myTurn="!isMyTurn" class="info-card-energy-icon" src="/energy.svg" width="23px"/>
@@ -168,13 +175,6 @@
 													<span :myTurn="!isMyTurn" class="info-card-energy">-{{spaceshipStats.repairCost}}</span>
 													<img :myTurn="!isMyTurn" class="info-card-energy-icon" src="/energy.svg" width="23px"/>
 												</center>
-											</div>
-											<div v-if="spaceshipStats.shock" class="info-card">
-												<img class="info-card-icon" :src="shockInfoIcon" />
-												<p class="info-card-shock-number">{{spaceshipStats.attack}}</p>
-												<h1 class="info-card-text"> Shock </h1>
-												<span class="info-card-energy">-{{spaceshipStatso.attackCost}}</span>
-												<img class="info-card-energy-icon" src="/energy.svg" width="23px"/>
 											</div>
 											<div class="info-card"></div>
 										</div>
