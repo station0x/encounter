@@ -1,12 +1,14 @@
 <template>
   <div id="app" :style="bodyStyle">
-	  <Navbar v-if="!$store.getters.isMobile && !$store.getters.isPicking"/>
+	  <Navbar v-show="!$store.getters.isMobile && !$store.getters.isPicking"/>
 		<router-view></router-view>
   </div>
 </template>
 
 <script>
 import Navbar from '@/components/Navbar'
+import {mapGetters} from 'vuex';
+
 export default {
   name: 'App',
   components: {
@@ -20,13 +22,16 @@ export default {
   computed: {
 	bodyStyle() {
 		let styles = {}
-		if(this.$store.getters.isPicking) {
+		if(this.isPicking) {
 			styles['--bg'] = '#090F15'
 		} else {
 			styles['--bg'] = 'black'
 		}
 		return styles
 	},
+	...mapGetters({
+        isPicking: 'isPicking'
+    })
   },
   created() {
   	this.$store.commit('changeWindowWidth', window.innerWidth)

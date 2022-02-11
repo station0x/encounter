@@ -99,6 +99,14 @@ export default {
             this.soundisOn = false
         }
     },
+    watch: {
+        "$store.state.matchState" (newState, oldState) {
+            if(newState.picking !== oldState.picking ) {
+                console.log('ran')
+                window.location.reload()
+            }
+        }
+    },
     created () {
         // setTimeout(()=> this.onboarding = false , 22000)
         this.soundOn()
@@ -140,8 +148,9 @@ export default {
     border: none;
     color: white;
     font-size: 25px;
-    top: 2.8vh;
-    right: 17vw;
+    top: 2.6vh;
+    right: 29vw;
+    z-index: 30;
 }
 .sound-btn:hover {
     color: rgba(255,255,255,0.8);
