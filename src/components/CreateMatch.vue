@@ -2,7 +2,7 @@
     <div class="section onboarding">
         <center>
             <img
-                src="/logo.png"
+                src="https://res.cloudinary.com/station0x/image/upload/v1644538254/encouter/logo_ivctff.png"
                 alt="Station0x Encounter Logo"
                 class="main-logo"
             />

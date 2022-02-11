@@ -145,6 +145,7 @@
 											<div v-if="spaceshipStats.type !== 'base'" class="info-card">
 												<center>
 													<img class="info-card-icon" :src="moveInfoIcon" />
+													<p class="info-card-move-number">1</p>
 													<h1 class="info-card-text"> Move </h1>
 													<span :myTurn="!isMyTurn" class="info-card-energy">-{{spaceshipStats.moveCost}}</span>
 													<img :myTurn="!isMyTurn" class="info-card-energy-icon" src="/energy.svg" width="23px"/>
@@ -167,6 +168,13 @@
 													<span :myTurn="!isMyTurn" class="info-card-energy">-{{spaceshipStats.repairCost}}</span>
 													<img :myTurn="!isMyTurn" class="info-card-energy-icon" src="/energy.svg" width="23px"/>
 												</center>
+											</div>
+											<div v-if="spaceshipStats.shock" class="info-card">
+												<img class="info-card-icon" :src="shockInfoIcon" />
+												<p class="info-card-shock-number">{{spaceshipStats.attack}}</p>
+												<h1 class="info-card-text"> Shock </h1>
+												<span class="info-card-energy">-{{spaceshipStatso.attackCost}}</span>
+												<img class="info-card-energy-icon" src="/energy.svg" width="23px"/>
 											</div>
 											<div class="info-card"></div>
 										</div>
@@ -271,9 +279,10 @@ export default {
 		attackIcon: require('../assets/img/attackIcon.svg'),
 		repairIcon: require('../assets/img/repairIcon.svg'),
 		blankImg: require('../assets/img/blank.gif'),
-		attackInfoIcon: require('../assets/img/attack-info.svg'),
-		moveInfoIcon: require('../assets/img/move-info.svg'),
-		repairInfoIcon: require('../assets/img/repair-info.svg')
+		attackInfoIcon: 'https://res.cloudinary.com/station0x/image/upload/v1644548304/encouter/elements/icons/attack_kwg82o.svg',
+		moveInfoIcon: 'https://res.cloudinary.com/station0x/image/upload/v1644548304/encouter/elements/icons/move_hngi7m.svg',
+		repairInfoIcon: 'https://res.cloudinary.com/station0x/image/upload/v1644548304/encouter/elements/icons/repair_msp7vc.svg',
+		shockInfoIcon: 'https://res.cloudinary.com/station0x/image/upload/v1644548304/encouter/elements/icons/shock_fiygbi.svg'
 	}
   },
   components: {
