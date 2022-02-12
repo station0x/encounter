@@ -111,10 +111,10 @@ export default {
             if(newCountdown === 0 && this.isMyTurn) this.endTurn()
         }
     },
-    mounted () {
+    mounted: function() {
         this.gravatar = this.$refs.gravatar.url
     },
-    async created () {
+    created: async function () {
         const self = this
         this.dateInterval = setInterval(function () {
             self.date = Date.now()

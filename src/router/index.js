@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import store from '../store'
-import Home from '@/views/Home.vue'
 import Admin from '@/views/Admin.vue'
 import Link from '@/views/Link.vue'
 import Lobby from '@/views/Lobby'

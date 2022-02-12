@@ -99,7 +99,7 @@ export default {
             }
         }
     },
-    created () {
+    created: function() {
         const self = this
         this.dateInterval = setInterval(function () {
             self.date = Date.now()

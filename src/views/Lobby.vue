@@ -8,6 +8,7 @@
         <CreateMatch v-if="$store.state.registered && !$store.state.matchState"/>
         <Match v-if="$store.state.matchState"/>
       </div>
+      <v-gravatar style="display: none" ref="gravatar" :email="$store.state.address" alt="Nobody" :size="82"/>
 	</div>
 </template>
 
@@ -19,9 +20,10 @@ import Loader from '@/components/Loader.vue'
 import axios from 'axios'
 
 export default {
-  name: 'Lobby',
+  name: 'Home',
   data() {
     return {
+      gravatar: null
     }
   },
   components: {
@@ -59,7 +61,11 @@ export default {
     if(this.$store.state.matchState && (this.$store.state.matchState.winner === 0 || this.$store.state.matchState.winner === 1) && !this.$store.state.interval) {
       this.$store.dispatch("startPolling")
     }
-  }
+  },
+  mounted: function() {
+    this.gravatar = this.$refs.gravatar.url
+    this.$store.commit('setGravatar', this.$refs.gravatar.url)
+  },
 }
 </script>
 

@@ -17,6 +17,7 @@ export default new Vuex.Store({
     state: {
         signature: window.localStorage.getItem('signature'),
         address: window.localStorage.getItem('address'),
+        gravatar: null,
         intervalId: undefined,
         matchId: undefined,
         matchState: undefined,
@@ -77,6 +78,9 @@ export default new Vuex.Store({
                 matchState.fuel1 = newFuel
             }
             state.matchState = matchState;
+        },
+        setGravatar(state, gravatarLink) {
+            state.gravatar = gravatarLink
         },
         setWinner (state, playerNumber) {
             const matchState = {...state.matchState}

@@ -44,6 +44,7 @@ export default {
             const signature = await signer.signMessage("Station Labs Login")
             this.$router.go()
             this.$store.dispatch('connect', {signature, address: await signer.getAddress()})
+            
             if(this.$hj){
                 this.$hj('identify', this.$store.state.address, {})
             }
