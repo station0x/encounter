@@ -5,6 +5,7 @@ const getAddress = require('../../api-utils/getAddress');
 const { ObjectId } = require('mongodb');
 const CONSTANTS = require('../../constants.json');
 const {dodgeMatch} = require('../../api-utils/match')
+const { rowOccupied } = require('../../common/board');
 
 module.exports = async (req, res) => {
     const client = await clientPromise;
