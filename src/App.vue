@@ -23,7 +23,7 @@ export default {
 	bodyStyle() {
 		let styles = {}
 		if(this.isPicking) {
-			styles['--bg'] = '#090F15'
+			styles['--bg'] = 'black'
 		} else {
 			styles['--bg'] = 'black'
 		}

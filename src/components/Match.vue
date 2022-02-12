@@ -99,17 +99,15 @@ export default {
             this.soundisOn = false
         }
     },
-    watch: {
-        "$store.state.matchState" (newState, oldState) {
-            if(newState.picking !== oldState.picking ) {
-                console.log('ran')
-                window.location.reload()
-            }
-        }
-    },
-    created () {
+    // watch: {
+    //     "$store.state.matchState" (newState, oldState) {
+    //         if(newState.picking !== oldState.picking ) {
+    //         }
+    //     }
+    // },
+    created: function() {
         // setTimeout(()=> this.onboarding = false , 22000)
-        this.soundOn()
+        // this.soundOn()
     },
     beforeDestroy() {
         this.soundOff()
