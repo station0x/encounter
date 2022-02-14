@@ -90,7 +90,7 @@
 						<h1 class="progressbar-text">HP:  {{spaceshipStats.hp}} / {{ spaceshipStats.maxHp}}</h1>
 					</b-progress>
 					<p class="spaceships-desc">{{ spaceshipStats.desc }}</p>
-					<h1 v-if="spaceshipStats.type !== 'base'" style="color: white; font-size: 17px; text-align: left; margin: 0px 20px 10px 20px;font-family: 'ClashDisplay-Variable';">Abilities</h1>
+					<h1 v-if="spaceshipStats.type !== 'base'" style="color: white; font-size: 17px; text-align: left; margin: 0px 20px 10px 20px;font-family: 'Roboto';">Abilities</h1>
 					<div v-if="spaceshipStats.type !== 'base'" class="info-card">
 							<img class="info-card-icon" :src="moveInfoIcon" />
 							<p class="info-card-move-number">1</p>
@@ -1014,7 +1014,7 @@ export default {
 }
 .spaceship-type {
 	color: #416BFF;
-	font-family: 'ClashDisplay-Variable';
+	font-family: 'Roboto';
 	font-size: 21px;
 	text-transform: capitalize;
 	margin-top: -10px;
@@ -1059,7 +1059,7 @@ export default {
 	margin: 5.5px;
 }
 .ability-text {
-	font-family: 'ClashDisplay-Variable';
+	font-family: 'Roboto';
     margin-top: -18px;
     font-size: 16px;
     margin-left: 10px;
@@ -1068,7 +1068,7 @@ export default {
     vertical-align: middle;
 }
 .energy-ability {
-	font-family: 'ClashDisplay-Variable';
+	font-family: 'Roboto';
 	line-height: 42px;
     vertical-align: middle;
     display: inline-block;
@@ -1078,7 +1078,7 @@ export default {
 	color: #EFC97F;
 }
 .attack-ability {
-	font-family: 'ClashDisplay-Variable';
+	font-family: 'Roboto';
 	line-height: 42px;
     vertical-align: middle;
     display: inline-block;
@@ -1123,7 +1123,7 @@ export default {
 }
 .main-wrapper {
 	border: 1px solid #303030;
-
+	margin-top: 50px;
 }
 .middle {
 	padding: 40px 0;
