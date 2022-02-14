@@ -281,7 +281,7 @@ export default {
 		blankImg: require('../assets/img/blank.gif'),
 		attackInfoIcon: 'https://res.cloudinary.com/station0x/image/upload/v1644548304/encouter/elements/icons/attack_kwg82o.svg',
 		moveInfoIcon: 'https://res.cloudinary.com/station0x/image/upload/v1644548304/encouter/elements/icons/move_hngi7m.svg',
-		repairInfoIcon: 'https://res.cloudinary.com/station0x/image/upload/v1644548304/encouter/elements/icons/repair_msp7vc.svg',
+		repairInfoIcon: 'https://res.cloudinary.com/station0x/image/upload/v1644549515/encouter/elements/icons/repair_lj60dt.svg',
 		shockInfoIcon: 'https://res.cloudinary.com/station0x/image/upload/v1644548304/encouter/elements/icons/shock_fiygbi.svg'
 	}
   },

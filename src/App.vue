@@ -63,7 +63,7 @@ body, html {
 #app {
 	background-color: var(--bg);
 	margin: 0px;
-	height: 100vh;
+	height: 100%;
 	max-width: 1680px;
 	/* min-width: 1680px; */
 	margin: 0 auto;

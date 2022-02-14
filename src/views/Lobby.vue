@@ -19,7 +19,7 @@ import Loader from '@/components/Loader.vue'
 import axios from 'axios'
 
 export default {
-  name: 'Home',
+  name: 'Lobby',
   data() {
     return {
       
