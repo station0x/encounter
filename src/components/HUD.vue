@@ -180,7 +180,7 @@ export default {
             return this.$store.state.address.slice(0, 5) + '...' + this.$store.state.address.slice(-4)
         },
         elo() {
-            return this.$store.state.profile === undefined ? '_' : this.$store.state.profile.elo
+            return this.$store.state.profile === undefined || this.$store.state.profile.elo === undefined ? '---' : this.$store.state.profile.elo
         },
         playerAlias() {
             if(this.$store.state.profile !== undefined){
@@ -243,7 +243,7 @@ export default {
 .hud-wrapper {
     width: 700px;
     margin: 0 auto;
-    padding-top: 40px;
+    padding-top: 20px;
 }
 .hud-address {
     color: white;

@@ -3,7 +3,8 @@ import VueRouter from 'vue-router'
 import store from '../store'
 import Admin from '@/views/Admin.vue'
 import Link from '@/views/Link.vue'
-import Lobby from '@/views/Lobby'
+import Lobby from '@/views/Lobby.vue'
+import Home from '@/views/Home.vue'
 import Login from '@/views/Login'
 import PlayerProfile from '@/views/PlayerProfile'
 import RedeemAccessKey from '@/views/RedeemAccessKey'
@@ -17,7 +18,8 @@ const TITLE = ' | Station ZeroX: Encounter'
 const routes = [
   { path: '/', redirect: { name: 'Home' }},
   { path: '*', redirect: { name: 'Not Found' }},
-  { path: '/home', component: Lobby, name: 'Home', meta: { requiresLogin: true, title: 'Home' } },
+  { path: '/home', component: Home, name: 'Home', meta: { requiresLogin: true, title: 'home' } },
+  { path: '/lobby', component: Lobby, name: 'Lobby', meta: { requiresLogin: true, title: 'Lobby' } },
   { path: '/play/:link', component: Link, name: 'Join Game with Link', meta: { title: 'Join Game' } },
   { path: '/admin', component: Admin, name: 'Admin' },
   { path: '/login/:redirect?:key?', component: Login, name: 'Login', meta: { title: 'Login' } },

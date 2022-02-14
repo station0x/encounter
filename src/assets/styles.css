@@ -56,9 +56,12 @@ body {
     width: 50vw;
 }
 .onboarding {
-    background-image: url('/bg.png');
+    background-image: url('https://res.cloudinary.com/station0x/image/upload/v1644816791/encouter/backgrounds/background_7_mjkbsu.png');
     background-color: black;
-    padding: 0; 
+    padding: 0;
+    background-repeat: no-repeat;
+    background-position: top;
+
 }
 .onboarding-wrapper {
    margin: auto;
@@ -284,7 +287,7 @@ button.button.secondary-btn[disabled] {
     animation: none;
 }
 .blinking-element {
-    animation: blink 1s steps(2, start) infinite;
+    animation: blink 5s steps(2, start) infinite;
 }
 @keyframes blink {
   to {
