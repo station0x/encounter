@@ -242,7 +242,7 @@
                         </g>
                         <g id="my-profile-img">
                         <!-- <path id="photo" d="M756.183 556V590.451L756.161 590.482L751.298 597.774H704.395L704.36 597.737L700.495 593.873V559.226L700.534 556.332L711.222 545.499H721.568L721.604 545.536L724.98 548.912H748.869L748.906 548.948L756.183 556Z" fill="white"/> -->
-                                            <mask id="mask0_303_27279" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="700" y="545" width="57" height="53">
+                        <mask id="mask0_303_27279" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="700" y="545" width="57" height="53">
                             <g id="my-profile-img">
                             <path id="photo" d="M756.183 556V590.451L756.161 590.482L751.298 597.774H704.395L704.36 597.737L700.495 593.873V559.226L700.534 556.332L711.222 545.499H721.568L721.604 545.536L724.98 548.912H748.869L748.906 548.948L756.183 556Z" fill="white"/>
                             </g>
@@ -303,7 +303,7 @@
                                         <h1 style="color: #29D403">HP: {{spaceshipObj.info.hp}}</h1>
                                     </center>
                                     <p class="spaceships-desc" style="text-align: left; color: rgba(255,255,255,.7)">{{ spaceshipObj.info.desc }}</p>
-                                    <h1  style="color: white; font-size: 17px; text-align: left; margin: 0px 20px 10px 30px;font-family: 'ClashDisplay-Variable';">Abilities</h1>
+                                    <h1  style="color: white; font-size: 17px; text-align: left; margin: 0px 20px 10px 30px;font-family: 'Roboto';">Abilities</h1>
                                     <div style="margin-left: 20px">
                                         <div class="info-card">
                                                 <img class="info-card-icon" :src="moveInfoIcon" />
@@ -416,9 +416,9 @@ export default {
         cssProps() {
             let styles = {}
             if(this.isMyTurn) {
-                styles['--gradient-color'] = 'rgb(20, 35, 49)'
+                styles['--gradient-color'] = 'rgb(16, 27, 37)'
             } else {
-                styles['--gradient-color'] = 'rgb(49, 20, 20)'
+                styles['--gradient-color'] = 'rgb(32, 14, 14)'
             }
             return styles
         },
@@ -805,12 +805,6 @@ export default {
     font-weight: 300;
     margin: 0 auto;
 }
-.blinking-element:hover {
-    animation: none;
-}
-.blinking-element {
-    animation: blink 1s steps(2, start) infinite;
-}
 .my-address {
     font-family: Roboto;
     font-style: normal;
@@ -847,9 +841,4 @@ export default {
 }
 .clearfix:after { clear: both; }
 .clearfix { zoom: 1; }  */
-@keyframes blink {
-  to {
-    visibility: hidden;
-  }
-}
 </style>

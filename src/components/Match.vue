@@ -15,8 +15,6 @@
             </div>
         </div> -->
     <div class="match-wrapper">
-        <b-button v-if="soundisOn" @click="soundOff" class="sound-btn" icon-right="volume-high"></b-button>
-        <b-button v-else-if="!soundisOn" @click="soundOn" class="sound-btn" icon-right="volume-off"></b-button>
         <PickingView v-if="$store.state.matchState.picking && !$store.state.matchState.dodged"
             :state="$store.state.matchState.state"
             :playerIs="$store.state.matchState.playerIs"
@@ -71,8 +69,6 @@ export default {
             logo: 'https://res.cloudinary.com/station0x/image/upload/v1644538655/encouter/widelogo_nog5zl.png',
             victory: 'https://res.cloudinary.com/station0x/image/upload/v1644538830/encouter/victory_dsfqjx.png',
             defeat: 'https://res.cloudinary.com/station0x/image/upload/v1644538829/encouter/defeat_zhhnus.png',
-            audio: new Howl({src: [require('../assets/sfx/background-music.mp3')], loop: true}),
-            soundisOn: undefined,
             loading: false
         }
     },
@@ -89,14 +85,6 @@ export default {
             min = Math.ceil(min);
             max = Math.floor(max);
             return Math.floor(Math.random() * (max - min + 1)) + min;
-        },
-        soundOn() {
-            this.audio.play()
-            this.soundisOn = true
-        },
-        soundOff() {
-            this.audio.pause()
-            this.soundisOn = false
         }
     },
     // watch: {
@@ -105,13 +93,6 @@ export default {
     //         }
     //     }
     // },
-    created: function() {
-        // setTimeout(()=> this.onboarding = false , 22000)
-        // this.soundOn()
-    },
-    beforeDestroy() {
-        this.soundOff()
-    }
 }
 </script>
 
@@ -201,7 +182,7 @@ export default {
     width: fit-content;
 }
 .paragraph {
-    font-family: 'ClashDisplay-Variable';
+    font-family: 'Roboto';
     font-size: 38px;
     text-align: left;
     color: white;
@@ -228,7 +209,7 @@ export default {
     animation-delay: 11s;
 }
 .skip-btn {
-    font-family: 'ClashDisplay-Variable';
+    font-family: 'Roboto';
     font-size: 21px;
     color: rgba(255,255,255,.3);
     cursor: pointer;
