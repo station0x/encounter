@@ -3,7 +3,7 @@
         <div class="picking-hud-wrapper">
             <!-- Picking HUD SVG -->
             <template>
-                <svg viewBox="0 0 858 615" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg fill="none" xmlns="http://www.w3.org/2000/svg">
                     <g id="All-picking">
                         <g id="picking board">
                         <g id="outline">
@@ -359,7 +359,7 @@ export default {
             spaceships: [...CONSTANTS.freeSpaceshipsRotation],
             // myPicks: [{},{},{},{},{},{},{},{},{}],
             // enemyPicks: [{},{},{},{},{},{},{},{},{}],
-            turnSfx: require('../assets/sfx/turn.mp3'),
+            turnSfx: require('../assets/sfx/turn.webm'),
             selected: undefined,
             hovered: undefined,
             playerProfile: undefined,

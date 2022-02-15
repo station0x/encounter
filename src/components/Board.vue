@@ -251,9 +251,9 @@
 <script>
 import axios from 'axios'
 import CONSTANTS from "../../constants.json"
-import PlayerCard from "@/components/PlayerCard.vue"
-import EnemyCard from "@/components/EnemyCard.vue"
-import GameGuide from '@/components/GameGuide.vue'
+import PlayerCard from "./PlayerCard.vue"
+import EnemyCard from "./EnemyCard.vue"
+import GameGuide from './GameGuide.vue'
 import arraySort from 'array-sort'
 import { isOccupied, legalAttacks, legalMoves, legalRepairs, legalShockable, parseHexID } from '../../common/board'
 
@@ -271,13 +271,10 @@ export default {
 		tabsModel: 'logs',
 		playerProfile: undefined,
 		enemyProfile: undefined,
-		turnSfx: require('../assets/sfx/turn.mp3'),
-		shotSfx: require('../assets/sfx/shot.mp3'),
-		repairSfx: require('../assets/sfx/repair.mp3'),
-		radioSfxes: [require('../assets/sfx/radio1.mp3'), require('../assets/sfx/radio2.mp3'), require('../assets/sfx/radio3.mp3')],
-		moveIcon: require('../assets/img/moveIcon.svg'),
-		attackIcon: require('../assets/img/attackIcon.svg'),
-		repairIcon: require('../assets/img/repairIcon.svg'),
+		turnSfx: require('../assets/sfx/turn.webm'),
+		shotSfx: require('../assets/sfx/shot.webm'),
+		repairSfx: require('../assets/sfx/repair.webm'),
+		radioSfxes: [require('../assets/sfx/radio1.webm'), require('../assets/sfx/radio2.webm'), require('../assets/sfx/radio3.webm')],
 		blankImg: require('../assets/img/blank.gif'),
 		attackInfoIcon: 'https://res.cloudinary.com/station0x/image/upload/v1644548304/encouter/elements/icons/attack_kwg82o.svg',
 		moveInfoIcon: 'https://res.cloudinary.com/station0x/image/upload/v1644548304/encouter/elements/icons/move_hngi7m.svg',
@@ -295,9 +292,9 @@ export default {
 		return this.state.map(row => {
 			return row.map(col => {
 			if(col.owner === this.playerIs) {
-				col.img = col.type ? require(`../assets/blue/${col.type}.png`) : this.blankImg
+				col.img = col.type ? require(`../assets/blue/${col.type}.webp`) : this.blankImg
 			} else if (col.owner !== this.playerIs) {
-				col.img = col.type ? require(`../assets/red/${col.type}.png`) : this.blankImg
+				col.img = col.type ? require(`../assets/red/${col.type}.webp`) : this.blankImg
 			}
 			return col
 			})
