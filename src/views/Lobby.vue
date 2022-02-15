@@ -4,9 +4,9 @@
         <Loader v-model="loading"/>
       </div>
       <div v-if="!loading">
-        <GetAccess v-if="!$store.state.registered && !$store.state.matchState"/>
-        <CreateMatch v-if="$store.state.registered && !$store.state.matchState"/>
-        <Match v-if="$store.state.matchState"/>
+        <GetAccess v-show="!$store.state.registered && !$store.state.matchState"/>
+        <CreateMatch v-show="$store.state.registered && !$store.state.matchState"/>
+        <Match v-show="$store.state.matchState"/>
       </div>
 	</div>
 </template>

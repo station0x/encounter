@@ -25,11 +25,11 @@
                     <pattern id="pattern-l" patternContentUnits="objectBoundingBox" width="1" height="1">
                     <use xlink:href="#image4_315_27460" transform="translate(0 -0.000379363) scale(0.000758725)"/>
                     </pattern>
-                    <image id="image0_315_27460" data-name="assets_04.png" width="1319" height="1319" href="https://res.cloudinary.com/station0x/image/upload/v1644817940/encouter/home/deployment_mpckni.png"/>
-                    <image id="image1_315_27460" data-name="Dim-assets-_02(edit).png" width="1318" height="1319" href="https://res.cloudinary.com/station0x/image/upload/v1644817940/encouter/home/refinery_refbp8.png"/>
-                    <image id="image2_315_27460" data-name="Dim-assets-_08(edit).png" width="1318" height="1319" href="https://res.cloudinary.com/station0x/image/upload/v1644817940/encouter/home/market_xl54h3.png"/>
-                    <image id="image3_315_27460" data-name="Dim-assets-_11(edit).png" width="1318" height="1318" href="https://res.cloudinary.com/station0x/image/upload/v1644817940/encouter/home/factory_zel1u6.png"/>
-                    <image id="image4_315_27460" data-name="assets_06.png" width="1318" height="1319" href="https://res.cloudinary.com/station0x/image/upload/v1644817940/encouter/home/leaderboard_pal3oo.png"/>
+                    <image id="image0_315_27460" data-name="assets_04.png" width="1319" height="1319" href="https://res.cloudinary.com/station0x/image/upload/v1644891419/encouter/home/deployment_pwk68g.webp"/>
+                    <image id="image1_315_27460" data-name="Dim-assets-_02(edit).png" width="1318" height="1319" href="https://res.cloudinary.com/station0x/image/upload/v1644891419/encouter/home/refinery_m3k6l6.webp"/>
+                    <image id="image2_315_27460" data-name="Dim-assets-_08(edit).png" width="1318" height="1319" href="https://res.cloudinary.com/station0x/image/upload/v1644891419/encouter/home/market_sswma8.webp"/>
+                    <image id="image3_315_27460" data-name="Dim-assets-_11(edit).png" width="1318" height="1318" href="https://res.cloudinary.com/station0x/image/upload/v1644891418/encouter/home/factory_yfhogo.webp"/>
+                    <image id="image4_315_27460" data-name="assets_06.png" width="1318" height="1319" href="https://res.cloudinary.com/station0x/image/upload/v1644891419/encouter/home/leaderboard_smxlah.webp"/>
                 </defs>
             </svg>
         </div>

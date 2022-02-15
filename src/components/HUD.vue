@@ -153,7 +153,7 @@
                 <stop stop-color="#FBC115"/>
                 <stop offset="1" stop-color="#5FB4A1" stop-opacity="0.11"/>
                 </linearGradient>
-                <image id="image1_363_1285" data-name="wide.png" width="2054" height="606" href="https://res.cloudinary.com/station0x/image/upload/v1644790436/encouter/wide_1_1_qbtlvg.png"/>
+                <image id="image1_363_1285" data-name="wide.png" width="2054" height="606" href="https://res.cloudinary.com/station0x/image/upload/v1644890557/encouter/wide_1_2_ffvc63.webp"/>
                 <image id="gravatar" data-name="image.png" width="2000" height="2000" :href="$store.state.gravatar"/>
             </defs>
 
@@ -170,7 +170,7 @@ import Settings from '@/components/Settings.vue'
 export default {
     data() {
         return {
-            audio: new Howl({src: [require('../assets/sfx/background-music.mp3')], loop: true}),
+            audio: new Howl({src: [require('../assets/sfx/background-music.webm')], loop: true}),
             soundisOn: undefined,
             gravatar: null
         }
@@ -226,7 +226,7 @@ export default {
         this.$store.commit('setGravatar', this.$refs.gravatar.url)
     },
     created: function() {
-        this.soundOn()
+        // this.soundOn()
     },
     beforeDestroy() {
         this.soundOff()
