@@ -174,7 +174,7 @@ export default {
         '$store.state.matchState' () {
             if(this.$store.state.matchId) {
                 this.matchLoader = false
-                this.$router.push('/')
+                this.$router.push('/lobby')
             }
         }
     },

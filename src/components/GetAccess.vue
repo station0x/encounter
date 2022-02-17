@@ -66,15 +66,15 @@
                     <g id="Group 135">
                     <path id="Rectangle 5" d="M95.25 287.25L371.75 287.25L371.75 317.566L366.768 322.75L102.104 322.75L95.25 315.896L95.25 287.25Z" stroke="#FBC115" stroke-width="0.5"/>
                     </g>
-                    <text @click="registerAddress()" id="redeam" fill="#FBC115" xml:space="preserve" style="white-space: pre; cursor: pointer" font-family="Anson" font-size="18" letter-spacing="0em"><tspan x="310.226" y="307.736">REDEAM</tspan></text>
+                    <text @click="registerAddress()" id="redeem" fill="#FBC115" xml:space="preserve" style="white-space: pre; cursor: pointer" font-family="Anson" font-size="18" letter-spacing="0em"><tspan x="310.226" y="307.736">REDEEM</tspan></text>
                     </g>
                     <text id="You need access key" fill="#FBC115" xml:space="preserve" style="white-space: pre" font-family="Anson" font-size="26" letter-spacing="0em"><tspan x="95" y="185.148">You Need Access Key</tspan></text>
                     <g id="Game is now on alpha so we descied to lock access to limited people, you need to Use your access key to get access to the closed beta version">
-                    <text fill="white" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="13.5" letter-spacing="0em"><tspan x="104.742" y="217.655">ame is now on alpha so we descied to </tspan><tspan x="96" y="233.655">lock access to limited people, you need to </tspan><tspan x="96" y="249.655">use your access key to get access to the </tspan><tspan x="96" y="265.655">closed beta version&#10;</tspan></text>
-                    <text fill="white" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="13.5" letter-spacing="0em"><tspan x="96" y="217.655">G</tspan></text>
+                    <text fill="white" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="13.5" letter-spacing="0em"><tspan x="104.742" y="217.655">he game is currently in closed alpha. </tspan><tspan x="96" y="233.655">You need an access key to play. </tspan></text>
+                    <text fill="white" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="13.5" letter-spacing="0em"><tspan x="96" y="217.655">T</tspan></text>
                     </g>
                     <g id="You can get access key from one of our markting channels">
-                    <text fill="white" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="11" letter-spacing="0em"><tspan x="102.727" y="370.655">ou can get access key from one of our markting channels</tspan></text>
+                    <text fill="white" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="11" letter-spacing="0em"><tspan x="102.727" y="370.655">ou can get an access key from our social media</tspan></text>
                     <text fill="white" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="11" letter-spacing="0em"><tspan x="96" y="370.655">Y</tspan></text>
                     </g>
                     <foreignObject x="105" y="288" width="200" height="34">
@@ -85,13 +85,13 @@
                     </foreignObject>
                     <text id="Enter access key here" fill="white" fill-opacity="0.5" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="13.5" letter-spacing="0em"><tspan c>Enter Access Key Here</tspan></text>
                     </g>
-                    <g id="Medium">
+                    <g id="Telegram" @click="openLink('https://t.me/station0x')" style="cursor: pointer">
                     <path id="Vector_30" d="M138.297 386.274L123.96 391.971C123.688 392.079 123.678 392.466 123.945 392.589L127.114 394.044C127.2 394.084 127.265 394.158 127.293 394.249L128.653 398.629C128.722 398.85 128.986 398.936 129.169 398.797L131.536 396.992C131.649 396.906 131.803 396.902 131.921 396.982L135.89 399.692C136.088 399.828 136.358 399.713 136.402 399.475L138.744 386.647C138.792 386.388 138.539 386.178 138.297 386.274ZM129.609 394.666L129.182 397.126L128.078 393.603L135.647 388.848L129.609 394.666Z" fill="#FBC115"/>
                     </g>
-                    <g id="Medium_2">
-                    <path id="Brand Logos" d="M161.706 388.908C161.654 388.839 161.599 388.773 161.54 388.709C161.599 388.551 161.644 388.387 161.674 388.221C161.764 387.611 161.686 386.989 161.45 386.421C161.45 386.421 160.732 386.196 159.083 387.308C158.384 387.114 157.661 387.017 156.935 387.019C156.207 387.017 155.482 387.115 154.78 387.308C153.132 386.183 152.414 386.421 152.414 386.421C152.18 386.983 152.103 387.598 152.189 388.201C152.22 388.375 152.267 388.545 152.33 388.709C152.272 388.773 152.215 388.844 152.163 388.908C151.685 389.51 151.431 390.26 151.445 391.03C151.444 391.212 151.452 391.395 151.471 391.576C151.676 394.424 153.568 395.086 155.37 395.291C155.115 395.529 154.942 395.842 154.876 396.185C154.817 396.413 154.789 396.649 154.793 396.885V397.727C154.076 397.791 153.339 397.686 153.111 397.045C152.866 396.431 152.459 395.895 151.935 395.495C151.897 395.474 151.86 395.449 151.826 395.422C151.78 395.301 151.699 395.196 151.592 395.122C151.485 395.048 151.359 395.008 151.229 395.007H151.226C151.057 395.007 150.894 395.075 150.774 395.195C150.654 395.314 150.586 395.477 150.585 395.647C150.583 396.169 151.104 396.506 151.318 396.621C151.567 396.873 151.768 397.169 151.91 397.494C152.143 398.152 152.826 399.152 154.774 399.022C154.774 399.044 154.775 399.066 154.775 399.085L154.778 399.257C154.778 399.342 154.795 399.425 154.827 399.503C154.859 399.581 154.906 399.652 154.966 399.712C155.025 399.771 155.096 399.819 155.174 399.851C155.252 399.883 155.335 399.9 155.419 399.9L155.421 399.899V399.9H158.443C158.527 399.9 158.61 399.883 158.688 399.851C158.766 399.819 158.837 399.771 158.896 399.712C158.956 399.652 159.003 399.581 159.035 399.503C159.068 399.425 159.084 399.342 159.084 399.257C159.084 399.257 159.089 397.226 159.089 396.885C159.093 396.649 159.065 396.413 159.005 396.185L159.004 396.181L159.006 396.185C159.001 396.162 158.992 396.144 158.986 396.122C158.915 395.804 158.749 395.514 158.512 395.291L158.519 395.305C158.515 395.301 158.511 395.295 158.506 395.291C160.308 395.086 162.187 394.411 162.393 391.576C162.411 391.395 162.42 391.212 162.418 391.03C162.43 390.262 162.178 389.513 161.706 388.908V388.908Z" fill="#FBC115"/>
+                    <g id="Discord" @click="openLink('https://discord.gg/fySjpMSnx6')" style="cursor: pointer">
+                    <path id="Vector_31" d="M162.149 389.322C160.311 387.962 158.55 388 158.55 388L158.37 388.204C160.555 388.852 161.571 389.805 161.571 389.805C158.445 388.103 154.462 388.115 151.211 389.805C151.211 389.805 152.265 388.801 154.578 388.153L154.45 388C154.45 388 152.702 387.962 150.851 389.322C150.851 389.322 149 392.614 149 396.669C149 396.669 150.08 398.499 152.92 398.588C152.92 398.588 153.396 398.029 153.782 397.546C152.149 397.063 151.532 396.059 151.532 396.059C152.558 396.693 153.595 397.091 154.887 397.343C156.99 397.771 159.605 397.331 161.558 396.059C161.558 396.059 160.915 397.088 159.232 397.559C159.617 398.029 160.08 398.576 160.08 398.576C162.92 398.487 164 396.656 164 396.669C164 392.614 162.149 389.322 162.149 389.322ZM154.103 395.487C153.383 395.487 152.792 394.864 152.792 394.089C152.844 392.232 155.374 392.238 155.414 394.089C155.414 394.864 154.835 395.487 154.103 395.487ZM158.794 395.487C158.074 395.487 157.483 394.864 157.483 394.089C157.541 392.236 160.04 392.235 160.105 394.089C160.105 394.864 159.527 395.487 158.794 395.487Z" fill="#FBC115"/>
                     </g>
-                    <g id="Twitter">
+                    <g @click="openLink('https://twitter.com/station0x')" style="cursor: pointer" id="Twitter">
                     <path id="Vector_31" d="M109.413 387.664C108.221 388.099 107.467 389.218 107.552 390.442L107.581 390.915L107.104 390.857C105.368 390.635 103.85 389.883 102.562 388.619L101.933 387.992L101.77 388.455C101.426 389.487 101.646 390.577 102.362 391.311C102.743 391.716 102.657 391.774 101.999 391.533C101.771 391.456 101.57 391.398 101.551 391.427C101.484 391.495 101.713 392.372 101.894 392.72C102.143 393.203 102.648 393.675 103.202 393.955L103.67 394.177L103.116 394.187C102.582 394.187 102.563 394.197 102.62 394.4C102.811 395.027 103.565 395.693 104.405 395.983L104.996 396.185L104.481 396.494C103.702 396.943 102.822 397.189 101.924 397.207C101.494 397.217 101.141 397.255 101.141 397.285C101.141 397.381 102.305 397.921 102.982 398.134C105.014 398.761 107.429 398.49 109.241 397.42C110.53 396.658 111.818 395.143 112.419 393.676C112.744 392.895 113.068 391.467 113.068 390.782C113.068 390.338 113.096 390.28 113.63 389.75C113.945 389.441 114.241 389.104 114.299 389.008C114.395 388.824 114.384 388.824 113.898 388.988C113.087 389.278 112.973 389.239 113.374 388.805C113.669 388.496 114.023 387.937 114.023 387.773C114.023 387.745 113.879 387.793 113.717 387.879C113.546 387.976 113.164 388.12 112.877 388.207L112.362 388.371L111.895 388.05C111.637 387.877 111.275 387.683 111.084 387.625C110.597 387.49 109.853 387.51 109.413 387.664V387.664Z" fill="#FBC115"/>
                     </g>
                     </g>
@@ -198,17 +198,15 @@ export default {
                 this.loader = false
             }
         },
-        openGameGuideModal() {
-            this.$buefy.modal.open({
-                component: GameGuide
-            })
+        openLink(link) {
+            window.open(link, '_blank')
         }
     },
     watch: {
         '$store.state.matchState' () {
             if(this.$store.state.matchId) {
                 this.matchLoader = false
-                this.$router.push('/')
+                this.$router.push('/lobby')
             }
         }
     }

@@ -232,7 +232,7 @@ export default {
         this.$store.commit('setGravatar', this.$refs.gravatar.url)
     },
     created: function() {
-        // this.soundOn()
+        this.soundOn()
     },
     beforeDestroy() {
         this.soundOff()

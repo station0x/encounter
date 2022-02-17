@@ -16,7 +16,7 @@ Vue.use(VueRouter)
 const TITLE = ' | Station ZeroX: Encounter'
 
 const routes = [
-  { path: '/', redirect: { name: 'Lobby' }},
+  { path: '/', redirect: { name: 'Home' }},
   { path: '*', redirect: { name: 'Not Found' }},
   { path: '/home', component: Home, name: 'Home', meta: { requiresLogin: true, title: 'home' } },
   { path: '/lobby', component: Lobby, name: 'Lobby', meta: { requiresLogin: true, title: 'Lobby' } },
