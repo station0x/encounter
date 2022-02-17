@@ -95,7 +95,7 @@
                 <g id="link-field" @click="copyLink()" style="cursor: pointer">
                 <path id="Rectangle 6" d="M378 375L35 375L35 404L42 411L372.874 411L378 405.667L378 375Z" fill="#010101" fill-opacity="0.01"/>
                 <path id="Rectangle 5" d="M35.25 375.25L377.75 375.25L377.75 405.566L372.768 410.75L42.1036 410.75L35.25 403.896L35.25 375.25Z" stroke="#6B6B6B" stroke-width="0.5"/>
-                <text id="d" fill="white" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="12" letter-spacing="0em"><tspan x="46" y="395.491">{{formatInvitationLink(invitationLink)}}</tspan></text>
+                <text id="d" fill="white" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="11" letter-spacing="0em"><tspan x="46" y="395.491">{{formatInvitationLink(invitationLink)}}</tspan></text>
                 <text id="copy link" fill="#FBC115" xml:space="preserve" style="white-space: pre" font-family="Anson" font-size="18" letter-spacing="0em"><tspan x="291" y="395.736">COPY LINK</tspan></text>
                 </g>
                 </g>

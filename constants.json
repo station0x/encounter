@@ -345,7 +345,7 @@
       "hp": 55,
       "moveFuelCost": 2,
       "attackFuelCost": 3,
-      "bonusAttackOnAttack": 10,
+      "bonusAttackOnAttack": 15,
       "desc": "Nightstalker gain 2 attack damage if it lands an attack to any other spaceship with unlimited stack amount. It's squishy with a base attack of 15."
     },
     "orkocraft": {
