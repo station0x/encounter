@@ -1,7 +1,7 @@
 <template>
   <div>
-      <div class="loader-wrapper" v-if="true">
-        <Loader/>
+      <div class="loader-wrapper" v-if="loading">
+        <Loader v-model="loading"/>
       </div>
       <div v-if="!loading">
         <GetAccess v-if="!$store.state.registered && !$store.state.matchState"/>
@@ -56,10 +56,10 @@ export default {
     }
   },
   async beforeMount() {
-    // await this.checkAddressAccess()
-    // if(this.$store.state.matchState && (this.$store.state.matchState.winner === 0 || this.$store.state.matchState.winner === 1) && !this.$store.state.interval) {
-    //   this.$store.dispatch("startPolling")
-    // }
+    await this.checkAddressAccess()
+    if(this.$store.state.matchState && (this.$store.state.matchState.winner === 0 || this.$store.state.matchState.winner === 1) && !this.$store.state.interval) {
+      this.$store.dispatch("startPolling")
+    }
   }
 }
 </script>
