@@ -1,12 +1,12 @@
 <template>
   <div>
-      <div class="loader-wrapper" v-if="loading">
-        <Loader v-model="loading"/>
+      <div class="loader-wrapper" v-if="true">
+        <Loader/>
       </div>
       <div v-if="!loading">
-        <GetAccess v-show="!$store.state.registered && !$store.state.matchState"/>
-        <CreateMatch v-show="$store.state.registered && !$store.state.matchState"/>
-        <Match v-show="$store.state.matchState"/>
+        <GetAccess v-if="!$store.state.registered && !$store.state.matchState"/>
+        <CreateMatch v-if="$store.state.registered && !$store.state.matchState"/>
+        <Match v-if="$store.state.matchState"/>
       </div>
 	</div>
 </template>
@@ -56,10 +56,10 @@ export default {
     }
   },
   async beforeMount() {
-    await this.checkAddressAccess()
-    if(this.$store.state.matchState && (this.$store.state.matchState.winner === 0 || this.$store.state.matchState.winner === 1) && !this.$store.state.interval) {
-      this.$store.dispatch("startPolling")
-    }
+    // await this.checkAddressAccess()
+    // if(this.$store.state.matchState && (this.$store.state.matchState.winner === 0 || this.$store.state.matchState.winner === 1) && !this.$store.state.interval) {
+    //   this.$store.dispatch("startPolling")
+    // }
   }
 }
 </script>
@@ -82,8 +82,5 @@ export default {
 }
 .loading-background {
   background-color: black !important;
-}
-body {
-  background: black !important;
 }
 </style>

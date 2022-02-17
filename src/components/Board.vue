@@ -477,20 +477,20 @@ export default {
 		hexImg(x, y) {
 			if(this.shockablePieces.length > 0) {
 				if(this.shockablePieces.some(target => target.x === x && target.y === y)) {
-					if(this.hovered.x === x && this.hovered.y === y) return 'red-hex.png'
-					else return 'electro.png'
+					if(this.hovered.x === x && this.hovered.y === y) return 'https://res.cloudinary.com/station0x/image/upload/v1645091325/encouter/elements/hexes/red-hex_q8kldh.webp'
+					else return 'https://res.cloudinary.com/station0x/image/upload/v1645091326/encouter/elements/hexes/electro_dlxibn.webp'
 				}
 			}
 			if(this.selected) {
 				if(this.ourState[this.selected.y][this.selected.x].type === "salvation" && this.isLegalRepair(x, y)) {
-					return 'green-hex.png'
+					return 'https://res.cloudinary.com/station0x/image/upload/v1645091326/encouter/elements/hexes/green-hex_aotcdp.webp'
 				} else if(this.ourState[this.selected.y][this.selected.x].type !== "salvation" && this.isLegalAttack(x, y)) {
-					return 'red-hex.png'
+					return 'https://res.cloudinary.com/station0x/image/upload/v1645091325/encouter/elements/hexes/red-hex_q8kldh.webp'
 				} else {
-					return 'hex.png'
+					return 'https://res.cloudinary.com/station0x/image/upload/v1645091325/encouter/elements/hexes/hex_hh2ews.svg'
 				}
 			} else {
-				return 'hex.png'
+				return 'https://res.cloudinary.com/station0x/image/upload/v1645091325/encouter/elements/hexes/hex_hh2ews.svg'
 			}
 		},
 		tabClicked(index) {
@@ -885,20 +885,20 @@ export default {
 		// const eleHexTarget = this.$refs[eleHex]
 		// this.$refs[ele].classList.value = this.$refs[ele].$el.classList.value + 'under-action'
 		const eleHex = this.parseHexID(to.x, to.y)
-		this.$refs[eleHex][0].src = "/red-hex.png"
+		this.$refs[eleHex][0].src = "https://res.cloudinary.com/station0x/image/upload/v1645091325/encouter/elements/hexes/red-hex_q8kldh.webp"
 		this.$refs[eleHex][0].classList.add('under-action','unhoverable')
 		setTimeout(() => {
-			this.$refs[eleHex][0].src = "/hex.png"
+			this.$refs[eleHex][0].src = "https://res.cloudinary.com/station0x/image/upload/v1645091325/encouter/elements/hexes/hex_hh2ews.svg"
 			this.$refs[eleHex][0].classList.remove('under-action','unhoverable')
 		}, 2500)
 	  },
 	  startRepairedFX(to) {
 		this.playSound(this.repairSfx)
 		const eleHex = this.parseHexID(to.x, to.y)
-		this.$refs[eleHex][0].src = "/green-hex.png"
+		this.$refs[eleHex][0].src = "https://res.cloudinary.com/station0x/image/upload/v1645091326/encouter/elements/hexes/green-hex_aotcdp.webp"
 		this.$refs[eleHex][0].classList.add('under-action','unhoverable')
 		setTimeout(() => {
-			this.$refs[eleHex][0].src = "/hex.png"
+			this.$refs[eleHex][0].src = "https://res.cloudinary.com/station0x/image/upload/v1645091325/encouter/elements/hexes/hex_hh2ews.svg"
 			this.$refs[eleHex][0].classList.remove('under-action','unhoverable')
 		}, 2500)
 	  },

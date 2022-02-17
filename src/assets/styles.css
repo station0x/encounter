@@ -7,7 +7,17 @@
     font-weight: normal;
     font-style: normal;
 }
-
+:focus {
+    outline: none;
+}
+.center-absolute-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    -ms-transform: translateX(-50%) translateY(-50%);
+    -webkit-transform: translate(-50%,-50%);
+}
 /* Board Styles */
 .match-wrapper {
     margin: 0 auto;
@@ -158,7 +168,22 @@ body {
     font-weight: 900;
     margin-bottom: 15px;
 }
-
+button.button.loader-fake-btn {
+    border: none;
+    box-shadow: none;
+    color: #FBC115;
+}
+button.button.loader-fake-btn.is-loading::after {
+    border-color: #FBC115;
+    border-right-color: transparent;
+    border-top-color: transparent;
+    border-width: 1px;
+    font-size: 14px;
+}
+button.button.loader-fake-btn:focus, button.button.loader-fake-btn:active {
+    border: none;
+    box-shadow: none;
+}
 .primary-btn {
     height: 60px;
     margin: 15px;
@@ -271,7 +296,7 @@ button.button.secondary-btn[disabled] {
     text-align: center;
     text-transform: capitalize;
     color: #FFFFFF;
-    margin-bottom: 50px;
+    margin-bottom: 20px;
 }
 /* Modal overrides */
 .modal-background {
