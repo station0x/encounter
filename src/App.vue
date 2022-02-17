@@ -1,7 +1,7 @@
 <template>
-  <div id="app" :style="bodyStyle">
+  <div id="app">
 	  <!-- <Navbar v-show="!$store.getters.isMobile && !$store.getters.isPicking"/> -->
-	  <HUD v-if="isConnected && !$store.getters.isMobile && $store.getters.isPicking === false && isMatch === false"/>
+	  <HUD v-if="isConnected && $store.getters.isPicking === false && isMatch === false"/>
 		<router-view></router-view>
   </div>
 </template>
@@ -54,14 +54,12 @@ export default {
 
 <style>
 @import "./assets/styles.css";
-
 body, html {
 	margin: 0;
 	padding: 0;
 	font-family: 'Roboto';
 }
 #app {
-	background-color: var(--bg);
 	margin: 0px;
 	height: 100%;
 	max-width: 1680px;

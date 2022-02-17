@@ -36,12 +36,31 @@
     </div>
 </template>
 
+<script>
+
+export default {
+  data() {
+    return {
+
+    }
+  },
+  watch: {
+    "$store.state.matchId" (newMatchId) {
+      if(newMatchId !== undefined) {
+        this.$router.push('/lobby')
+      }
+    }
+  }
+}
+</script>
+
+
 
 <style scoped>
 .home-wrapper {
     max-width: 1100px;
     margin: 0 auto;
-    margin-top: -40px;
+    margin-top: 130px;
     /* -webkit-animation: float 6s ease-in-out infinite;
     animation: float 6s ease-in-out infinite; */
 }
@@ -53,9 +72,9 @@
 }
 @media screen and (max-width: 1500px) {
     .home-wrapper {
-        max-width: 900px;
-        margin: 0 auto;
-        margin-top: -40px;
+      max-width: 900px;
+      margin: 0 auto;
+      margin-top: 100px;
     }
 }
 @-webkit-keyframes float {

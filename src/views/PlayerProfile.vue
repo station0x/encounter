@@ -111,11 +111,11 @@ export default {
 
 <style>
 .page-container {
-    padding-top: 20px;
+    padding-top: 190px;
 }
 .profile-wrapper {
     height: 700px;
-    max-width: 700px;
+    max-width: 600px;
     padding: 50px;
     background: black;
     backdrop-filter: blur(6px);

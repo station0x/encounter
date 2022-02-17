@@ -3,7 +3,7 @@
         <div class="picking-hud-wrapper">
             <!-- Picking HUD SVG -->
             <template>
-                <svg fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg fill="none" viewBox="0 0 858 615" xmlns="http://www.w3.org/2000/svg">
                     <g id="All-picking">
                         <g id="picking board">
                         <g id="outline">
@@ -248,7 +248,7 @@
                             </g>
                             </mask>
                             <g mask="url(#mask0_303_27279)">
-                            <rect id="image 6" x="687" y="539" width="81.6828" height="82" fill="url(#pattern0)"/>
+                            <rect id="image 6" x="687" y="539" width="81.6828" height="82" fill="url(#pattern-picking-fix)"/>
                             </g>
                         </g>
                         </g>
@@ -261,7 +261,7 @@
                         </clipPath>
                     </defs>
                     <defs>
-                        <pattern id="pattern0" patternContentUnits="objectBoundingBox" width="1" height="1">
+                        <pattern id="pattern-picking-fix" patternContentUnits="objectBoundingBox" width="1" height="1">
                             <use xlink:href="#gravatar" transform="scale(0.000970874)"/>
                         </pattern>
                         <clipPath id="clip0_303_27279">
@@ -383,7 +383,7 @@ export default {
             return spaceships.map((spaceship) => {
                 return {
                     type: spaceship,
-                    image: require(`../assets/blue/${spaceship}.png`),
+                    image: require(`../assets/blue/${spaceship}.webp`),
                     info: CONSTANTS.spaceshipsAttributes[spaceship]
                 }
             })
@@ -432,23 +432,23 @@ export default {
 		},
         spaceshipImg(hex) {
             if(hex.type === undefined) return require('../assets/img/blank.gif')
-            else return hex.owner === this.playerIs ? require(`../assets/blue/${hex.type}.png`) : require(`../assets/red/${hex.type}.png`)
+            else return hex.owner === this.playerIs ? require(`../assets/blue/${hex.type}.webp`) : require(`../assets/red/${hex.type}.webp`)
         },
         hexImg(hex, index) {
             if(this.isMyTurn) {
-                if(hex.type === undefined && this.selected === undefined) return '/hex-slot.svg'
-                else if(hex.type === undefined && this.selected !== undefined) return '/insertion-slot.svg'
-                else if(hex.type !== undefined && this.hovered === index && hex.canRemove === true) return '/removable-slot.svg'
-                else if(hex.type !== undefined && hex.canRemove === false) return '/locked-slot.svg'
-                else return '/occupied-slot.svg'
+                if(hex.type === undefined && this.selected === undefined) return 'https://res.cloudinary.com/station0x/image/upload/v1645091325/encouter/elements/hexes/hex-slot_buo7ot.svg'
+                else if(hex.type === undefined && this.selected !== undefined) return 'https://res.cloudinary.com/station0x/image/upload/v1645091327/encouter/elements/hexes/insertion-slot_rrtdnc.svg'
+                else if(hex.type !== undefined && this.hovered === index && hex.canRemove === true) return 'https://res.cloudinary.com/station0x/image/upload/v1645091325/encouter/elements/hexes/removable-slot_uklatc.svg'
+                else if(hex.type !== undefined && hex.canRemove === false) return 'https://res.cloudinary.com/station0x/image/upload/v1645091325/encouter/elements/hexes/locked-slot_h8vptu.svg'
+                else return 'https://res.cloudinary.com/station0x/image/upload/v1645091325/encouter/elements/hexes/occupied-slot_mlrzhp.svg'
             } else {
-                if(hex.type !== undefined && hex.canRemove === false) return '/locked-slot.svg'
-                else return '/hex.svg'
+                if(hex.type !== undefined && hex.canRemove === false) return 'https://res.cloudinary.com/station0x/image/upload/v1645091325/encouter/elements/hexes/locked-slot_h8vptu.svg'
+                else return 'https://res.cloudinary.com/station0x/image/upload/v1645091325/encouter/elements/hexes/hex_hh2ews.svg'
             }
         },
         enemyHexImg(hex) {
-            if(hex.type !== undefined && hex.canRemove === false) return '/locked-slot.svg'
-            else return '/hex.svg'
+            if(hex.type !== undefined && hex.canRemove === false) return 'https://res.cloudinary.com/station0x/image/upload/v1645091325/encouter/elements/hexes/locked-slot_h8vptu.svg'
+            else return 'https://res.cloudinary.com/station0x/image/upload/v1645091325/encouter/elements/hexes/hex_hh2ews.svg'
         },
         renderHexImg(hex, index) {
             let classes = 'hex-bg '
