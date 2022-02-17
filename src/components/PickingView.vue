@@ -3,7 +3,7 @@
         <div class="picking-hud-wrapper">
             <!-- Picking HUD SVG -->
             <template>
-                <svg viewBox="0 0 858 615" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg fill="none" viewBox="0 0 858 615" xmlns="http://www.w3.org/2000/svg">
                     <g id="All-picking">
                         <g id="picking board">
                         <g id="outline">
@@ -242,13 +242,13 @@
                         </g>
                         <g id="my-profile-img">
                         <!-- <path id="photo" d="M756.183 556V590.451L756.161 590.482L751.298 597.774H704.395L704.36 597.737L700.495 593.873V559.226L700.534 556.332L711.222 545.499H721.568L721.604 545.536L724.98 548.912H748.869L748.906 548.948L756.183 556Z" fill="white"/> -->
-                                            <mask id="mask0_303_27279" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="700" y="545" width="57" height="53">
+                        <mask id="mask0_303_27279" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="700" y="545" width="57" height="53">
                             <g id="my-profile-img">
                             <path id="photo" d="M756.183 556V590.451L756.161 590.482L751.298 597.774H704.395L704.36 597.737L700.495 593.873V559.226L700.534 556.332L711.222 545.499H721.568L721.604 545.536L724.98 548.912H748.869L748.906 548.948L756.183 556Z" fill="white"/>
                             </g>
                             </mask>
                             <g mask="url(#mask0_303_27279)">
-                            <rect id="image 6" x="687" y="539" width="81.6828" height="82" fill="url(#pattern0)"/>
+                            <rect id="image 6" x="687" y="539" width="81.6828" height="82" fill="url(#pattern-picking-fix)"/>
                             </g>
                         </g>
                         </g>
@@ -261,7 +261,7 @@
                         </clipPath>
                     </defs>
                     <defs>
-                        <pattern id="pattern0" patternContentUnits="objectBoundingBox" width="1" height="1">
+                        <pattern id="pattern-picking-fix" patternContentUnits="objectBoundingBox" width="1" height="1">
                             <use xlink:href="#gravatar" transform="scale(0.000970874)"/>
                         </pattern>
                         <clipPath id="clip0_303_27279">
@@ -303,7 +303,7 @@
                                         <h1 style="color: #29D403">HP: {{spaceshipObj.info.hp}}</h1>
                                     </center>
                                     <p class="spaceships-desc" style="text-align: left; color: rgba(255,255,255,.7)">{{ spaceshipObj.info.desc }}</p>
-                                    <h1  style="color: white; font-size: 17px; text-align: left; margin: 0px 20px 10px 30px;font-family: 'ClashDisplay-Variable';">Abilities</h1>
+                                    <h1  style="color: white; font-size: 17px; text-align: left; margin: 0px 20px 10px 30px;font-family: 'Roboto';">Abilities</h1>
                                     <div style="margin-left: 20px">
                                         <div class="info-card">
                                                 <img class="info-card-icon" :src="moveInfoIcon" />
@@ -359,7 +359,7 @@ export default {
             spaceships: [...CONSTANTS.freeSpaceshipsRotation],
             // myPicks: [{},{},{},{},{},{},{},{},{}],
             // enemyPicks: [{},{},{},{},{},{},{},{},{}],
-            turnSfx: require('../assets/sfx/turn.mp3'),
+            turnSfx: require('../assets/sfx/turn.webm'),
             selected: undefined,
             hovered: undefined,
             playerProfile: undefined,
@@ -383,7 +383,7 @@ export default {
             return spaceships.map((spaceship) => {
                 return {
                     type: spaceship,
-                    image: require(`../assets/blue/${spaceship}.png`),
+                    image: require(`../assets/blue/${spaceship}.webp`),
                     info: CONSTANTS.spaceshipsAttributes[spaceship]
                 }
             })
@@ -416,9 +416,9 @@ export default {
         cssProps() {
             let styles = {}
             if(this.isMyTurn) {
-                styles['--gradient-color'] = 'rgb(20, 35, 49)'
+                styles['--gradient-color'] = 'rgb(16, 27, 37)'
             } else {
-                styles['--gradient-color'] = 'rgb(49, 20, 20)'
+                styles['--gradient-color'] = 'rgb(32, 14, 14)'
             }
             return styles
         },
@@ -432,23 +432,23 @@ export default {
 		},
         spaceshipImg(hex) {
             if(hex.type === undefined) return require('../assets/img/blank.gif')
-            else return hex.owner === this.playerIs ? require(`../assets/blue/${hex.type}.png`) : require(`../assets/red/${hex.type}.png`)
+            else return hex.owner === this.playerIs ? require(`../assets/blue/${hex.type}.webp`) : require(`../assets/red/${hex.type}.webp`)
         },
         hexImg(hex, index) {
             if(this.isMyTurn) {
-                if(hex.type === undefined && this.selected === undefined) return '/hex-slot.svg'
-                else if(hex.type === undefined && this.selected !== undefined) return '/insertion-slot.svg'
-                else if(hex.type !== undefined && this.hovered === index && hex.canRemove === true) return '/removable-slot.svg'
-                else if(hex.type !== undefined && hex.canRemove === false) return '/locked-slot.svg'
-                else return '/occupied-slot.svg'
+                if(hex.type === undefined && this.selected === undefined) return 'https://res.cloudinary.com/station0x/image/upload/v1645091325/encouter/elements/hexes/hex-slot_buo7ot.svg'
+                else if(hex.type === undefined && this.selected !== undefined) return 'https://res.cloudinary.com/station0x/image/upload/v1645091327/encouter/elements/hexes/insertion-slot_rrtdnc.svg'
+                else if(hex.type !== undefined && this.hovered === index && hex.canRemove === true) return 'https://res.cloudinary.com/station0x/image/upload/v1645091325/encouter/elements/hexes/removable-slot_uklatc.svg'
+                else if(hex.type !== undefined && hex.canRemove === false) return 'https://res.cloudinary.com/station0x/image/upload/v1645091325/encouter/elements/hexes/locked-slot_h8vptu.svg'
+                else return 'https://res.cloudinary.com/station0x/image/upload/v1645091325/encouter/elements/hexes/occupied-slot_mlrzhp.svg'
             } else {
-                if(hex.type !== undefined && hex.canRemove === false) return '/locked-slot.svg'
-                else return '/hex.svg'
+                if(hex.type !== undefined && hex.canRemove === false) return 'https://res.cloudinary.com/station0x/image/upload/v1645091325/encouter/elements/hexes/locked-slot_h8vptu.svg'
+                else return 'https://res.cloudinary.com/station0x/image/upload/v1645091325/encouter/elements/hexes/hex_hh2ews.svg'
             }
         },
         enemyHexImg(hex) {
-            if(hex.type !== undefined && hex.canRemove === false) return '/locked-slot.svg'
-            else return '/hex.svg'
+            if(hex.type !== undefined && hex.canRemove === false) return 'https://res.cloudinary.com/station0x/image/upload/v1645091325/encouter/elements/hexes/locked-slot_h8vptu.svg'
+            else return 'https://res.cloudinary.com/station0x/image/upload/v1645091325/encouter/elements/hexes/hex_hh2ews.svg'
         },
         renderHexImg(hex, index) {
             let classes = 'hex-bg '
@@ -805,12 +805,6 @@ export default {
     font-weight: 300;
     margin: 0 auto;
 }
-.blinking-element:hover {
-    animation: none;
-}
-.blinking-element {
-    animation: blink 1s steps(2, start) infinite;
-}
 .my-address {
     font-family: Roboto;
     font-style: normal;
@@ -847,9 +841,4 @@ export default {
 }
 .clearfix:after { clear: both; }
 .clearfix { zoom: 1; }  */
-@keyframes blink {
-  to {
-    visibility: hidden;
-  }
-}
 </style>

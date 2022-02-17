@@ -90,7 +90,7 @@
 						<h1 class="progressbar-text">HP:  {{spaceshipStats.hp}} / {{ spaceshipStats.maxHp}}</h1>
 					</b-progress>
 					<p class="spaceships-desc">{{ spaceshipStats.desc }}</p>
-					<h1 v-if="spaceshipStats.type !== 'base'" style="color: white; font-size: 17px; text-align: left; margin: 0px 20px 10px 20px;font-family: 'ClashDisplay-Variable';">Abilities</h1>
+					<h1 v-if="spaceshipStats.type !== 'base'" style="color: white; font-size: 17px; text-align: left; margin: 0px 20px 10px 20px;font-family: 'Roboto';">Abilities</h1>
 					<div v-if="spaceshipStats.type !== 'base'" class="info-card">
 							<img class="info-card-icon" :src="moveInfoIcon" />
 							<p class="info-card-move-number">1</p>
@@ -251,9 +251,9 @@
 <script>
 import axios from 'axios'
 import CONSTANTS from "../../constants.json"
-import PlayerCard from "@/components/PlayerCard.vue"
-import EnemyCard from "@/components/EnemyCard.vue"
-import GameGuide from '@/components/GameGuide.vue'
+import PlayerCard from "./PlayerCard.vue"
+import EnemyCard from "./EnemyCard.vue"
+import GameGuide from './GameGuide.vue'
 import arraySort from 'array-sort'
 import { isOccupied, legalAttacks, legalMoves, legalRepairs, legalShockable, parseHexID } from '../../common/board'
 
@@ -271,17 +271,14 @@ export default {
 		tabsModel: 'logs',
 		playerProfile: undefined,
 		enemyProfile: undefined,
-		turnSfx: require('../assets/sfx/turn.mp3'),
-		shotSfx: require('../assets/sfx/shot.mp3'),
-		repairSfx: require('../assets/sfx/repair.mp3'),
-		radioSfxes: [require('../assets/sfx/radio1.mp3'), require('../assets/sfx/radio2.mp3'), require('../assets/sfx/radio3.mp3')],
-		moveIcon: require('../assets/img/moveIcon.svg'),
-		attackIcon: require('../assets/img/attackIcon.svg'),
-		repairIcon: require('../assets/img/repairIcon.svg'),
+		turnSfx: require('../assets/sfx/turn.webm'),
+		shotSfx: require('../assets/sfx/shot.webm'),
+		repairSfx: require('../assets/sfx/repair.webm'),
+		radioSfxes: [require('../assets/sfx/radio1.webm'), require('../assets/sfx/radio2.webm'), require('../assets/sfx/radio3.webm')],
 		blankImg: require('../assets/img/blank.gif'),
 		attackInfoIcon: 'https://res.cloudinary.com/station0x/image/upload/v1644548304/encouter/elements/icons/attack_kwg82o.svg',
 		moveInfoIcon: 'https://res.cloudinary.com/station0x/image/upload/v1644548304/encouter/elements/icons/move_hngi7m.svg',
-		repairInfoIcon: 'https://res.cloudinary.com/station0x/image/upload/v1644548304/encouter/elements/icons/repair_msp7vc.svg',
+		repairInfoIcon: 'https://res.cloudinary.com/station0x/image/upload/v1644549515/encouter/elements/icons/repair_lj60dt.svg',
 		shockInfoIcon: 'https://res.cloudinary.com/station0x/image/upload/v1644548304/encouter/elements/icons/shock_fiygbi.svg'
 	}
   },
@@ -295,9 +292,9 @@ export default {
 		return this.state.map(row => {
 			return row.map(col => {
 			if(col.owner === this.playerIs) {
-				col.img = col.type ? require(`../assets/blue/${col.type}.png`) : this.blankImg
+				col.img = col.type ? require(`../assets/blue/${col.type}.webp`) : this.blankImg
 			} else if (col.owner !== this.playerIs) {
-				col.img = col.type ? require(`../assets/red/${col.type}.png`) : this.blankImg
+				col.img = col.type ? require(`../assets/red/${col.type}.webp`) : this.blankImg
 			}
 			return col
 			})
@@ -480,20 +477,20 @@ export default {
 		hexImg(x, y) {
 			if(this.shockablePieces.length > 0) {
 				if(this.shockablePieces.some(target => target.x === x && target.y === y)) {
-					if(this.hovered.x === x && this.hovered.y === y) return 'red-hex.png'
-					else return 'electro.png'
+					if(this.hovered.x === x && this.hovered.y === y) return 'https://res.cloudinary.com/station0x/image/upload/v1645091325/encouter/elements/hexes/red-hex_q8kldh.webp'
+					else return 'https://res.cloudinary.com/station0x/image/upload/v1645091326/encouter/elements/hexes/electro_dlxibn.webp'
 				}
 			}
 			if(this.selected) {
 				if(this.ourState[this.selected.y][this.selected.x].type === "salvation" && this.isLegalRepair(x, y)) {
-					return 'green-hex.png'
+					return 'https://res.cloudinary.com/station0x/image/upload/v1645091326/encouter/elements/hexes/green-hex_aotcdp.webp'
 				} else if(this.ourState[this.selected.y][this.selected.x].type !== "salvation" && this.isLegalAttack(x, y)) {
-					return 'red-hex.png'
+					return 'https://res.cloudinary.com/station0x/image/upload/v1645091325/encouter/elements/hexes/red-hex_q8kldh.webp'
 				} else {
-					return 'hex.png'
+					return 'https://res.cloudinary.com/station0x/image/upload/v1645091325/encouter/elements/hexes/hex_hh2ews.svg'
 				}
 			} else {
-				return 'hex.png'
+				return 'https://res.cloudinary.com/station0x/image/upload/v1645091325/encouter/elements/hexes/hex_hh2ews.svg'
 			}
 		},
 		tabClicked(index) {
@@ -888,20 +885,20 @@ export default {
 		// const eleHexTarget = this.$refs[eleHex]
 		// this.$refs[ele].classList.value = this.$refs[ele].$el.classList.value + 'under-action'
 		const eleHex = this.parseHexID(to.x, to.y)
-		this.$refs[eleHex][0].src = "/red-hex.png"
+		this.$refs[eleHex][0].src = "https://res.cloudinary.com/station0x/image/upload/v1645091325/encouter/elements/hexes/red-hex_q8kldh.webp"
 		this.$refs[eleHex][0].classList.add('under-action','unhoverable')
 		setTimeout(() => {
-			this.$refs[eleHex][0].src = "/hex.png"
+			this.$refs[eleHex][0].src = "https://res.cloudinary.com/station0x/image/upload/v1645091325/encouter/elements/hexes/hex_hh2ews.svg"
 			this.$refs[eleHex][0].classList.remove('under-action','unhoverable')
 		}, 2500)
 	  },
 	  startRepairedFX(to) {
 		this.playSound(this.repairSfx)
 		const eleHex = this.parseHexID(to.x, to.y)
-		this.$refs[eleHex][0].src = "/green-hex.png"
+		this.$refs[eleHex][0].src = "https://res.cloudinary.com/station0x/image/upload/v1645091326/encouter/elements/hexes/green-hex_aotcdp.webp"
 		this.$refs[eleHex][0].classList.add('under-action','unhoverable')
 		setTimeout(() => {
-			this.$refs[eleHex][0].src = "/hex.png"
+			this.$refs[eleHex][0].src = "https://res.cloudinary.com/station0x/image/upload/v1645091325/encouter/elements/hexes/hex_hh2ews.svg"
 			this.$refs[eleHex][0].classList.remove('under-action','unhoverable')
 		}, 2500)
 	  },
@@ -1014,7 +1011,7 @@ export default {
 }
 .spaceship-type {
 	color: #416BFF;
-	font-family: 'ClashDisplay-Variable';
+	font-family: 'Roboto';
 	font-size: 21px;
 	text-transform: capitalize;
 	margin-top: -10px;
@@ -1059,7 +1056,7 @@ export default {
 	margin: 5.5px;
 }
 .ability-text {
-	font-family: 'ClashDisplay-Variable';
+	font-family: 'Roboto';
     margin-top: -18px;
     font-size: 16px;
     margin-left: 10px;
@@ -1068,7 +1065,7 @@ export default {
     vertical-align: middle;
 }
 .energy-ability {
-	font-family: 'ClashDisplay-Variable';
+	font-family: 'Roboto';
 	line-height: 42px;
     vertical-align: middle;
     display: inline-block;
@@ -1078,7 +1075,7 @@ export default {
 	color: #EFC97F;
 }
 .attack-ability {
-	font-family: 'ClashDisplay-Variable';
+	font-family: 'Roboto';
 	line-height: 42px;
     vertical-align: middle;
     display: inline-block;
@@ -1123,7 +1120,7 @@ export default {
 }
 .main-wrapper {
 	border: 1px solid #303030;
-
+	margin-top: 50px;
 }
 .middle {
 	padding: 40px 0;

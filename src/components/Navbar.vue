@@ -89,7 +89,7 @@ export default {
 
 <style lang="scss">
 .logout-btn {
-  font-family: 'ClashDisplay-Variable';
+  font-family: 'Roboto';
   font-size: 19px;
   color: white;
   cursor: pointer;
@@ -157,7 +157,7 @@ img.nav-logo {
   background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' stroke='%23416BFF' stroke-width='2' stroke-dasharray='3%2c 56%2c 16' stroke-dashoffset='22' stroke-linecap='square'/%3e%3c/svg%3e") !important;
   border: none !important;
   border-radius: 0px !important;
-  font-family: 'ClashDisplay-Variable';
+  font-family: 'Roboto';
   color: white;
   transition: 200ms ease-in;
 }

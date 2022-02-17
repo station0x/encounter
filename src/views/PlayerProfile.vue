@@ -111,11 +111,11 @@ export default {
 
 <style>
 .page-container {
-    padding-top: 20px;
+    padding-top: 190px;
 }
 .profile-wrapper {
     height: 700px;
-    max-width: 700px;
+    max-width: 600px;
     padding: 50px;
     background: black;
     backdrop-filter: blur(6px);
@@ -155,7 +155,7 @@ export default {
     margin: 0 auto;
     font-size: 2rem;
     color: white;
-    font-family: 'ClashDisplay-Variable';
+    font-family: 'Roboto';
     font-weight: 500;
     letter-spacing: 2px;
     padding: 25px 30px;
@@ -167,7 +167,7 @@ export default {
     margin-top: -40px;
     margin-bottom: 20px;
     font-size: 17px;
-    font-family: 'ClashDisplay-Variable';
+    font-family: 'Roboto';
     font-weight: 300;
     letter-spacing: 1.1px;
     color: rgba(255,255,255,.7);
@@ -183,7 +183,7 @@ export default {
   background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' stroke='%23416BFF' stroke-width='2' stroke-dasharray='3%2c 56%2c 16' stroke-dashoffset='22' stroke-linecap='square'/%3e%3c/svg%3e") !important;
   border: none !important;
   border-radius: 0px !important;
-  font-family: 'ClashDisplay-Variable';
+  font-family: 'Roboto';
   color: white;
   transition: 200ms ease-in;
 }

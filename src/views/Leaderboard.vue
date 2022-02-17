@@ -3,27 +3,29 @@
         <div class="loader-wrapper" v-if="sortedData === false">
             <Loader/>
         </div>
-        <h1 class="page-title">Leaderboard</h1>
-        <b-table @click="openProfile($event.address)" v-if="sortedData" :data="sortedData" :selected="selected" hoverable style="max-width: 900px; margin: 0 auto">
-            <b-table-column cell-class="hoverable-cell" field="rank" label="Rank" width="30" numeric v-slot="props">
-                {{ props.index + 1 > 3 ? props.index + 1 : "" }}
-                <img v-if="props.index + 1 === 1" src="/top1.png"/>
-                <img v-if="props.index + 1 === 2" src="/top2.png"/>
-                <img v-if="props.index + 1 === 3" src="/top3.png"/>
-            </b-table-column>
+        <div v-else class="leaderboard">
+            <h1 class="page-title">Leaderboard</h1>
+            <b-table @click="openProfile($event.address)" v-if="sortedData" :data="sortedData" :selected="selected" hoverable style="max-width: 900px; margin: 0 auto">
+                <b-table-column cell-class="hoverable-cell" field="rank" label="Rank" width="30" numeric v-slot="props">
+                    {{ props.index + 1 > 3 ? props.index + 1 : "" }}
+                    <img v-if="props.index + 1 === 1" src="/top1.png"/>
+                    <img v-if="props.index + 1 === 2" src="/top2.png"/>
+                    <img v-if="props.index + 1 === 3" src="/top3.png"/>
+                </b-table-column>
 
-            <b-table-column cell-class="hoverable-cell" field="rank" width="50" numeric v-slot="props">
-            <img v-if="props.row.gm" src="/gm.png"/>
-            </b-table-column>
+                <b-table-column cell-class="hoverable-cell" field="rank" width="50" numeric v-slot="props">
+                <img v-if="props.row.gm" src="/gm.png"/>
+                </b-table-column>
 
-            <b-table-column cell-class="hoverable-cell" field="player" label="Player" v-slot="props">
-                {{ props.row.player }}
-            </b-table-column>
+                <b-table-column cell-class="hoverable-cell" field="player" label="Player" v-slot="props">
+                    {{ props.row.player }}
+                </b-table-column>
 
-            <b-table-column cell-class="hoverable-cell" width="100px" field="elo" label="Elo" v-slot="props">
-                {{ props.row.elo }}
-            </b-table-column>
-        </b-table>
+                <b-table-column cell-class="hoverable-cell" width="100px" field="elo" label="Elo" v-slot="props">
+                    {{ props.row.elo }}
+                </b-table-column>
+            </b-table>
+        </div>
     </div>
 </template>
 
@@ -77,6 +79,9 @@ export default {
 </script>
 
 <style>
+.leaderboard {
+    margin-top: 190px;
+}
 table.table {
     background-color: black;
     color: white;
