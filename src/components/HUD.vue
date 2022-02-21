@@ -42,11 +42,19 @@
             <path id="Vector_28" d="M186.099 69.1851L186.889 69.9677V71.5329L186.099 72.3155V69.1851Z" fill="#FBC115"/>
             <path id="Vector_29" d="M311.901 69.1851L311.111 69.9677V71.5329L311.901 72.3155V69.1851Z" fill="#FBC115"/>
             </g>
-            <foreignObject class="hud-elo-text" x="205" y="59">ELO</foreignObject>
-            <foreignObject class="hud-elo-number" x="272" y="55.3">{{ elo }}</foreignObject>
+            <foreignObject class="hud-elo-text" x="205" y="59">
+                <span class="saf-elo-text">ELO</span>
+            </foreignObject>
+            <foreignObject class="hud-elo-number" x="272" y="55.3">
+                <span class="saf-elo-number">{{ elo }}</span>
+            </foreignObject>
             <g id="my-user-info">
-            <foreignObject class="hud-username" x="95" y="38">{{ playerAlias }}</foreignObject>
-            <foreignObject class="hud-address" x="95" y="55">{{ formattedAddress }}</foreignObject>
+            <foreignObject class="hud-username" x="95" y="38">
+                <span style="position: fixed">{{ playerAlias }}</span>
+            </foreignObject>
+            <foreignObject class="hud-address" x="95" y="55">
+                <span style="position: fixed">{{ formattedAddress }}</span>
+                </foreignObject>
             </g>
             <g id="Hud Frame">
             <path id="Vector_30" d="M245.637 98.7444H11.3251L0.4594 91.4998V80.3241L4.1346 76.6485V34.1878L4.06844 34.1198L0.4594 30.5122V16.0009L4.00045 12.4595H197.886L252.854 49.109L253.313 48.8627L198.025 12H3.80934L3.74135 12.0662L0 15.8098V30.7033L0.0661536 30.7713L3.6752 34.379V76.4574L0 80.133V91.7461L11.1855 99.2039H245.828L245.895 99.1377L253.313 91.7185L252.854 91.5274L245.637 98.7444Z" fill="url(#paint2_linear_363_1285)"/>
@@ -307,6 +315,7 @@ export default {
     padding: 0 !important;
     width: 12px;
     height: 20px;
+    position: fixed;
 }
 .sound-btn:hover {
     color: #face4c;
@@ -319,6 +328,53 @@ export default {
     width: 12px;
     height: 40px;
 }
+.saf-elo-text {
+    width: 40px;
+    position: fixed;
+    font-size: 18px;
+}
+.saf-elo-number {
+    width: 40px;
+    position: fixed;
+    font-size: 21px;
+}
+@media not all and (min-resolution:.001dpcm)
+{ @supports (-webkit-appearance:none) {
+
+    .sound-btn {
+        font-size: 21px;
+        left: 1px;
+        top: 2px;
+    }
+
+    @media screen and (max-width: 768px) {
+    .saf-elo-text {
+        width: 40px;
+        position: fixed;
+        font-size: 13px;
+        top: -2px;
+    }
+    .saf-elo-number {
+        width: 40px;
+        position: fixed;
+        font-size: 14px;
+        left: -2px;
+        top: -1px;
+    }
+    .sound-btn {
+        font-size: 12px;
+        top: -4px;
+        left: -2px;
+    }
+    .hud-username {
+        font-size: 12px;
+    }
+    .hud-address {
+        font-size: 7px;
+        margin-top: 10px;
+    }
+}
+}}
 @media screen and (max-width: 1500px) {
     .hud-wrapper {
         width: 70vw;

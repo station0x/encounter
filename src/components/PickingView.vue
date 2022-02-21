@@ -761,7 +761,8 @@ export default {
     padding: 25px 0px 25px 0px;
 }
 .picking-hud-wrapper {
-    width: 1100px;
+    width: 90vw;
+    max-width: 1100px;
     height: 100%;
     margin: 0 auto;
 }
