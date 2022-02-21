@@ -1,7 +1,7 @@
 {
   "initFuel": 10,
   "turnTimeout": 30,
-  "pickingTurnTimeout": 60,
+  "pickingTurnTimeout": 6000,
   "pickingInsertionsAllowedPerTurn": 3,
   "pickingRounds": 3, 
   "maxFuel": 15,
@@ -341,12 +341,12 @@
       "desc": "Ubiquity spaceships can warp from one edge to another when placed adjacent to the left or right edges of the board."
     },
     "nightstalker": {
-      "attack": 10,
+      "attack": 15,
       "hp": 55,
       "moveFuelCost": 2,
       "attackFuelCost": 3,
-      "bonusAttackOnAttack": 15,
-      "desc": "Nightstalker gain 2 attack damage if it lands an attack to any other spaceship with unlimited stack amount. It's squishy with a base attack of 15."
+      "bonusAttackOnAttack": 8,
+      "desc": "Nightstalker gain 8 attack damage if it lands an attack to any other spaceship with unlimited stack amount. It's squishy with a base attack of 15."
     },
     "orkocraft": {
       "attack": 10,
