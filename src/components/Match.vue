@@ -220,7 +220,7 @@
             </div>
         </div>
         <!-- Victory -->
-        <div class="end-wrapper" v-if="$store.state.matchState.playerIs === $store.state.matchState.winner">
+        <div class="end-wrapper" v-if="$store.state.matchState.playerIs === $store.state.matchState.winner && $store.state.matchState.type === 'matchmaking'">
             <center>
                 <svg class="svg-ores" viewBox="0 0 531 253" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                     <g id="Group 370">
@@ -264,104 +264,31 @@
                     </g>
                     </g>
                     </g>
-                    <text id="Rewards" fill="white" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="12" letter-spacing="0em"><tspan x="241.418" y="60.6553">Rewards</tspan></text>
+                    <text id="Rewards" fill="white" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="12" letter-spacing="0em" x="50%" text-anchor="middle" y="67.5"> {{ $store.state.profile.elo >= CONSTANTS.economicPolicy.minRewardsElo ? 'Match Rewards' : `Reach ${CONSTANTS.economicPolicy.minRewardsElo} Elo to become eligible for rewards` }}</text>
                     <g @click="continueBtn()" id="Group 287" style="cursor: pointer">
                     <g id="Group 135">
                     <path id="Rectangle 5" d="M329.25 217.896L329.25 189.25L475.75 189.25L475.75 219.566L470.768 224.75L336.104 224.75L329.25 217.896Z" fill="url(#paint8_linear_481_1290)" stroke="#FBC115" stroke-width="0.5"/>
                     <text id="Continue" fill="#FBC115" xml:space="preserve" style="white-space: pre" font-family="Anson" font-size="18" letter-spacing="0em"><tspan x="372.24" y="209.736">CONTINUE</tspan></text>
                     </g>
                     </g>
-                    <g id="Group 311_2" style="cursor: not-allowed">
-                    <g id="Group 135_2">
-                    <path id="Rectangle 5_2" d="M54.25 217.896L54.25 189.25L200.75 189.25L200.75 219.566L195.768 224.75L61.1035 224.75L54.25 217.896Z" stroke="#7A7A7A" stroke-width="0.5"/>
-                    <text id="CLAIM" fill="#7A7A7A" xml:space="preserve" style="white-space: pre" font-family="Anson" font-size="18" letter-spacing="0em"><tspan x="109.378" y="209.736">CLAIM</tspan></text>
+                    <g v-if="$store.state.profile.elo < CONSTANTS.economicPolicy.minRewardsElo" id="Group 311_2" style="cursor: not-allowed">
+                        <g id="Group 135_2">
+                            <path id="Rectangle 5_2" d="M54.25 217.896L54.25 189.25L200.75 189.25L200.75 219.566L195.768 224.75L61.1035 224.75L54.25 217.896Z" stroke="#7A7A7A" stroke-width="0.5"/>
+                            <text id="CLAIM" fill="#7A7A7A" xml:space="preserve" style="white-space: pre" font-family="Anson" font-size="18" letter-spacing="0em"><tspan x="109.378" y="209.736">CLAIM</tspan></text>
+                        </g>
+                    </g>
+                    <g v-else @click="claimBtn" id="Group 311_2" style="cursor: pointer">
+                        <g id="Group 135_2">
+                            <path id="Rectangle 5_2" d="M54.25 217.896L54.25 189.25L200.75 189.25L200.75 219.566L195.768 224.75L61.1035 224.75L54.25 217.896Z" fill="url(#paint8_linear_481_1290)" stroke="#FBC115" stroke-width="0.5"/>
+                            <text id="CLAIM" fill="#FBC115" xml:space="preserve" style="white-space: pre" font-family="Anson" font-size="18" letter-spacing="0em"><tspan x="109.378" y="209.736">CLAIM</tspan></text>
+                        </g>
+                    </g>
+
                     </g>
                     </g>
-                    </g>
-                    <g id="Group 312">
-                    <g id="matrial componant">
-                    <rect id="Rectangle 8" x="62" y="133" width="82" height="16" fill="#20282D"/>
-                    <text id="1,084" fill="#484848" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="10" font-weight="bold" letter-spacing="0em"><tspan x="100.277" y="160.879">--</tspan></text>
-                    <path id="Vector_29" d="M140.757 166H73.8522L73.7837 165.934L70.1501 162.356H57.8372L57.7687 162.29L54 158.579V134.354L54.0666 134.287L57.7021 130.71V81.779L57.7687 81.7116L61.5393 78H140.757L140.825 78.0674L148.298 85.4231V138.91L152 142.554V154.935L151.932 155.002L140.757 166ZM74.0373 165.544H140.572L151.543 154.747V142.73L147.841 139.086V85.5998L140.572 78.4446H61.7244L58.1537 81.9612V130.893L58.0852 130.96L54.4517 134.537V158.397L58.0168 161.906H70.3297L70.3982 161.973L74.0373 165.544Z" fill="#6A6A6A"/>
-                    <path id="Vector_30" d="M140.169 166H74.2033L74.1631 165.957L70.5852 162.247H65.7797L65.7394 162.204L62 158.657V91.2379L62.0402 91.1988L73.051 80H132.949L132.989 80.0428L144 91.2379V162.5L143.96 162.539L140.169 166ZM74.3185 165.719H140.054L143.728 162.383V91.355L132.837 80.2807H73.1699L62.2798 91.355V158.54L65.8948 161.966H70.7004L70.7406 162.009L74.3185 165.719Z" fill="#6A6A6A"/>
-                    <path id="Vector_31" d="M146 152.492L150.025 152.492L150.025 154.637L146.003 154.637L146 152.492ZM149.739 152.773L146.286 152.773L146.286 154.355L149.739 154.355L149.739 152.773Z" fill="#6A6A6A"/>
-                    <path id="Vector_32" d="M149.74 150.771L150.021 150.771L150.021 144L149.74 144L149.74 150.771Z" fill="#6A6A6A"/>
-                    <path id="Vector_33" d="M147.87 150.771L148.15 150.771L148.15 141.454L147.87 141.454L147.87 150.771Z" fill="#6A6A6A"/>
-                    <path id="Vector_34" d="M146 150.771L146.28 150.771L146.28 144L146 144L146 150.771Z" fill="#6A6A6A"/>
-                    <rect id="Mtare 1" x="82" y="85" width="43" height="48" fill="url(#pattern0)"/>
-                    <text id="name of ore" fill="#828282" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="10" font-weight="bold" letter-spacing="0em"><tspan x="88.2197" y="144.879">SOON</tspan></text>
-                    <path id="Vector_35" d="M59.9779 139.362H55.9521V137.218H59.9741L59.9779 139.362ZM56.2382 139.081H59.6918V137.499H56.2382V139.081Z" fill="#6A6A6A"/>
-                    <path id="Vector_36" d="M63.5773 85.8224C63.1796 85.8228 62.7907 85.7057 62.4598 85.486C62.1288 85.2662 61.8707 84.9537 61.7179 84.5878C61.5651 84.2219 61.5246 83.819 61.6014 83.4302C61.6782 83.0413 61.8689 82.6839 62.1495 82.4031C62.43 82.1222 62.7878 81.9304 63.1776 81.8521C63.5675 81.7737 63.9719 81.8123 64.3397 81.9629C64.7076 82.1134 65.0224 82.3692 65.2445 82.6979C65.4665 83.0267 65.5858 83.4137 65.5873 83.81C65.5883 84.3425 65.3772 84.8535 65.0003 85.2308C64.6234 85.6082 64.1115 85.8209 63.5773 85.8224Z" fill="url(#paint9_radial_481_1290)"/>
-                    <path id="Vector_37" d="M56.2385 141.084H55.958V157.855H56.2385V141.084Z" fill="#6A6A6A"/>
-                    <path id="Vector_38" d="M58.1076 141.084H57.8271V150.401H58.1076V141.084Z" fill="#6A6A6A"/>
-                    <path id="Vector_39" d="M59.9777 141.084H59.6973V157.855H59.9777V141.084Z" fill="#6A6A6A"/>
-                    </g>
-                    <text id="?" fill="#828282" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="18" letter-spacing="0em"><tspan x="99.4219" y="117.483">?</tspan></text>
-                    </g>
-                    <g id="Group 313">
-                    <g id="matrial componant_2">
-                    <rect id="Rectangle 8_2" x="170" y="133" width="82" height="16" fill="#20282D"/>
-                    <text id="1,084_2" fill="#484848" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="10" font-weight="bold" letter-spacing="0em"><tspan x="208.277" y="160.879">--</tspan></text>
-                    <path id="Vector_40" d="M248.757 166H181.852L181.784 165.934L178.15 162.356H165.837L165.769 162.29L162 158.579V134.354L162.067 134.287L165.702 130.71V81.779L165.769 81.7116L169.539 78H248.757L248.825 78.0674L256.298 85.4231V138.91L260 142.554V154.935L259.932 155.002L248.757 166ZM182.037 165.544H248.572L259.543 154.747V142.73L255.841 139.086V85.5998L248.572 78.4446H169.724L166.154 81.9612V130.893L166.085 130.96L162.452 134.537V158.397L166.017 161.906H178.33L178.398 161.973L182.037 165.544Z" fill="#6A6A6A"/>
-                    <path id="Vector_41" d="M248.169 166H182.203L182.163 165.957L178.585 162.247H173.78L173.739 162.204L170 158.657V91.2379L170.04 91.1988L181.051 80H240.949L240.989 80.0428L252 91.2379V162.5L251.96 162.539L248.169 166ZM182.319 165.719H248.054L251.728 162.383V91.355L240.837 80.2807H181.17L170.28 91.355V158.54L173.895 161.966H178.7L178.741 162.009L182.319 165.719Z" fill="#6A6A6A"/>
-                    <path id="Vector_42" d="M254 152.492L258.025 152.492L258.025 154.637L254.003 154.637L254 152.492ZM257.739 152.773L254.286 152.773L254.286 154.355L257.739 154.355L257.739 152.773Z" fill="#6A6A6A"/>
-                    <path id="Vector_43" d="M257.74 150.771L258.021 150.771L258.021 144L257.74 144L257.74 150.771Z" fill="#6A6A6A"/>
-                    <path id="Vector_44" d="M255.87 150.771L256.15 150.771L256.15 141.454L255.87 141.454L255.87 150.771Z" fill="#6A6A6A"/>
-                    <path id="Vector_45" d="M254 150.771L254.28 150.771L254.28 144L254 144L254 150.771Z" fill="#6A6A6A"/>
-                    <rect id="Mtare 1_2" x="190" y="85" width="43" height="48" fill="url(#pattern1)"/>
-                    <text id="name of ore_2" fill="#828282" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="10" font-weight="bold" letter-spacing="0em"><tspan x="196.22" y="144.879">SOON</tspan></text>
-                    <path id="Vector_46" d="M167.978 139.362H163.952V137.218H167.974L167.978 139.362ZM164.238 139.081H167.692V137.499H164.238V139.081Z" fill="#6A6A6A"/>
-                    <path id="Vector_47" d="M171.577 85.8224C171.18 85.8228 170.791 85.7057 170.46 85.486C170.129 85.2662 169.871 84.9537 169.718 84.5878C169.565 84.2219 169.525 83.819 169.601 83.4302C169.678 83.0413 169.869 82.6839 170.149 82.4031C170.43 82.1222 170.788 81.9304 171.178 81.8521C171.567 81.7737 171.972 81.8123 172.34 81.9629C172.708 82.1134 173.022 82.3692 173.244 82.6979C173.467 83.0267 173.586 83.4137 173.587 83.81C173.588 84.3425 173.377 84.8535 173 85.2308C172.623 85.6082 172.112 85.8209 171.577 85.8224Z" fill="url(#paint10_radial_481_1290)"/>
-                    <path id="Vector_48" d="M164.238 141.084H163.958V157.855H164.238V141.084Z" fill="#6A6A6A"/>
-                    <path id="Vector_49" d="M166.108 141.084H165.827V150.401H166.108V141.084Z" fill="#6A6A6A"/>
-                    <path id="Vector_50" d="M167.978 141.084H167.697V157.855H167.978V141.084Z" fill="#6A6A6A"/>
-                    </g>
-                    <text id="?_2" fill="#828282" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="18" letter-spacing="0em"><tspan x="207.422" y="117.483">?</tspan></text>
-                    </g>
-                    <g id="Group 314">
-                    <g id="matrial componant_3">
-                    <rect id="Rectangle 8_3" x="278" y="133" width="82" height="16" fill="#20282D"/>
-                    <text id="1,084_3" fill="#484848" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="10" font-weight="bold" letter-spacing="0em"><tspan x="316.277" y="160.879">--</tspan></text>
-                    <path id="Vector_51" d="M356.757 166H289.852L289.784 165.934L286.15 162.356H273.837L273.769 162.29L270 158.579V134.354L270.067 134.287L273.702 130.71V81.779L273.769 81.7116L277.539 78H356.757L356.825 78.0674L364.298 85.4231V138.91L368 142.554V154.935L367.932 155.002L356.757 166ZM290.037 165.544H356.572L367.543 154.747V142.73L363.841 139.086V85.5998L356.572 78.4446H277.724L274.154 81.9612V130.893L274.085 130.96L270.452 134.537V158.397L274.017 161.906H286.33L286.398 161.973L290.037 165.544Z" fill="#6A6A6A"/>
-                    <path id="Vector_52" d="M356.169 166H290.203L290.163 165.957L286.585 162.247H281.78L281.739 162.204L278 158.657V91.2379L278.04 91.1988L289.051 80H348.949L348.989 80.0428L360 91.2379V162.5L359.96 162.539L356.169 166ZM290.319 165.719H356.054L359.728 162.383V91.355L348.837 80.2807H289.17L278.28 91.355V158.54L281.895 161.966H286.7L286.741 162.009L290.319 165.719Z" fill="#6A6A6A"/>
-                    <path id="Vector_53" d="M362 152.492L366.025 152.492L366.025 154.637L362.003 154.637L362 152.492ZM365.739 152.773L362.286 152.773L362.286 154.355L365.739 154.355L365.739 152.773Z" fill="#6A6A6A"/>
-                    <path id="Vector_54" d="M365.74 150.771L366.021 150.771L366.021 144L365.74 144L365.74 150.771Z" fill="#6A6A6A"/>
-                    <path id="Vector_55" d="M363.87 150.771L364.15 150.771L364.15 141.454L363.87 141.454L363.87 150.771Z" fill="#6A6A6A"/>
-                    <path id="Vector_56" d="M362 150.771L362.28 150.771L362.28 144L362 144L362 150.771Z" fill="#6A6A6A"/>
-                    <rect id="Mtare 1_3" x="298" y="85" width="43" height="48" fill="url(#pattern2)"/>
-                    <text id="name of ore_3" fill="#828282" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="10" font-weight="bold" letter-spacing="0em"><tspan x="304.22" y="144.879">SOON</tspan></text>
-                    <path id="Vector_57" d="M275.978 139.362H271.952V137.218H275.974L275.978 139.362ZM272.238 139.081H275.692V137.499H272.238V139.081Z" fill="#6A6A6A"/>
-                    <path id="Vector_58" d="M279.577 85.8224C279.18 85.8228 278.791 85.7057 278.46 85.486C278.129 85.2662 277.871 84.9537 277.718 84.5878C277.565 84.2219 277.525 83.819 277.601 83.4302C277.678 83.0413 277.869 82.6839 278.149 82.4031C278.43 82.1222 278.788 81.9304 279.178 81.8521C279.567 81.7737 279.972 81.8123 280.34 81.9629C280.708 82.1134 281.022 82.3692 281.244 82.6979C281.467 83.0267 281.586 83.4137 281.587 83.81C281.588 84.3425 281.377 84.8535 281 85.2308C280.623 85.6082 280.112 85.8209 279.577 85.8224Z" fill="url(#paint11_radial_481_1290)"/>
-                    <path id="Vector_59" d="M272.238 141.084H271.958V157.855H272.238V141.084Z" fill="#6A6A6A"/>
-                    <path id="Vector_60" d="M274.108 141.084H273.827V150.401H274.108V141.084Z" fill="#6A6A6A"/>
-                    <path id="Vector_61" d="M275.978 141.084H275.697V157.855H275.978V141.084Z" fill="#6A6A6A"/>
-                    </g>
-                    <text id="?_3" fill="#828282" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="18" letter-spacing="0em"><tspan x="315.422" y="117.483">?</tspan></text>
-                    </g>
-                    <g id="Group 315">
-                    <g id="matrial componant_4">
-                    <rect id="Rectangle 8_4" x="386" y="133" width="82" height="16" fill="#20282D"/>
-                    <text id="1,084_4" fill="#484848" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="10" font-weight="bold" letter-spacing="0em"><tspan x="424.277" y="160.879">--</tspan></text>
-                    <path id="Vector_62" d="M464.757 166H397.852L397.784 165.934L394.15 162.356H381.837L381.769 162.29L378 158.579V134.354L378.067 134.287L381.702 130.71V81.779L381.769 81.7116L385.539 78H464.757L464.825 78.0674L472.298 85.4231V138.91L476 142.554V154.935L475.932 155.002L464.757 166ZM398.037 165.544H464.572L475.543 154.747V142.73L471.841 139.086V85.5998L464.572 78.4446H385.724L382.154 81.9612V130.893L382.085 130.96L378.452 134.537V158.397L382.017 161.906H394.33L394.398 161.973L398.037 165.544Z" fill="#6A6A6A"/>
-                    <path id="Vector_63" d="M464.169 166H398.203L398.163 165.957L394.585 162.247H389.78L389.739 162.204L386 158.657V91.2379L386.04 91.1988L397.051 80H456.949L456.989 80.0428L468 91.2379V162.5L467.96 162.539L464.169 166ZM398.319 165.719H464.054L467.728 162.383V91.355L456.837 80.2807H397.17L386.28 91.355V158.54L389.895 161.966H394.7L394.741 162.009L398.319 165.719Z" fill="#6A6A6A"/>
-                    <path id="Vector_64" d="M470 152.492L474.025 152.492L474.025 154.637L470.003 154.637L470 152.492ZM473.739 152.773L470.286 152.773L470.286 154.355L473.739 154.355L473.739 152.773Z" fill="#6A6A6A"/>
-                    <path id="Vector_65" d="M473.74 150.771L474.021 150.771L474.021 144L473.74 144L473.74 150.771Z" fill="#6A6A6A"/>
-                    <path id="Vector_66" d="M471.87 150.771L472.15 150.771L472.15 141.454L471.87 141.454L471.87 150.771Z" fill="#6A6A6A"/>
-                    <path id="Vector_67" d="M470 150.771L470.28 150.771L470.28 144L470 144L470 150.771Z" fill="#6A6A6A"/>
-                    <rect id="Mtare 1_4" x="406" y="85" width="43" height="48" fill="url(#pattern3)"/>
-                    <text id="name of ore_4" fill="#828282" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="10" font-weight="bold" letter-spacing="0em"><tspan x="412.22" y="144.879">SOON</tspan></text>
-                    <path id="Vector_68" d="M383.978 139.362H379.952V137.218H383.974L383.978 139.362ZM380.238 139.081H383.692V137.499H380.238V139.081Z" fill="#6A6A6A"/>
-                    <path id="Vector_69" d="M387.577 85.8224C387.18 85.8228 386.791 85.7057 386.46 85.486C386.129 85.2662 385.871 84.9537 385.718 84.5878C385.565 84.2219 385.525 83.819 385.601 83.4302C385.678 83.0413 385.869 82.6839 386.149 82.4031C386.43 82.1222 386.788 81.9304 387.178 81.8521C387.567 81.7737 387.972 81.8123 388.34 81.9629C388.708 82.1134 389.022 82.3692 389.244 82.6979C389.467 83.0267 389.586 83.4137 389.587 83.81C389.588 84.3425 389.377 84.8535 389 85.2308C388.623 85.6082 388.112 85.8209 387.577 85.8224Z" fill="url(#paint12_radial_481_1290)"/>
-                    <path id="Vector_70" d="M380.238 141.084H379.958V157.855H380.238V141.084Z" fill="#6A6A6A"/>
-                    <path id="Vector_71" d="M382.108 141.084H381.827V150.401H382.108V141.084Z" fill="#6A6A6A"/>
-                    <path id="Vector_72" d="M383.978 141.084H383.697V157.855H383.978V141.084Z" fill="#6A6A6A"/>
-                    </g>
-                    <text id="?_4" fill="#828282" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="18" letter-spacing="0em"><tspan x="423.422" y="117.483">?</tspan></text>
-                    </g>
-                    </g>
-                    <g id="Group 322">
-                    <g id="Group 321">
-                    <g id="Group 318">
+                    <g id="VictoryWrapper">
+                    <g id="VictoryBox">
+                    <g id="Bottom">
                     <path id="Vector_73" d="M298.383 41.2958H271.213V40.5825H298.096L314.594 23.8862L315.083 24.3819L298.383 41.2958Z" fill="url(#paint13_linear_481_1290)"/>
                     <path id="Vector_74" d="M360.768 41.1991H302.692L319.787 23.8863L320.288 24.3819L304.376 40.4858H360.076V25.3975H332.799L329.313 21.8672H313.938V21.166H329.6L333.085 24.6963H360.768V41.1991Z" fill="url(#paint14_linear_481_1290)"/>
                     <path id="Vector_75" d="M372.001 41.2834H364.684V23.2451L372.001 31.0311V41.2834ZM365.376 40.5821H371.345V31.3212L365.376 25.0103V40.5821Z" fill="url(#paint15_linear_481_1290)"/>
@@ -389,7 +316,7 @@
                     <path id="Vector_97" d="M206.978 39.4703H209.484V38.757H207.276L195.637 26.9692L195.147 27.477L206.978 39.4703Z" fill="url(#paint37_linear_481_1290)"/>
                     <path id="Vector_98" d="M202.083 39.4703H204.59V38.757H202.369L190.742 26.9692L190.253 27.477L202.083 39.4703Z" fill="url(#paint38_linear_481_1290)"/>
                     </g>
-                    <g id="Group 320">
+                    <g id="Top">
                     <path id="Vector_99" d="M232.26 0.000106344L259.43 0.000108719L259.43 0.713417L232.546 0.713415L216.049 17.4097L215.559 16.914L232.26 0.000106344Z" fill="url(#paint39_linear_481_1290)"/>
                     <path id="Vector_100" d="M169.874 0.0967967L227.95 0.0968018L210.856 17.4096L210.354 16.9139L226.267 0.810112L170.567 0.810107L170.567 15.8984L197.844 15.8984L201.33 19.4287L216.705 19.4287L216.705 20.1299L201.043 20.1299L197.557 16.5996L169.874 16.5996L169.874 0.0967967Z" fill="url(#paint40_linear_481_1290)"/>
                     <path id="Vector_101" d="M158.641 0.0125268L165.959 0.0125275L165.959 18.0508L158.641 10.2648L158.641 0.0125268ZM165.267 0.713766L159.298 0.713766L159.298 9.97465L165.267 16.2856L165.267 0.713766Z" fill="url(#paint41_linear_481_1290)"/>
@@ -418,7 +345,7 @@
                     <path id="Vector_124" d="M328.56 1.82563L326.053 1.82563L326.053 2.53894L328.273 2.53894L339.9 14.3267L340.39 13.8189L328.56 1.82563Z" fill="url(#paint64_linear_481_1290)"/>
                     </g>
                     </g>
-                    <g id="Group 317">
+                    <g id="Victory">
                     <path id="Vector_125" d="M198.985 9.23389H208.116L209.81 21.9793L216.102 9.23389H222.615L211.449 31.8727H204.607L201.989 12.2866L198.985 9.23389Z" fill="url(#paint65_linear_481_1290)"/>
                     <path id="Vector_126" d="M221.966 9.23389H230.767L227.566 31.8504H221.042L223.957 11.2059L221.966 9.23389Z" fill="url(#paint66_linear_481_1290)"/>
                     <path id="Vector_127" d="M249.346 9.23389L248.026 18.637L244.561 15.1276H237.96L236.453 25.9567H244.154L247.366 23.3497L246.167 31.8504H229.094L231.822 12.5094L235.694 9.23389H249.346Z" fill="url(#paint67_linear_481_1290)"/>
@@ -429,6 +356,14 @@
                     </g>
                     </g>
                     </g>
+                    <foreignObject y="73" width="100%" height="100px">
+                        <ResourceItem
+                        height="80" width="90" x="0" y="100"
+                        v-for="(quantity, rewardSymbol) in $store.state.matchState.potentialRewards" :key="rewardSymbol"
+                        :symbol="rewardSymbol" 
+                        :quantity="quantity"
+                        :disabled="$store.state.profile.elo < CONSTANTS.economicPolicy.minRewardsElo" />
+                    </foreignObject>
                     <defs>
                     <pattern id="pattern0" patternContentUnits="objectBoundingBox" width="1" height="1">
                     <use xlink:href="#image0_481_1290" transform="translate(-0.0157623) scale(0.00103359 0.000925926)"/>
@@ -730,7 +665,6 @@
                     <stop stop-color="#FBC115"/>
                     <stop offset="1" stop-color="#846300"/>
                     </linearGradient>
-                    <image id="image0_481_1290" data-name="Mtare(edit).png" width="998" height="1080" href="https://res.cloudinary.com/station0x/image/upload/v1645103296/encouter/Mtare_1_xxvan4.webp"/>
                     </defs>
                 </svg>
                 <center style="margin-top: 50px">
@@ -742,7 +676,33 @@
                 </center>
             </center>
         </div>
-        <!-- Default -->
+        <div v-if="$store.state.matchState.playerIs === $store.state.matchState.winner && $store.state.matchState.type !== 'matchmaking'" class="end-wrapper">
+            <center>
+                <img class="result-vector" :src="victory"/>
+                    <svg width="210" viewBox="0 0 147 36" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-top: 55px">
+                        <g id="Group 287" @click="continueBtn" style="cursor: pointer">
+                        <g id="Group 135">
+                        <path id="Rectangle 5" d="M0.250001 28.8964L0.250003 0.249998L146.75 0.250011L146.75 30.566L141.768 35.75L7.10355 35.75L0.250001 28.8964Z" fill="url(#paint0_linear_293_27083)" stroke="#FBC115" stroke-width="0.5"/>
+                        </g>
+                        <text id="Continue" fill="#FBC115" xml:space="preserve" style="white-space: pre" font-family="Anson" font-size="18" letter-spacing="0em"><tspan x="43.2402" y="20.736">CONTINUE</tspan></text>
+                        </g>
+                        <defs>
+                        <linearGradient id="paint0_linear_293_27083" x1="53.5" y1="36" x2="53.5" y2="6.54214e-06" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#FBC115" stop-opacity="0"/>
+                        <stop offset="1" stop-color="#FBC115" stop-opacity="0.12"/>
+                        </linearGradient>
+                        </defs>
+                    </svg>
+                    <center style="margin-top: 50px">
+                    <div v-if="loading" class="loading-box">
+                        <b-button class="loader-fake-btn" :loading="true" ></b-button>
+                        <h1 class="loading-text">Cleaning up the battlefield...</h1>
+                        <!-- <h1 style="margin-top: 30px">{{ currentHint }}</h1> -->
+                    </div>
+                    </center>
+            </center>
+        </div>
+        <!-- Defeat -->
         <div class="end-wrapper" v-if="($store.state.matchState.playerIs === 0 ? 1 : 0) === $store.state.matchState.winner">
             <center>
                 <img class="result-vector" :src="defeat"/>
@@ -775,6 +735,9 @@
 <script>
 import Board from './Board.vue'
 import PickingView from './PickingView.vue'
+import CONSTANTS from '../../constants.json'
+import ResourceItem from '@/components/ResourceItem.vue'
+import Rewards from '@/components/Rewards.vue'
 
 export default {
     data() {
@@ -782,17 +745,28 @@ export default {
             onboarding: false,
             victory: 'https://res.cloudinary.com/station0x/image/upload/v1645057034/encouter/victory_msdozp.svg',
             defeat: 'https://res.cloudinary.com/station0x/image/upload/v1645057036/encouter/defeat_nahvao.svg',
-            loading: false
+            loading: false,
+            CONSTANTS
         }
     },
     components: {
         Board,
-        PickingView
+        PickingView,
+        ResourceItem
     },
     methods: {
         async continueBtn () {
             this.loading = true
             await this.$store.dispatch("startPolling")
+        },
+        async claimBtn () {
+            this.loading = true
+            await this.$store.dispatch("startPolling")
+            this.$buefy.modal.open({
+                parent: this,
+                component: Rewards,
+                canCancel: ['escape', 'button']
+            })
         },
         getRandomInt(min, max) {
             min = Math.ceil(min);

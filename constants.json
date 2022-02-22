@@ -1,11 +1,16 @@
 {
   "initFuel": 10,
-  "turnTimeout": 30,
+  "turnTimeout": 45,
   "pickingTurnTimeout": 60,
   "pickingInsertionsAllowedPerTurn": 3,
   "pickingRounds": 3, 
   "maxFuel": 15,
   "fuelPerTurn": 5,
+  "chainId":4002,
+  "hexChainId":"0xfa2",
+  "rpcUrl":"https://rpc.testnet.fantom.network/",
+  "chainName":"Fantom Testnet",
+  "chainExplorer":"https://testnet.ftmscan.com/",
   "freeSpaceshipsRotation": [
     "vampship", 
     "divinewind",
@@ -18,6 +23,48 @@
     "ubiquity",
     "colossus"
   ],
+  "allSpaceships": [
+    "vampship", 
+    "divinewind",
+    "thunderbird", 
+    "orkocraft",
+    "salvation",
+    "battlestar",
+    "nightstalker",
+    "gunship",
+    "ubiquity",
+    "colossus"
+  ],
+  "economicPolicy": {
+    "minRewardsElo": 1300,
+    "oreMinter":"0x5d09c01A3c248D96B5a5a41fD97fbb7807A41a4a",
+    "assets": {
+      "HALF": {
+        "name": "halfinium",
+        "address":"0xd125BaF15Cc3Cfaa02AF48DaF91bB0bD279a470D",
+        "type": "ore",
+        "img": "https://res.cloudinary.com/station0x/image/upload/v1645464588/encouter/elements/ores/half_wghdoy.webp"
+      },
+      "SAN": {
+        "name": "sangius",
+        "address":"0x1282a23ed752360d701512809429f255ec7c9b2a",
+        "type": "ore",
+        "img": "https://res.cloudinary.com/station0x/image/upload/v1645482364/encouter/elements/ores/SAN_ogiik4.webp"
+      },
+      "SHI": {
+        "name": "shigerium",
+        "address":"0x757ac39bcf561b9f9201e3d3aa71fe0233a26d81",
+        "type": "ore",
+        "img": "https://res.cloudinary.com/station0x/image/upload/v1645482364/encouter/elements/ores/SAN_ogiik4.webp"
+      },
+      "ZIS": {
+        "name": "zisek",
+        "address":"0x9d3a0bc053d2020bfce0a9fd761637acb32aa64e",
+        "type": "ore",
+        "img": "https://res.cloudinary.com/station0x/image/upload/v1645482364/encouter/elements/ores/SAN_ogiik4.webp"
+      }
+    }
+  },
   "initialBoardState": [
     [
       {},
@@ -341,12 +388,12 @@
       "desc": "Ubiquity spaceships can warp from one edge to another when placed adjacent to the left or right edges of the board."
     },
     "nightstalker": {
-      "attack": 10,
+      "attack": 15,
       "hp": 55,
       "moveFuelCost": 2,
       "attackFuelCost": 3,
-      "bonusAttackOnAttack": 15,
-      "desc": "Nightstalker gain 2 attack damage if it lands an attack to any other spaceship with unlimited stack amount. It's squishy with a base attack of 15."
+      "bonusAttackOnAttack": 8,
+      "desc": "Nightstalker gain 8 attack damage if it lands an attack to any other spaceship with unlimited stack amount. It's squishy with a base attack of 15."
     },
     "orkocraft": {
       "attack": 10,

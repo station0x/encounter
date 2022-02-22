@@ -304,7 +304,10 @@ button.button.secondary-btn[disabled] {
     backdrop-filter: blur(7px);
 }
 .modal-content {
-    height: 50% !important;
+    height: fit-content !important;
+    position: absolute;
+    top: 0;
+    bottom: 0;
 }
 
 /* Animations */
