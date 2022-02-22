@@ -245,6 +245,11 @@ export default {
     async beforeMount() {
         this.$store.dispatch('fetchProfile')
     },
+    watch: {
+        "$store.state.profile"() {
+            this.$store.dispatch('refreshWithdrawnRewards');
+        }
+    },
     created () {
         this.$store.dispatch('refreshWithdrawnRewards');
     },
