@@ -1,6 +1,6 @@
-import prod from './prod.json'
-import dev from './dev.json'
+const prod = require('./prod.json')
+const dev = require('./dev.json')
 
 const isProd = process.env.VUE_APP_ENV === "prod"
 
-export default isProd? prod: dev
+module.exports = isProd? prod: dev

@@ -251,6 +251,7 @@ export default {
         }
     },
     created () {
+        this.soundOn()
         this.$store.dispatch('refreshWithdrawnRewards');
     },
     mounted: function() {
