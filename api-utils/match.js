@@ -84,8 +84,11 @@ async function endMatch(matchDoc, players, winner) {
             })
         }
         newMatchDoc.potentialRewards = {
-            "HALF": halfRewards,
-            "SAN": sanRewards > 0 ? sanRewards : undefined
+            "HALF": halfRewards
+        }
+
+        if(sanRewards > 0) {
+            newMatchDoc.potentialRewards.SAN = sanRewards
         }
     }
     return newMatchDoc
