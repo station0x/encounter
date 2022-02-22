@@ -1,4 +1,4 @@
-const CONSTANTS = require('../constants.json');
+const CONSTANTS = require('../constants');
 
 function isOccupied(board, x, y) {
     return board[y][x].type ? true : false

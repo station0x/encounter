@@ -735,7 +735,7 @@
 <script>
 import Board from './Board.vue'
 import PickingView from './PickingView.vue'
-import CONSTANTS from '../../constants.json'
+import CONSTANTS from '../../constants'
 import ResourceItem from '@/components/ResourceItem.vue'
 import Rewards from '@/components/Rewards.vue'
 

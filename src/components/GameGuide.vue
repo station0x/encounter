@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import CONSTANTS from '../../constants.json'
+import CONSTANTS from '../../constants'
 export default {
     data() {
         return {

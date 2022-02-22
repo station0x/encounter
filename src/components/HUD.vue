@@ -125,7 +125,7 @@
             <path id="Rewards_2" d="M361.927 63.3256H362.477L362.357 66.7656L362.347 66.7756V66.8656L361.147 67.9056L362.257 68.9956V70.0256H361.217L359.667 68.4256L359.617 70.0156H358.317L358.557 63.3256H359.227H359.847H361.177H361.927ZM361.067 66.3056L361.127 64.6256H359.807L359.707 67.3956L361.067 66.3056ZM366.65 65.0256L366.62 66.0556L366.58 67.4356L364.16 68.4656V68.7456H364.57L366.58 67.8856L366.54 69.2556L364.91 70.0156H364.11H363.18H362.81L362.98 65.0256H363.57H364.28H366.65ZM364.24 66.3256L364.21 67.0956L365.5 66.5456V66.3256H364.24ZM370.49 65.0356H371.78L371.61 70.0156H370.31L370.49 65.0356ZM367.06 65.0356H368.36L368.19 70.0156H366.89L367.06 65.0356ZM370.31 70.0156L369.28 68.9456L368.18 70.0156V68.3256L369.34 67.2756L370.39 68.4256L370.31 70.0156ZM375.81 69.9856H374.51L374.62 65.0056H375.92L375.81 69.9856ZM373.27 69.9856H371.97L372.14 65.0056H373.44L373.27 69.9856ZM372.48 69.9856V68.9756L375.03 67.8756V69.2256L373.29 69.9856H372.48ZM372.67 65.0056H375.21V66.3056H372.67V65.0056ZM377.316 67.3456L376.796 66.1556L379.356 65.0356L379.766 66.2756L377.316 67.3456ZM377.496 70.0156H376.196L376.376 65.0356H377.666L377.496 70.0156ZM381.208 70.0156H379.908L380.088 65.0356H381.388L381.208 70.0156ZM383.738 70.0156H382.438L382.668 63.3156H383.968L383.738 70.0156ZM380.438 70.0156L379.948 69.3956L382.988 68.0756V69.4356L381.648 70.0156H380.438ZM380.668 65.0356H383.218V66.3256H380.668V65.0356ZM384.876 66.3256V65.0356H388.036L387.996 66.3256H384.876ZM384.796 68.1756V66.8756H388.076L388.036 68.1756H384.796ZM385.446 68.1756H384.146L384.226 65.0356H385.526L385.446 68.1756ZM385.576 68.7156H387.516L387.386 70.0156H385.536H384.276H384.236L384.276 68.7156H385.576ZM387.976 70.0156H386.676L386.766 67.0156H388.066L387.976 70.0156Z" fill="#FBC115"/>
             <path id="Vector_71" d="M366.631 38.9962C366.513 39.008 366.402 39.057 366.313 39.1359C366.225 39.2148 366.163 39.3198 366.138 39.4357L365.111 44.0575H371.399V38.9963H366.685V38.9962C366.668 38.9954 366.65 38.9954 366.632 38.9962L366.631 38.9962ZM372.524 38.9962V44.0574H375.476V38.9962H372.524ZM376.601 38.9962L376.601 44.0574H382.886L381.859 39.4356L381.858 39.4355C381.831 39.3109 381.761 39.1996 381.661 39.1197C381.562 39.0399 381.438 38.9963 381.31 38.996L376.601 38.9962ZM365 45.1824V56.431C365 56.5801 365.058 56.7234 365.163 56.8294C365.268 56.9352 365.411 56.9951 365.56 56.9956H382.435C382.585 56.9962 382.729 56.937 382.835 56.8309C382.941 56.7249 383.001 56.5809 383 56.431V45.1824H376.602V48.7001C376.6 49.1273 376.142 49.3957 375.768 49.189L373.998 48.2134L372.233 49.189C371.859 49.3957 371.401 49.1273 371.4 48.7001V45.1824L365 45.1824ZM372.525 45.1824V47.7444L373.729 47.0796C373.898 46.9861 374.103 46.9861 374.273 47.0796L375.477 47.7444V45.1824H372.525ZM371.872 51.2785H376.125L376.125 51.2784C376.275 51.2779 376.419 51.3372 376.525 51.4432C376.631 51.5492 376.69 51.6932 376.69 51.8431V53.8437C376.69 53.9937 376.631 54.1375 376.525 54.2436C376.419 54.3496 376.275 54.409 376.125 54.4084H371.872C371.722 54.409 371.578 54.3496 371.472 54.2436C371.366 54.1377 371.307 53.9936 371.307 53.8437V51.8431C371.307 51.6932 371.366 51.5492 371.472 51.4432C371.578 51.3372 371.722 51.2779 371.872 51.2784L371.872 51.2785ZM372.433 52.4035V53.2835H375.563V52.4035H372.433Z" fill="#FBC115"/>
             </g>
-            <circle v-if="Object.keys(rewards).length > 0" r="4" cx="383" cy="40" fill="red"/>
+            <circle v-if="Object.keys($store.getters.rewards).length > 0" r="4" cx="383" cy="40" fill="red"/>
             <foreignObject y="66" x="464" class="sound-btn-wrapper">
                 <b-button v-if="soundisOn" @click="soundOff" class="sound-btn" icon-right="volume-high"></b-button>
                 <b-button v-else-if="!soundisOn" @click="soundOn" class="sound-btn" icon-right="volume-off"></b-button>
@@ -185,16 +185,13 @@ import axios from 'axios'
 import Settings from '@/components/Settings.vue'
 import Rewards from '@/components/Rewards.vue'
 import Inventory from '@/components/Inventory.vue'
-import { ethers } from 'ethers'
-import CONSTANTS from '../../constants.json'
 
 export default {
     data() {
         return {
             audio: new Howl({src: [require('../assets/sfx/background-music.webm')], loop: true}),
             soundisOn: undefined,
-            gravatar: null,
-            withdrawnRewards:{},
+            gravatar: null
         }
     },
     computed: {
@@ -208,18 +205,6 @@ export default {
             if(this.$store.state.profile !== undefined){
                 return this.$store.state.profile.playerAlias.length === 0 || this.$store.state.profile.playerAlias === undefined ? 'You' : this.$store.state.profile.playerAlias
             } else return 'You'
-        },
-        rewards () {
-            if(!this.$store.state.profile || !this.$store.state.profile.rewards) return {};
-            if(Object.keys(this.$store.state.profile.rewards).length !== Object.keys(this.withdrawnRewards).length) return {};
-            return Object.keys(this.$store.state.profile.rewards).reduce((acc, v) => {
-                const withdrawn = this.withdrawnRewards[v] || 0
-                const withdrawable = this.$store.state.profile.rewards[v] - withdrawn
-                if(withdrawable > 0) {
-                    acc[v] = withdrawable;
-                }
-                return acc
-            }, {})
         }
     },
     methods: {
@@ -234,15 +219,6 @@ export default {
         goHome() {
             if(this.$route.name !== "Home") this.$router.push({name: 'Home'})
         },
-        async fetchProfile() {
-            const res = await axios.get('/api/player/fetchPlayerProfile', {
-                params:{
-                address: this.$store.state.address
-                }
-            })
-            this.$store.commit('setProfile', res.data.playerDoc)
-            this.$store.dispatch('fetchInventory')
-        },
         openSettings() {
             this.$buefy.modal.open({
                 parent: this,
@@ -250,55 +226,31 @@ export default {
                 canCancel: ['escape', 'button']
             })
         },
-        openRewards() {
+        async openRewards() {
             this.$buefy.modal.open({
                 parent: this,
                 component: Rewards,
-                canCancel: ['escape', 'button'],
-                props: {
-                    rewards: this.rewards
-                },
-                 events: {
-                    'refreshRewards': () => {
-                        this.refreshWithdrawnRewards()
-                    }
-                }
+                canCancel: ['escape', 'button']
             })
         },
         openInventory() {
+            this.$store.dispatch('fetchInventory')
             this.$buefy.modal.open({
                 parent: this,
                 component: Inventory,
                 canCancel: ['escape', 'button']
             })
-        },
-        async refreshWithdrawnRewards() {
-            if(!this.$store.state.profile || !this.$store.state.profile.rewards) return;
-            const provider = new ethers.providers.JsonRpcProvider(CONSTANTS.rpcUrl);
-            const oreMinterContract = new ethers.Contract(CONSTANTS.economicPolicy.oreMinter, ["function oreUserWithdrawn(address,address) view returns (uint)"], provider);
-            Object.keys(this.$store.state.profile.rewards).forEach(async v => {
-                const oreAddress = CONSTANTS.economicPolicy.assets[v].address
-                const withdrawn = await oreMinterContract.oreUserWithdrawn(oreAddress, this.$store.state.address)
-                this.withdrawnRewards = {...this.withdrawnRewards, [v]: Number(ethers.utils.formatEther(withdrawn))}
-            })
         }
     },
     async beforeMount() {
-        this.fetchProfile()
-
+        this.$store.dispatch('fetchProfile')
+    },
+    created () {
+        this.$store.dispatch('refreshWithdrawnRewards');
     },
     mounted: function() {
         this.gravatar = this.$refs.gravatar.url
         this.$store.commit('setGravatar', this.$refs.gravatar.url)
-    },
-    created: function() {
-        // this.soundOn()
-        this.refreshWithdrawnRewards()
-    },
-     watch: {
-        "$store.state.profile" () {
-            this.refreshWithdrawnRewards()
-        }
     },
     beforeDestroy() {
         this.soundOff()

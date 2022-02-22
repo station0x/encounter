@@ -48,7 +48,7 @@ export default {
   },
   destroyed() {
 	window.removeEventListener("resize", this.responsify)
-  }
+  },
 }
 </script>
 

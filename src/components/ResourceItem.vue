@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import CONSTANTS from '../../constants.json'
+import CONSTANTS from '../../constants'
 export default {
     props: ['symbol', 'quantity', 'disabled', 'selected'],
     computed: {

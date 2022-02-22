@@ -8,7 +8,7 @@
             </g>
             <text id="Rewards" fill="#CDCDCD" xml:space="preserve" style="white-space: pre" font-family="Anson" font-size="26" letter-spacing="0em"><tspan x="359.134" y="18.452">REWARDS</tspan></text>
             <path id="Vector" d="M334.631 3.00063C334.513 3.01243 334.402 3.0614 334.313 3.14025C334.225 3.21922 334.163 3.32419 334.138 3.44008L333.111 8.06185H339.399V3.00069H334.685V3.00057C334.668 2.99981 334.65 2.99981 334.632 3.00057L334.631 3.00063ZM340.524 3.00063V8.06178H343.476V3.00063H340.524ZM344.601 3.00063L344.601 8.06178H350.886L349.859 3.44002L349.858 3.43989C349.831 3.31534 349.761 3.20397 349.661 3.12412C349.562 3.04426 349.438 3.0007 349.31 3.00044L344.601 3.00063ZM333 9.18677V20.4354C333 20.5845 333.058 20.7278 333.163 20.8338C333.268 20.9396 333.411 20.9995 333.56 21H350.435C350.585 21.0006 350.729 20.9414 350.835 20.8353C350.941 20.7293 351.001 20.5853 351 20.4354V9.1868H344.602V12.7045C344.6 13.1317 344.142 13.4001 343.768 13.1934L341.998 12.2178L340.233 13.1934C339.859 13.4001 339.401 13.1317 339.4 12.7045V9.1868L333 9.18677ZM340.525 9.18677V11.7488L341.729 11.084C341.898 10.9905 342.103 10.9905 342.273 11.084L343.477 11.7488V9.18677H340.525ZM339.872 15.2829H344.125L344.125 15.2828C344.275 15.2823 344.419 15.3415 344.525 15.4476C344.631 15.5536 344.69 15.6976 344.69 15.8475V17.8481C344.69 17.9981 344.631 18.1419 344.525 18.248C344.419 18.354 344.275 18.4134 344.125 18.4128H339.872C339.722 18.4134 339.578 18.354 339.472 18.248C339.366 18.1421 339.307 17.998 339.307 17.8481V15.8475C339.307 15.6976 339.366 15.5536 339.472 15.4476C339.578 15.3415 339.722 15.2823 339.872 15.2828L339.872 15.2829ZM340.433 16.4079V17.2879H343.563V16.4079H340.433Z" fill="#CDCDCD"/>
-            <g v-if="selectedItems.length === 0 || Object.keys(rewards).length === 0" id="claim-btn" style="filter: grayscale(1); opacity: 0.7; cursor: not-allowed">
+            <g v-if="selectedItems.length === 0 || Object.keys($store.getters.rewards).length === 0" id="claim-btn" style="filter: grayscale(1); opacity: 0.7; cursor: not-allowed">
             <g id="Group 134">
             <path id="Rectangle 5" d="M604.25 431.25L710.75 431.25L710.75 461.566L705.768 466.75L611.104 466.75L604.25 459.896L604.25 431.25Z" fill="url(#paint2_linear_497_3286)" stroke="#FBC115" stroke-width="0.5"/>
             </g>
@@ -24,7 +24,7 @@
                 </foreignObject>
             </g>
             <text id="all rewards" fill="#CDCDCD" xml:space="preserve" style="white-space: pre" font-family="Anson" font-size="18" letter-spacing="0em"><tspan x="141" y="110.736">Ores</tspan></text>
-            <g v-if="selectedItems.length !== Object.keys(rewards).length" @click="selectAll" id="select all" style="filter: grayscale(1); opacity: 0.7; cursor: pointer">
+            <g v-if="selectedItems.length !== Object.keys($store.getters.rewards).length" @click="selectAll" id="select all" style="filter: grayscale(1); opacity: 0.7; cursor: pointer">
             <text id="select all_2" fill="#FBC115" xml:space="preserve" style="white-space: pre" font-family="Anson" font-size="18" letter-spacing="0em"><tspan x="163.324" y="451.736">SELECT ALL</tspan></text>
             <rect id="Rectangle 6" x="137.25" y="441.25" width="14.5" height="14.5" stroke="#FBC115" stroke-width="0.5"/>
             <rect id="Rectangle 90" x="137" y="441" width="15" height="15" fill="#C4C4C4" fill-opacity="0.01"/>
@@ -139,7 +139,7 @@
             <rect id="Rectangle 90_2" x="25" y="89" width="15" height="15" fill="#C4C4C4" fill-opacity="0.01"/>
             <rect id="Rectangle 7" x="25.25" y="89.25" width="14.5" height="14.5" stroke="#FBC115" stroke-width="0.5"/>
             </g>
-            <g v-if="Object.keys(rewards).length === 0" id="empty">
+            <g v-if="Object.keys($store.getters.rewards).length === 0" id="empty">
                 <text id="add text here" fill="#363636" xml:space="preserve" style="white-space: pre" font-family="Anson" font-size="26" letter-spacing="0em"><tspan x="370" y="334.452">NO REWARDS</tspan></text>
                 <g id="Frame" clip-path="url(#clip0_509_3433)">
                 <path id="Vector_65" d="M435.85 271.67H418.81V276.46H435.85V271.67Z" fill="#363636"/>
@@ -156,7 +156,7 @@
                 <ResourceItem
                 style="cursor: pointer"
                 height="80" width="90" x="0" y="100"
-                v-for="(quantity, rewardSymbol) in rewards" :key="rewardSymbol"
+                v-for="(quantity, rewardSymbol) in $store.getters.rewards" :key="rewardSymbol"
                 :symbol="rewardSymbol" 
                 :quantity="quantity"
                 :disabled="false"
@@ -260,7 +260,7 @@
 <script>
 import detectEthereumProvider from '@metamask/detect-provider'
 import { ethers } from 'ethers'
-import CONSTANTS from '../../constants.json'
+import CONSTANTS from '../../constants'
 import ResourceItem from '@/components/ResourceItem.vue'
 import axios from 'axios'
 
@@ -268,28 +268,12 @@ export default {
     data () {
         return {
             selectedItems:[],
-            // withdrawnRewards:{},
             mmloader: false,
         }
     },
     components: {
         ResourceItem
     },
-    props: ['rewards'],
-    // computed: {
-    //     rewards () {
-    //         if(!this.$store.state.profile || !this.$store.state.profile.rewards) return {};
-    //         if(Object.keys(this.$store.state.profile.rewards).length !== Object.keys(this.withdrawnRewards).length) return {};
-    //         return Object.keys(this.$store.state.profile.rewards).reduce((acc, v) => {
-    //             const withdrawn = this.withdrawnRewards[v] || 0
-    //             const withdrawable = this.$store.state.profile.rewards[v] - withdrawn
-    //             if(withdrawable > 0) {
-    //                 acc[v] = withdrawable;
-    //             }
-    //             return acc
-    //         }, {})
-    //     }
-    // },
     methods: {
         closeModal() {
             this.$emit('close')
@@ -303,7 +287,7 @@ export default {
             }
         },
         selectAll() {
-            this.selectedItems = Object.keys(this.rewards)
+            this.selectedItems = Object.keys(this.$store.getters.rewards)
         },
         unselectAll() {
             this.selectedItems = [];
@@ -391,31 +375,11 @@ export default {
                 this.mmloader = false
             }
         },
-        // async refreshWithdrawnRewards() {
-        //     this.$emit('refreshRewards')
-        //     if(!this.$store.state.profile || !this.$store.state.profile.rewards) return;
-        //     const provider = new ethers.providers.JsonRpcProvider(CONSTANTS.rpcUrl);
-        //     const oreMinterContract = new ethers.Contract(CONSTANTS.economicPolicy.oreMinter, ["function oreUserWithdrawn(address,address) view returns (uint)"], provider);
-        //     Object.keys(this.$store.state.profile.rewards).forEach(async v => {
-        //         const oreAddress = CONSTANTS.economicPolicy.assets[v].address
-        //         const withdrawn = await oreMinterContract.oreUserWithdrawn(oreAddress, this.$store.state.address)
-        //         this.withdrawnRewards = {...this.withdrawnRewards, [v]: Number(ethers.utils.formatEther(withdrawn))}
-        //     })
-        // }
-    },
-    // watch: {
-    //     "$store.state.profile" () {
-    //         this.refreshWithdrawnRewards()
-    //     }
-    // },
-    watch: {
-        rewards: {
-            deep: true
-        }
     },
     created () {
-        // this.refreshWithdrawnRewards()
-        this.$emit('refreshRewards')
+        this.$store.dispatch('fetchProfile')
+        this.$store.dispatch('refreshWithdrawnRewards')
+        
     }
 }
 </script>
@@ -429,6 +393,5 @@ export default {
 }
 .rewards-view {
     overflow: unset;
-    overflow-x: scroll;
 }
 </style>
