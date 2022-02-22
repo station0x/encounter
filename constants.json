@@ -1,7 +1,7 @@
 {
   "initFuel": 10,
-  "turnTimeout": 30,
-  "pickingTurnTimeout": 6000,
+  "turnTimeout": 45,
+  "pickingTurnTimeout": 60,
   "pickingInsertionsAllowedPerTurn": 3,
   "pickingRounds": 3, 
   "maxFuel": 15,
@@ -18,6 +18,23 @@
     "ubiquity",
     "colossus"
   ],
+  "economicPolicy": {
+    "minRewardsElo": 1300,
+    "assets": {
+      "HALF": {
+        "name": "halfinium",
+        "address": "",
+        "type": "ore",
+        "img": "https://res.cloudinary.com/station0x/image/upload/v1645464588/encouter/elements/ores/half_wghdoy.webp"
+      },
+      "SAN": {
+        "name": "sangius",
+        "address": "",
+        "type": "ore",
+        "img": "https://res.cloudinary.com/station0x/image/upload/v1645482364/encouter/elements/ores/SAN_ogiik4.webp"
+      }
+    }
+  },
   "initialBoardState": [
     [
       {},
