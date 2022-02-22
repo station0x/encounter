@@ -15,10 +15,13 @@
             <text id="Claim" fill="#FBC115" xml:space="preserve" style="white-space: pre" font-family="Anson" font-size="18" letter-spacing="0em"><tspan x="640.378" y="451.736">CLAIM</tspan></text>
             </g>
             <g v-else id="claim-btn" style="cursor: pointer" @click="claim">
-            <g id="Group 134">
-            <path id="Rectangle 5" d="M604.25 431.25L710.75 431.25L710.75 461.566L705.768 466.75L611.104 466.75L604.25 459.896L604.25 431.25Z" fill="url(#paint2_linear_497_3286)" stroke="#FBC115" stroke-width="0.5"/>
-            </g>
-            <text id="Claim" fill="#FBC115" xml:space="preserve" style="white-space: pre" font-family="Anson" font-size="18" letter-spacing="0em"><tspan x="640.378" y="451.736">CLAIM</tspan></text>
+                <g id="Group 134">
+                <path id="Rectangle 5" d="M604.25 431.25L710.75 431.25L710.75 461.566L705.768 466.75L611.104 466.75L604.25 459.896L604.25 431.25Z" fill="url(#paint2_linear_497_3286)" stroke="#FBC115" stroke-width="0.5"/>
+                </g>
+                <text id="Claim" fill="#FBC115" xml:space="preserve" style="white-space: pre" font-family="Anson" font-size="18" letter-spacing="0em"><tspan x="640.378" y="451.736">{{ mmloader ? 'CLAIMING' : 'CLAIM' }}</tspan></text>
+                <foreignObject x="605" y="429" height="50px" width="50px">
+                <b-button class="loader-fake-btn" :loading="mmloader"></b-button>
+                </foreignObject>
             </g>
             <text id="all rewards" fill="#CDCDCD" xml:space="preserve" style="white-space: pre" font-family="Anson" font-size="18" letter-spacing="0em"><tspan x="141" y="110.736">Ores</tspan></text>
             <g v-if="selectedItems.length !== Object.keys(rewards).length" @click="selectAll" id="select all" style="filter: grayscale(1); opacity: 0.7; cursor: pointer">
@@ -136,7 +139,20 @@
             <rect id="Rectangle 90_2" x="25" y="89" width="15" height="15" fill="#C4C4C4" fill-opacity="0.01"/>
             <rect id="Rectangle 7" x="25.25" y="89.25" width="14.5" height="14.5" stroke="#FBC115" stroke-width="0.5"/>
             </g>
-            <foreignObject class="rewards-view" y="130" x="140" width="73%" height="55%" >
+            <g v-if="Object.keys(rewards).length === 0" id="empty">
+                <text id="add text here" fill="#363636" xml:space="preserve" style="white-space: pre" font-family="Anson" font-size="26" letter-spacing="0em"><tspan x="370" y="334.452">NO REWARDS</tspan></text>
+                <g id="Frame" clip-path="url(#clip0_509_3433)">
+                <path id="Vector_65" d="M435.85 271.67H418.81V276.46H435.85V271.67Z" fill="#363636"/>
+                <path id="Vector_66" d="M473.39 226.23H475.72L475.43 224.93L483.43 219.81L480.21 214.75L370 284.88L373.22 289.94L378.34 286.67V293.59C378.338 294.405 378.658 295.189 379.23 295.77C379.803 296.343 380.579 296.667 381.39 296.67H473.27C474.084 296.67 474.865 296.347 475.441 295.771C476.017 295.195 476.34 294.414 476.34 293.6V232.35H463.77L473.39 226.23ZM441.98 279.51C441.99 279.916 441.917 280.319 441.766 280.696C441.615 281.073 441.389 281.415 441.102 281.702C440.815 281.989 440.473 282.215 440.096 282.366C439.719 282.517 439.316 282.59 438.91 282.58H415.75C415.346 282.582 414.945 282.503 414.572 282.347C414.199 282.19 413.862 281.96 413.58 281.67C413.294 281.384 413.067 281.044 412.912 280.67C412.758 280.296 412.679 279.895 412.68 279.49V268.67C412.679 268.266 412.757 267.866 412.911 267.492C413.065 267.118 413.29 266.779 413.576 266.493C413.861 266.207 414.2 265.98 414.573 265.825C414.946 265.67 415.346 265.59 415.75 265.59H417.75V269.84H434.75V265.54H438.84C439.254 265.529 439.667 265.602 440.052 265.756C440.437 265.909 440.787 266.139 441.081 266.432C441.375 266.724 441.606 267.074 441.76 267.459C441.915 267.843 441.99 268.255 441.98 268.67V279.51ZM441.5 251.51C441.497 252.041 441.356 252.561 441.09 253.021C440.825 253.481 440.445 253.864 439.987 254.132C439.529 254.4 439.009 254.545 438.479 254.552C437.948 254.558 437.425 254.427 436.96 254.17L432.96 251.95L441.51 246.51L441.5 251.51Z" fill="#363636"/>
+                <path id="Vector_67" d="M440.47 225.68V236.29L457.15 225.68H440.47Z" fill="#363636"/>
+                <path id="Vector_68" d="M434.35 192H418.28V219.56H434.35V192Z" fill="#363636"/>
+                <path id="Vector_69" d="M473.71 215.15L469.1 194.4C468.945 193.718 468.564 193.109 468.02 192.67C467.482 192.228 466.806 191.988 466.11 191.99H440.47V219.56H466.77L473.71 215.15Z" fill="#363636"/>
+                <path id="Vector_70" d="M426.34 242.19L416.73 247.5C416.265 247.757 415.742 247.888 415.211 247.881C414.681 247.875 414.161 247.73 413.703 247.462C413.245 247.194 412.865 246.811 412.599 246.351C412.334 245.891 412.193 245.371 412.19 244.84V225.67H377.34V276.46L428.92 243.67L426.34 242.19Z" fill="#363636"/>
+                <path id="Vector_71" d="M412.15 192H386.15C385.508 192.066 384.903 192.332 384.42 192.76C383.916 193.182 383.565 193.759 383.42 194.4L377.91 219.56H412.15V192Z" fill="#363636"/>
+                <path id="Vector_72" d="M427.79 236.01L434.34 239.67V225.67H418.28V239.67L424.83 236.05C425.279 235.792 425.787 235.654 426.305 235.647C426.822 235.64 427.334 235.765 427.79 236.01Z" fill="#363636"/>
+                </g>
+            </g>
+            <foreignObject v-else class="rewards-view" y="130" x="140" width="73%" height="55%" >
                 <ResourceItem
                 style="cursor: pointer"
                 height="80" width="90" x="0" y="100"
@@ -252,29 +268,32 @@ export default {
     data () {
         return {
             selectedItems:[],
-            withdrawnRewards:{}
+            // withdrawnRewards:{},
+            mmloader: false,
         }
     },
     components: {
         ResourceItem
     },
-    computed: {
-        rewards () {
-            if(!this.$store.state.profile || !this.$store.state.profile.rewards) return {};
-            if(Object.keys(this.$store.state.profile.rewards).length !== Object.keys(this.withdrawnRewards).length) return {};
-            return Object.keys(this.$store.state.profile.rewards).reduce((acc, v) => {
-                const withdrawn = this.withdrawnRewards[v] || 0
-                const withdrawable = this.$store.state.profile.rewards[v] - withdrawn
-                if(withdrawable > 0) {
-                    acc[v] = withdrawable;
-                }
-                return acc
-            }, {})
-        }
-    },
+    props: ['rewards'],
+    // computed: {
+    //     rewards () {
+    //         if(!this.$store.state.profile || !this.$store.state.profile.rewards) return {};
+    //         if(Object.keys(this.$store.state.profile.rewards).length !== Object.keys(this.withdrawnRewards).length) return {};
+    //         return Object.keys(this.$store.state.profile.rewards).reduce((acc, v) => {
+    //             const withdrawn = this.withdrawnRewards[v] || 0
+    //             const withdrawable = this.$store.state.profile.rewards[v] - withdrawn
+    //             if(withdrawable > 0) {
+    //                 acc[v] = withdrawable;
+    //             }
+    //             return acc
+    //         }, {})
+    //     }
+    // },
     methods: {
         closeModal() {
             this.$emit('close')
+            this.$emit('refreshRewards')
         },
         selectItem(symbol) {
             if(this.selectedItems.includes(symbol)) {
@@ -290,93 +309,113 @@ export default {
             this.selectedItems = [];
         },
         async claim() {
-            const metamaskProvider = await detectEthereumProvider()
-            if(metamaskProvider) {
-                const provider = new ethers.providers.Web3Provider(metamaskProvider, "any")
-                const signer = provider.getSigner()
-                const address = await signer.getAddress()
-                if(address !== this.$store.state.address) {
-                    this.$buefy.snackbar.open({
-                        duration: 5000,
-                        message: 'Please switch your wallet address to your logged in address',
-                        type: 'is-danger',
-                        position: 'is-bottom',
-                    })
-                    return;
-                }
-                let chainId = (await provider.getNetwork()).chainId
-                if(chainId !== CONSTANTS.chainId) {
-                    await provider.provider.request({
-                        method: "wallet_addEthereumChain",
-                        params: [{
-                            chainId: CONSTANTS.hexChainId,
-                            rpcUrls: [CONSTANTS.rpcUrl],
-                            chainName: CONSTANTS.chainName,
-                            nativeCurrency: {
-                                name: "FTM",
-                                symbol: "FTM",
-                                decimals: 18
-                            },
-                            blockExplorerUrls: [CONSTANTS.chainExplorer]
-                        }]
-                    });
-                    chainId = (await provider.getNetwork()).chainId
-                    if(chainId !== CONSTANTS.chainId) {
+            this.mmloader = true
+            try {
+                const selectedItems = [...this.selectedItems]
+                const metamaskProvider = await detectEthereumProvider()
+                if(metamaskProvider) {
+                    const provider = new ethers.providers.Web3Provider(metamaskProvider, "any")
+                    const signer = provider.getSigner()
+                    const address = await signer.getAddress()
+                    if(address !== this.$store.state.address) {
                         this.$buefy.snackbar.open({
                             duration: 5000,
-                            message: 'Failed to switch network. Please try again',
+                            message: 'Please switch your wallet address to your logged in address',
                             type: 'is-danger',
                             position: 'is-bottom',
                         })
+                        this.mmloader = false
                         return;
                     }
-                }
-
-                // all check already passed, let's start claiming
-                const res = await axios.get('/api/tokens/claimOres', {
-                    params:{
-                        signature:this.$store.state.signature,
-                        ores:JSON.stringify(this.selectedItems)
+                    let chainId = (await provider.getNetwork()).chainId
+                    if(chainId !== CONSTANTS.chainId) {
+                        await provider.provider.request({
+                            method: "wallet_addEthereumChain",
+                            params: [{
+                                chainId: CONSTANTS.hexChainId,
+                                rpcUrls: [CONSTANTS.rpcUrl],
+                                chainName: CONSTANTS.chainName,
+                                nativeCurrency: {
+                                    name: "FTM",
+                                    symbol: "FTM",
+                                    decimals: 18
+                                },
+                                blockExplorerUrls: [CONSTANTS.chainExplorer]
+                            }]
+                        });
+                        chainId = (await provider.getNetwork()).chainId
+                        if(chainId !== CONSTANTS.chainId) {
+                            this.$buefy.snackbar.open({
+                                duration: 5000,
+                                message: 'Failed to switch network. Please try again',
+                                type: 'is-danger',
+                                position: 'is-bottom',
+                            })
+                            this.mmloader = false
+                            return;
+                        }
                     }
-                })
-                const signature = ethers.utils.splitSignature(res.data.signature)
-                const oreMinterContract = new ethers.Contract(CONSTANTS.economicPolicy.oreMinter, ["function mintOre(address[] _ores, uint[] _amounts, uint8 _v, bytes32 _r, bytes32 _s)"], signer);
-                const tx = await oreMinterContract.mintOre(
-                    this.selectedItems.map(v => CONSTANTS.economicPolicy.assets[v].address),
-                    this.selectedItems.map(v => ethers.utils.parseEther(this.$store.state.profile.rewards[v].toString())),
-                    signature.v,
-                    signature.r,
-                    signature.s
-                )
-                await tx.wait()
-                await this.refreshWithdrawnRewards();
-            } else {
-                this.$buefy.snackbar.open({
-                    duration: 5000,
-                    message: 'Cannot connect wallet. Please use a web3 wallet in your browser',
-                    type: 'is-danger',
-                    position: 'is-bottom',
-                })
+                    // all check already passed, let's start claiming
+                    const res = await axios.get('/api/tokens/claimOres', {
+                        params:{
+                            signature:this.$store.state.signature,
+                            ores:JSON.stringify(selectedItems)
+                        }
+                    })
+                    const signature = ethers.utils.splitSignature(res.data.signature)
+                    const oreMinterContract = new ethers.Contract(CONSTANTS.economicPolicy.oreMinter, ["function mintOre(address[] _ores, uint[] _amounts, uint8 _v, bytes32 _r, bytes32 _s)"], signer);
+                    const tx = await oreMinterContract.mintOre(
+                        selectedItems.map(v => CONSTANTS.economicPolicy.assets[v].address),
+                        selectedItems.map(v => ethers.utils.parseEther(this.$store.state.profile.rewards[v].toString())),
+                        signature.v,
+                        signature.r,
+                        signature.s
+                    )
+                    await tx.wait()
+                    this.closeModal()
+                    this.$buefy.snackbar.open({
+                        duration: 5000,
+                        message: 'Rewards Claimed! Check your inventory.',
+                        type: 'is-success', 
+                        position: 'is-bottom'
+                    })
+                } else {
+                    this.$buefy.snackbar.open({
+                        duration: 5000,
+                        message: 'Cannot connect wallet. Please use a web3 wallet in your browser',
+                        type: 'is-danger',
+                        position: 'is-bottom',
+                    })
+                }
+            } finally {
+                this.mmloader = false
             }
         },
-        async refreshWithdrawnRewards() {
-            if(!this.$store.state.profile || !this.$store.state.profile.rewards) return;
-            const provider = new ethers.providers.JsonRpcProvider(CONSTANTS.rpcUrl);
-            const oreMinterContract = new ethers.Contract(CONSTANTS.economicPolicy.oreMinter, ["function oreUserWithdrawn(address,address) view returns (uint)"], provider);
-            Object.keys(this.$store.state.profile.rewards).forEach(async v => {
-                const oreAddress = CONSTANTS.economicPolicy.assets[v].address
-                const withdrawn = await oreMinterContract.oreUserWithdrawn(oreAddress, this.$store.state.address)
-                this.withdrawnRewards = {...this.withdrawnRewards, [v]: Number(ethers.utils.formatEther(withdrawn))}
-            })
-        }
+        // async refreshWithdrawnRewards() {
+        //     this.$emit('refreshRewards')
+        //     if(!this.$store.state.profile || !this.$store.state.profile.rewards) return;
+        //     const provider = new ethers.providers.JsonRpcProvider(CONSTANTS.rpcUrl);
+        //     const oreMinterContract = new ethers.Contract(CONSTANTS.economicPolicy.oreMinter, ["function oreUserWithdrawn(address,address) view returns (uint)"], provider);
+        //     Object.keys(this.$store.state.profile.rewards).forEach(async v => {
+        //         const oreAddress = CONSTANTS.economicPolicy.assets[v].address
+        //         const withdrawn = await oreMinterContract.oreUserWithdrawn(oreAddress, this.$store.state.address)
+        //         this.withdrawnRewards = {...this.withdrawnRewards, [v]: Number(ethers.utils.formatEther(withdrawn))}
+        //     })
+        // }
     },
+    // watch: {
+    //     "$store.state.profile" () {
+    //         this.refreshWithdrawnRewards()
+    //     }
+    // },
     watch: {
-        "$store.state.profile" () {
-            this.refreshWithdrawnRewards()
+        rewards: {
+            deep: true
         }
     },
     created () {
-        this.refreshWithdrawnRewards()
+        // this.refreshWithdrawnRewards()
+        this.$emit('refreshRewards')
     }
 }
 </script>

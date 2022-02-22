@@ -23,6 +23,18 @@
     "ubiquity",
     "colossus"
   ],
+  "allSpaceships": [
+    "vampship", 
+    "divinewind",
+    "thunderbird", 
+    "orkocraft",
+    "salvation",
+    "battlestar",
+    "nightstalker",
+    "gunship",
+    "ubiquity",
+    "colossus"
+  ],
   "economicPolicy": {
     "minRewardsElo": 1300,
     "oreMinter":"0x5d09c01A3c248D96B5a5a41fD97fbb7807A41a4a",
