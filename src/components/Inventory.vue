@@ -262,7 +262,7 @@
 <script>
 import ResourceItem from '@/components/ResourceItem.vue'
 import arraySort from 'array-sort'
-import CONSTANTS from '../../constants.json'
+import CONSTANTS from '../../constants'
 export default {
     components: {
        ResourceItem

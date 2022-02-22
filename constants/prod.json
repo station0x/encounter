@@ -1,0 +1,425 @@
+{
+    "initFuel": 10,
+    "turnTimeout": 45,
+    "pickingTurnTimeout": 60,
+    "pickingInsertionsAllowedPerTurn": 3,
+    "pickingRounds": 3, 
+    "maxFuel": 15,
+    "fuelPerTurn": 5,
+    "chainId":250,
+    "hexChainId":"0xfa",
+    "rpcUrl":"https://rpc.ftm.tools/",
+    "chainName":"Fantom Opera",
+    "chainExplorer":"https://ftmscan.com/",
+    "freeSpaceshipsRotation": [
+      "vampship", 
+      "divinewind",
+      "thunderbird", 
+      "orkocraft",
+      "salvation",
+      "battlestar",
+      "nightstalker",
+      "gunship",
+      "ubiquity",
+      "colossus"
+    ],
+    "allSpaceships": [
+      "vampship", 
+      "divinewind",
+      "thunderbird", 
+      "orkocraft",
+      "salvation",
+      "battlestar",
+      "nightstalker",
+      "gunship",
+      "ubiquity",
+      "colossus"
+    ],
+    "economicPolicy": {
+      "minRewardsElo": 1300,
+      "oreMinter":"0x0482eAd2DF276f194ee6F3503A689c20D81b8fB0",
+      "assets": {
+        "HALF": {
+          "name": "halfinium",
+          "address":"0x6C125F5499FCA04fa029E9674D028B0696522c96",
+          "type": "ore",
+          "img": "https://res.cloudinary.com/station0x/image/upload/v1645464588/encouter/elements/ores/half_wghdoy.webp"
+        },
+        "SAN": {
+          "name": "sangius",
+          "address":"0x2FF32ce2A488E4F934CfcC0A78642b6F9ed29f0f",
+          "type": "ore",
+          "img": "https://res.cloudinary.com/station0x/image/upload/v1645482364/encouter/elements/ores/SAN_ogiik4.webp"
+        },
+        "SHI": {
+          "name": "shigerium",
+          "address":"0x9c138c09CB5c1d7745153b6ca47cc67CDE6704D2",
+          "type": "ore",
+          "img": "https://res.cloudinary.com/station0x/image/upload/v1645482364/encouter/elements/ores/SAN_ogiik4.webp"
+        },
+        "ZIS": {
+          "name": "zisek",
+          "address":"0x530c58AC01dAa8338Eb9BD6DCA2adAe46826CF5B",
+          "type": "ore",
+          "img": "https://res.cloudinary.com/station0x/image/upload/v1645482364/encouter/elements/ores/SAN_ogiik4.webp"
+        }
+      }
+    },
+    "initialBoardState": [
+      [
+        {},
+        {},
+        {},
+        {},
+        {
+          "type": "base",
+          "owner": 1
+        },
+        {},
+        {},
+        {},
+        {}
+      ],
+      [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ],
+      [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ],
+      [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ],
+      [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ],
+      [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ],
+      [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ],
+      [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ],
+      [
+        {},
+        {},
+        {},
+        {},
+        {
+          "type": "base",
+          "owner": 0
+        },
+        {},
+        {},
+        {},
+        {}
+      ]
+    ],
+    "initialBoardStateDEBUGMODE": [
+        [
+          {},
+          {},
+          {},
+          {},
+          {
+            "type": "base",
+            "owner": 1
+          },
+          {},
+          {},
+          {},
+          {}
+        ],
+        [
+          {
+            "type": "ubiquity",
+            "owner": 1
+          },
+          {
+            "type": "thunderbird",
+            "owner": 1
+          },
+          {
+            "type": "gunship",
+            "owner": 1
+          },
+          {
+            "type": "battlestar",
+            "owner": 1
+          },
+          {
+            "type": "salvation",
+            "owner": 1
+          },
+          {
+            "type": "nightstalker",
+            "owner": 1
+          },
+          {
+            "type": "vampship",
+            "owner": 1
+          },
+          {
+            "type": "orkocraft",
+            "owner": 1
+          },
+          {
+            "type": "colossus",
+            "owner": 1
+          }
+        ],
+        [
+          {
+            "type": "divinewind",
+            "owner": 1
+          },
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {}
+        ],
+        [
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {}
+        ],
+        [
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {}
+        ],
+        [
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {}
+        ],
+        [
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {
+            "type": "divinewind",
+            "owner": 0
+          }
+        ],
+        [
+          {
+            "type": "ubiquity",
+            "owner": 0
+          },
+          {
+            "type": "thunderbird",
+            "owner": 0
+          },
+          {
+            "type": "gunship",
+            "owner": 0
+          },
+          {
+            "type": "battlestar",
+            "owner": 0
+          },
+          {
+            "type": "salvation",
+            "owner": 0
+          },
+          {
+            "type": "nightstalker",
+            "owner": 0
+          },
+          {
+            "type": "vampship",
+            "owner": 0
+          },
+          {
+            "type": "orkocraft",
+            "owner": 0
+          },
+          {
+            "type": "colossus",
+            "owner": 0
+          }
+        ],
+        [
+          {},
+          {},
+          {},
+          {},
+          {
+            "type": "base",
+            "owner": 0
+          },
+          {},
+          {},
+          {},
+          {}
+        ]
+      ],
+    "spaceshipsAttributes": {
+      "base": {
+        "hp": 100,
+        "desc": "Base is the bumping heart of the spaceships fleet. It's an immobile spacecraft that control and command all of your spaceships. Your mission is to defend yours and destroy the enemy's."
+      },
+      "battlestar": {
+        "attack": 25,
+        "hp": 65,
+        "moveFuelCost": 2,
+        "attackFuelCost": 3,
+        "desc": "Battlestar is tough and have moderately high damage. It's balanced. It have 25 attack damage, 65 hp and consumes 2 fuel per turn."
+      },
+      "thunderbird": {
+        "attack": 10,
+        "hp": 50,
+        "moveFuelCost": 1,
+        "attackFuelCost": 3,
+        "desc": "Thunderbirds are the most mobile spaceships but also squishy. It consumes only 1 fuel per move but have the lowest attack damage. It's undoubtly the most unpredicted spaceship that can surprise your enemy."
+      },
+      "salvation": {
+        "repairPercent": 25,
+        "hp": 50,
+        "moveFuelCost": 2,
+        "repairFuelCost": 2,
+        "desc": "Salvation is a healer. It cannot attack other spaceships but can repair your own. If you lose it, you cannot repair your spaceships anymore! You can only heal one spaceship per turn, use it wisely."
+      },
+      "gunship": {
+        "attack": 30,
+        "hp": 60,
+        "moveFuelCost": 2,
+        "attackFuelCost": 3,
+        "desc": "Gunships have the highest damage but is fairly damagable. Don't solo it unless you know what are you doing."
+      },
+      "colossus": {
+        "attack": 15,
+        "hp": 90,
+        "moveFuelCost": 2,
+        "attackFuelCost": 3,
+        "desc": "Colossus is the tankiest spaceship with the highest HP in the game. It's not very mobile and has a relatively low attack damage."
+      },
+      "ubiquity": {
+        "attack": 20,
+        "hp": 45,
+        "moveFuelCost": 2,
+        "attackFuelCost": 3,
+        "warp": true,
+        "desc": "Ubiquity spaceships can warp from one edge to another when placed adjacent to the left or right edges of the board."
+      },
+      "nightstalker": {
+        "attack": 15,
+        "hp": 55,
+        "moveFuelCost": 2,
+        "attackFuelCost": 3,
+        "bonusAttackOnAttack": 8,
+        "desc": "Nightstalker gain 8 attack damage if it lands an attack to any other spaceship with unlimited stack amount. It's squishy with a base attack of 15."
+      },
+      "orkocraft": {
+        "attack": 10,
+        "hp": 65,
+        "moveFuelCost": 2,
+        "attackFuelCost": 3,
+        "shock": true,
+        "desc": "Orkocraft creates an electromagnetic shockwave that propogates through all adjacent units causing damage to it. (including your fleet, Except your base). It's very effecient against defensive structures."
+      },
+      "vampship": {
+        "attack": 15,
+        "hp": 50,
+        "vamp": 10,
+        "moveFuelCost": 0,
+        "attackFuelCost": 0,
+        "moveHpCost": 5,
+        "desc": "Vampship is a fuelless spaceship that doesn't need FUEL to move or attack. Moving only costs HP, that can be refunded by attacking other units (stealing their HP)."
+      },
+      "divinewind": {
+        "attack": 15,
+        "hp": 60,
+        "onDestroyDamage": 10,
+        "moveFuelCost": 2,
+        "attackFuelCost": 3,
+        "desc": "DivineWind spaceship have balanced stats between attack, defense and mobility. When it's destroyed it explodes dealing extra damage to the spaceships adjacent to it."
+      }
+    }
+  }
+  

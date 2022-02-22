@@ -48,9 +48,7 @@ new Vue({
     leaving(e) {
         if(store.state.matchId === undefined) {
           if(store.state.address !== undefined) {
-            if(this.playerEnqueuedInMatchmaking()) {
               this.leaveMatchMaking()
-            }
           }
         } else {
           this.nativeBrowserHandler(e, 'Sure to leave your spaceships there to be destroyed? Going AFK while in game is punished. Do not do it')
@@ -66,7 +64,7 @@ new Vue({
       else return true
     },
     async leaveMatchMaking() {
-      const res = await axios.get('/api/matchmaker/leaveMatchmaking', {
+      await axios.get('/api/matchmaker/leaveMatchmaking', {
         params:{
           signature:this.$store.state.signature
         }

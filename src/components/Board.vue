@@ -250,7 +250,7 @@
 
 <script>
 import axios from 'axios'
-import CONSTANTS from "../../constants.json"
+import CONSTANTS from "../../constants"
 import PlayerCard from "./PlayerCard.vue"
 import EnemyCard from "./EnemyCard.vue"
 import GameGuide from './GameGuide.vue'

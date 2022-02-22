@@ -27,9 +27,9 @@ export default new Vuex.Store({
         loaded: false,
         registered: false,
         innerWidth: window.innerWidth,
-        inventory: []
+        inventory: [],
+        withdrawnRewards:{}
     },
-    getters: {},
     mutations: {
         sign(state, {signature, address}) {
             state.signature = signature
@@ -113,12 +113,24 @@ export default new Vuex.Store({
             state.innerWidth = width
         },
         setAssetBalance(state, {assetSymbol, assetBalance}) {
-            const inventory = [...state.inventory]
+            const inventory = [...state.inventory].filter(v => v.symbol !== assetSymbol)
             inventory.push({symbol: assetSymbol, balance: assetBalance})
             state.inventory = inventory
+        },
+        setWithdrawnRewards(state, withdrawnRewards) {
+            state.withdrawnRewards = withdrawnRewards
         }
     },
     actions: {
+        async fetchProfile ({commit, dispatch, state}) {
+            const res = await axios.get('/api/player/fetchPlayerProfile', {
+                params:{
+                    address: state.address
+                }
+            })
+            commit('setProfile', res.data.playerDoc)
+            dispatch('fetchInventory')
+        },
         connect({commit, dispatch}, {signature, address}) {
             commit('sign', {signature, address})
             window.localStorage.setItem('signature', signature)
@@ -131,7 +143,7 @@ export default new Vuex.Store({
             window.localStorage.removeItem('address')
             dispatch('stopPolling')
         },
-        startPolling({state, commit, dispatch}) {
+        async startPolling({state, commit, dispatch}) {
             if(state.intervalId) {
                 clearInterval(state.intervalId)
             }
@@ -151,10 +163,10 @@ export default new Vuex.Store({
                     commit('load')
                 }
             }
-            intervalFunc()
             const intervalId = setInterval(intervalFunc, 5000)
             commit('setIntervalId', intervalId)
             commit('setPicking', false)
+            await intervalFunc()
         },
         stopPolling({state, commit}) {
             clearInterval(state.intervalId)
@@ -216,6 +228,16 @@ export default new Vuex.Store({
             commit('setBoard', board)
             commit('decrementInsertionsCount', playerIs)
         },
+        async refreshWithdrawnRewards({state, commit}) {
+            if(!state.profile || !state.profile.rewards) return;
+            const provider = new ethers.providers.JsonRpcProvider(CONSTANTS.rpcUrl);
+            const oreMinterContract = new ethers.Contract(CONSTANTS.economicPolicy.oreMinter, ["function oreUserWithdrawn(address,address) view returns (uint)"], provider);
+            Object.keys(state.profile.rewards).forEach(async v => {
+                const oreAddress = CONSTANTS.economicPolicy.assets[v].address
+                const withdrawn = await oreMinterContract.oreUserWithdrawn(oreAddress, state.address)
+                commit("setWithdrawnRewards", {...state.withdrawnRewards, [v]: Number(ethers.utils.formatEther(withdrawn))})
+            })
+        }
     },
     plugins: [
         function({state, dispatch}) {
@@ -225,6 +247,18 @@ export default new Vuex.Store({
         }  
     ],
     getters: {
+        rewards (state) {
+            if(!state.profile || !state.profile.rewards) return {};
+            if(Object.keys(state.profile.rewards).length !== Object.keys(state.withdrawnRewards).length) return {};
+            return Object.keys(state.profile.rewards).reduce((acc, v) => {
+                const withdrawn = state.withdrawnRewards[v] || 0
+                const withdrawable = state.profile.rewards[v] - withdrawn
+                if(withdrawable > 0) {
+                    acc[v] = withdrawable;
+                }
+                return acc
+            }, {})
+        },
         innerWidth: state => {
             return state.innerWidth
         },

@@ -1,4 +1,4 @@
-const CONSTANTS = require('../constants.json');
+const CONSTANTS = require('../constants');
 var Elo = require( 'elo-js' );
 var elo = new Elo();
 

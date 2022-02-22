@@ -3,7 +3,7 @@
 const clientPromise = require('../../api-utils/mongodb-client');
 const getAddress = require('../../api-utils/getAddress');
 const { ObjectId } = require('mongodb');
-const CONSTANTS = require('../../constants.json')
+const CONSTANTS = require('../../constants')
 import { ethers } from 'ethers'
 
 module.exports = async (req, res) => {
