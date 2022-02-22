@@ -5,6 +5,8 @@ var elo = new Elo();
 async function endMatch(matchDoc, players, winner) {
     const newMatchDoc = {...matchDoc}
     newMatchDoc.winner = winner
+
+    // player docs getters
     let player0Doc = (await players.find({address:newMatchDoc.player0}).limit(1).toArray())[0]
     let player1Doc = (await players.find({address:newMatchDoc.player1}).limit(1).toArray())[0]
 
@@ -14,7 +16,9 @@ async function endMatch(matchDoc, players, winner) {
     let newPlayer1Stats = {...player1Doc}
     newPlayer1Stats.matchHistory.push(newMatchDoc._id)
 
+
     if(newMatchDoc.type === "matchmaking") {
+        // Elo calculation and update
         newPlayer0Stats.elo = newPlayer0Stats.elo === undefined ? 1200 : newPlayer0Stats.elo
         newPlayer1Stats.elo = newPlayer1Stats.elo === undefined ? 1200 : newPlayer1Stats.elo
 
@@ -25,8 +29,21 @@ async function endMatch(matchDoc, players, winner) {
             newPlayer1Stats.elo = elo.ifWins(newPlayer1Stats.elo, newPlayer0Stats.elo)
             newPlayer0Stats.elo = elo.ifLoses(newPlayer0Stats.elo, newPlayer1Stats.elo)
         }
+
+        // Win streak update
+        newPlayer0Stats.winStreak = newPlayer0Stats.winStreak === undefined ? 0 : newPlayer0Stats.winStreak
+        newPlayer1Stats.winStreak = newPlayer1Stats.winStreak === undefined ? 0 : newPlayer1Stats.winStreak
+        if(newMatchDoc.winner === 0) {
+            newPlayer0Stats.winStreak = Math.min(newPlayer0Stats.winStreak + 1, 5)
+            newPlayer1Stats.winStreak = 0
+        } else {
+            newPlayer1Stats.winStreak = Math.min(newPlayer1Stats.winStreak + 1, 5)
+            newPlayer0Stats.winStreak = 0
+        }
+
     }
     
+    // Remove matchID
     await Promise.all([
         players.updateOne({address:newMatchDoc.player0}, {
             $unset:{activeMatch:""},
@@ -49,6 +66,28 @@ async function endMatch(matchDoc, players, winner) {
         })
     ])
 
+    // Calculate rewards
+    if(newMatchDoc.type === "matchmaking") {
+        let winnerDoc = winner === 0 ? newPlayer0Stats : newPlayer1Stats;
+        let halfRewards = Math.floor((winnerDoc.elo / 100)**2)
+        let sanRewards = 0;
+
+        if(winnerDoc.winStreak === 5) {
+            sanRewards = Math.floor((winnerDoc.elo / 10)*2)
+            winnerDoc.winStreak = 0;
+        }
+
+        if(winnerDoc.elo >= CONSTANTS.economicPolicy.minRewardsElo) {
+            await players.updateOne({address: winnerDoc.address}, {
+                $inc:{"rewards.HALF": halfRewards, "rewards.SAN": sanRewards },
+                $set: { winStreak: winnerDoc.winStreak }
+            })
+        }
+        newMatchDoc.potentialRewards = {
+            "HALF": halfRewards,
+            "SAN": sanRewards > 0 ? sanRewards : undefined
+        }
+    }
     return newMatchDoc
 }
 
