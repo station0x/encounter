@@ -345,7 +345,7 @@
 
 
 <script>
-import CONSTANTS from "../../constants.json"
+import CONSTANTS from "../../constants"
 import axios from 'axios'
 
 export default {

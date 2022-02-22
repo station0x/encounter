@@ -1,6 +1,6 @@
 // TO-DO: Board initialization needs to be modular and imported from one file to here and create match by inviation
 "use strict";
-const CONSTANTS = require('../../constants.json')
+const CONSTANTS = require('../../constants')
 // Import the dependency.
 const clientPromise = require('../../api-utils/mongodb-client');
 const getAddress = require('../../api-utils/getAddress');

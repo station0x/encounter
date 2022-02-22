@@ -1,5 +1,5 @@
 "use strict";
-const CONSTANTS = require('../../constants.json')
+const CONSTANTS = require('../../constants')
 // Import the dependency.
 const clientPromise = require('../../api-utils/mongodb-client');
 const getAddress = require('../../api-utils/getAddress');
