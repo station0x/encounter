@@ -133,6 +133,12 @@ contract ERC20 {
         transferable = true;
     }
 
+    // operator can seize tokens during the guarded launch only while tokens are non-transferable
+    function seize(address _user, uint _amount) public onlyOperator {
+        require(!transferable, "Cannot seize while token is transferable");
+        _transfer(_user, address(0), _amount);
+    }
+
     event Approval(address indexed owner, address indexed spender, uint value);
     event Transfer(address indexed from, address indexed to, uint value);
     event AddMinter(address indexed minter);
