@@ -356,6 +356,8 @@ export default {
                         signature.s
                     )
                     await tx.wait()
+                    this.$store.dispatch('fetchProfile')
+                    this.$store.dispatch('refreshWithdrawnRewards')
                     this.closeModal()
                     this.$buefy.snackbar.open({
                         duration: 5000,
@@ -379,7 +381,6 @@ export default {
     created () {
         this.$store.dispatch('fetchProfile')
         this.$store.dispatch('refreshWithdrawnRewards')
-        
     }
 }
 </script>
