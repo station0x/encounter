@@ -10,6 +10,7 @@
     "build-storybook": "build-storybook"
   },
   "dependencies": {
+    "@metamask/detect-provider": "^1.2.0",
     "array-sort": "^1.0.0",
     "axios": "^0.24.0",
     "buefy": "^0.9.13",
