@@ -5,6 +5,7 @@ import * as Realm from "realm-web"
 import Queue from 'promise-queue'
 import CONSTANTS from '../../constants'
 import { debounce } from "debounce"
+import { ethers } from 'ethers'
 
 const axiosQueue = new Queue(1)
 const debouncedMatchState = debounce((matchDoc, commit)=>{commit("setMatchState", matchDoc)}, 1000)
@@ -25,7 +26,8 @@ export default new Vuex.Store({
         picking: false,
         loaded: false,
         registered: false,
-        innerWidth: window.innerWidth
+        innerWidth: window.innerWidth,
+        inventory: []
     },
     getters: {},
     mutations: {
@@ -109,6 +111,11 @@ export default new Vuex.Store({
         },
         changeWindowWidth(state, width) {
             state.innerWidth = width
+        },
+        setAssetBalance(state, {assetSymbol, assetBalance}) {
+            const inventory = [...state.inventory]
+            inventory.push({symbol: assetSymbol, balance: assetBalance})
+            state.inventory = inventory
         }
     },
     actions: {
@@ -153,6 +160,20 @@ export default new Vuex.Store({
             clearInterval(state.intervalId)
             commit('setIntervalId')
             commit('setActiveMatchId')
+        },
+        fetchInventory({state, commit}) {
+            const provider = new ethers.providers.JsonRpcProvider(CONSTANTS.rpcUrl);
+            Object.keys(CONSTANTS.economicPolicy.assets).forEach(async v => {
+                if(CONSTANTS.economicPolicy.assets[v].type === "ore") {
+                    const oreContract = new ethers.Contract(CONSTANTS.economicPolicy.assets[v].address, ["function balanceOf(address) view returns (uint)"], provider);
+                    const oreBalance = Number(ethers.utils.formatEther(await oreContract.balanceOf(state.address)))
+                    const oreSymbol = v
+                    commit('setAssetBalance', { 
+                        assetSymbol: oreSymbol,
+                        assetBalance: oreBalance
+                    })
+                }
+            })
         },
         async startRealm({state, commit, dispatch}) {
             await realm.logIn(credentials);
