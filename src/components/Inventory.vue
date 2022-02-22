@@ -277,7 +277,7 @@ export default {
     },
     methods: {
         openItemInExplorer(symbol) {
-            window.open(`https://testnet.ftmscan.com/address/${CONSTANTS.economicPolicy.assets[symbol].address}`, "_blank");
+            window.open(`${CONSTANTS.chainExplorer}address/${CONSTANTS.economicPolicy.assets[symbol].address}`, "_blank");
         },
         closeModal() {
             this.$emit('close')
