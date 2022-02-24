@@ -1,5 +1,6 @@
 <template>
     <div class="hud-wrapper">
+        <b-button v-if="isAdmin" @click="$router.push({ name: 'Dashboard'})" class="admin-btn">ADMIN DASHBOARD</b-button>
         <svg viewBox="0 0 499 100" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
             <g id="HUD">
             <g id="Mask Group">
@@ -185,6 +186,7 @@ import axios from 'axios'
 import Settings from '@/components/Settings.vue'
 import Rewards from '@/components/Rewards.vue'
 import Inventory from '@/components/Inventory.vue'
+import CONSTANTS from '../../constants'
 
 export default {
     data() {
@@ -205,6 +207,9 @@ export default {
             if(this.$store.state.profile !== undefined){
                 return this.$store.state.profile.playerAlias.length === 0 || this.$store.state.profile.playerAlias === undefined ? 'You' : this.$store.state.profile.playerAlias
             } else return 'You'
+        },
+        isAdmin() {
+            return CONSTANTS.admins.includes(this.$store.state.address)
         }
     },
     methods: {
@@ -272,7 +277,7 @@ export default {
 }
 .hud-wrapper {
     width: 700px;
-    position: fixed;
+    position: absolute;
     top: 25px;
     left: 0; 
     right: 0; 
@@ -395,12 +400,17 @@ export default {
     .hud-wrapper {
         width: 70vw;
         max-width: 600px;
-        position: fixed;
+        position: absolute;
         top: 10px;
         left: 0; 
         right: 0; 
         margin-left: auto; 
         margin-right: auto; 
     }
+}
+.admin-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
 }
 </style>
