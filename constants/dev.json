@@ -1,4 +1,9 @@
 {
+  "admins": [
+    "0x6BDD6Bb68Ec6927F56749b46746F0AFA7CdA9F3c",
+    "0xBeD17aa3E1c99ea86e19e7B38356C54007BB6CDe",
+    "0x203A62f2B684f1B06e52B8DC2c8B69AE44b40887"
+  ],
   "initFuel": 100,
   "turnTimeout": 9000,
   "pickingTurnTimeout": 60000,

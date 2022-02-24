@@ -10,6 +10,8 @@ import PlayerProfile from '@/views/PlayerProfile'
 import RedeemAccessKey from '@/views/RedeemAccessKey'
 import Leaderboard from '@/views/Leaderboard'
 import NotFound from '@/views/NotFound.vue'
+import Dashboard from '@/views/admin/Dashboard.vue'
+import CONSTANTS from '../../constants'
 
 Vue.use(VueRouter)
 
@@ -26,7 +28,9 @@ const routes = [
   { path: '/redeem-your-access-key', component: RedeemAccessKey, name: 'Redeem Access Key', meta: { requiresLogin: true, title: 'Redeem Access Key' } },
   { path: '/player/:playerAddress', component: PlayerProfile, name: 'Player Profile', meta: { title: 'Profile' } },
   { path: '/not-found', component: NotFound, name: 'Not Found', props: true, meta: { title: 'Page Not Found' } },
-  { path: '/leaderboard', component: Leaderboard, name: 'Leaderboard', meta: { title: 'Leaderboard' } }
+  { path: '/leaderboard', component: Leaderboard, name: 'Leaderboard', meta: { title: 'Leaderboard' } },
+  // Admin
+  { path: '/dashboard', component: Dashboard, name: 'Dashboard', meta: { requiresAdmin: true, title: 'Admin Dashboard' } },
 ]
 
 const router = new VueRouter({
@@ -35,7 +39,9 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  if(to.matched.some(record => record.meta.requiresLogin) && !store.state.address) next({ name: 'Login' })
+  let isAdmin = CONSTANTS.admins.includes(store.state.address)
+  if(to.matched.some(record => record.meta.requiresAdmin) && !isAdmin) next({ name: 'Home' })
+  else if(to.matched.some(record => record.meta.requiresLogin) && !store.state.address) next({ name: 'Login' })
   else if(to.name == 'Login' && store.state.address) next({ name: 'Home' })
   else next()
 })
