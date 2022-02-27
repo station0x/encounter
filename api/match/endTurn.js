@@ -76,6 +76,20 @@ module.exports = async (req, res) => {
                     return col
                 })
                 newMatchStats.picking = false
+                newMatchStats.board = newMatchStats.board
+                .map(row => row.map(col => {
+                    if(!col.type) {
+                        return col
+                    }
+                    
+                    col.lastAttackTurn = 0
+                    col.lastRepairTurn = 0
+                    col.lastWarpTurn = 0
+         
+                    col.hp = CONSTANTS.spaceshipsAttributes[col.type].hp
+                    return col
+                }))
+                newMatchStats.initialBoard = newMatchStats.board
             }
         }
         await matches.updateOne({_id:matchDoc._id}, {

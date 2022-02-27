@@ -20,7 +20,7 @@ const TITLE = ' | Station ZeroX: Encounter'
 const routes = [
   { path: '/', redirect: { name: 'Home' }},
   { path: '*', redirect: { name: 'Not Found' }},
-  { path: '/home', component: Home, name: 'Home', meta: { requiresLogin: true, title: 'home' } },
+  { path: '/home', component: Home, name: 'Home', meta: { requiresLogin: true, title: 'Home' } },
   { path: '/lobby', component: Lobby, name: 'Lobby', meta: { requiresLogin: true, title: 'Lobby' } },
   { path: '/play/:link', component: Link, name: 'Join Game with Link', meta: { title: 'Join Game' } },
   { path: '/admin', component: Admin, name: 'Admin' },

@@ -90,7 +90,8 @@ export default {
   methods: {
     openGameGuideModal() {
         this.$buefy.modal.open({
-            component: GameGuide
+          component: GameGuide,
+          canCancel: ['escape', 'outside', 'x']
         })
     }
   },
