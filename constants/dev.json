@@ -13,7 +13,7 @@
   "fuelPerTurn": 50,
   "chainId":4002,
   "hexChainId":"0xfa2",
-  "rpcUrl":"https://rpc.testnet.fantom.network/",
+  "rpcUrl":"https://rpcapi-tracing.testnet.fantom.network/",
   "chainName":"Fantom Testnet",
   "chainExplorer":"https://testnet.ftmscan.com/",
   "freeSpaceshipsRotation": [
