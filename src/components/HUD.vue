@@ -3,7 +3,7 @@
         <b-button v-if="isAdmin" @click="$router.push({ name: 'Dashboard'})" class="admin-btn">ADMIN DASHBOARD</b-button>
         <svg viewBox="0 0 499 100" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
             <g id="HUD">
-            <g id="Mask Group">
+            <g id="Mask Group" @click="openProfile" style="cursor: pointer">
             <mask id="mask0_363_1285" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="26" y="30" width="55" height="51">
             <path id="Vector" d="M80.8543 42.0941V71.94L80.835 71.9672L74.8192 80.9419H32.8329L32.8023 80.9099L26.7849 74.924V42.0941L26.8187 42.062L38.8164 30.124H47.8844L47.9165 30.156L50.8753 33.1001H71.8137L71.846 33.1321L80.8543 42.0941Z" fill="white"/>
             </mask>
@@ -49,7 +49,7 @@
             <foreignObject class="hud-elo-number" x="272" y="55.3">
                 <span class="saf-elo-number">{{ elo }}</span>
             </foreignObject>
-            <g id="my-user-info">
+            <g id="my-user-info" @click="openProfile" style="cursor: pointer">
             <foreignObject class="hud-username" x="95" y="38">
                 <span style="position: fixed">{{ playerAlias }}</span>
             </foreignObject>
@@ -224,6 +224,10 @@ export default {
         goHome() {
             if(this.$route.name !== "Home") this.$router.push({name: 'Home'})
         },
+        openProfile() {
+          let routeData = this.$router.resolve({ name: 'Player Profile', params: { playerAddress: this.$store.state.address } })
+          window.open(routeData.href, '_self')
+        },
         openSettings() {
             this.$buefy.modal.open({
                 parent: this,
@@ -256,7 +260,7 @@ export default {
         }
     },
     created () {
-        this.soundOn()
+        // this.soundOn()
         this.$store.dispatch('refreshWithdrawnRewards');
     },
     mounted: function() {
@@ -272,9 +276,9 @@ export default {
 
 
 <style scoped>
-#gravatar {
+/* #gravatar {
     filter: grayscale(1);
-}
+} */
 .hud-wrapper {
     width: 700px;
     position: absolute;

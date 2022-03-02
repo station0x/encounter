@@ -1,17 +1,19 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import store from '../store'
-import Admin from '@/views/Admin.vue'
-import Link from '@/views/Link.vue'
-import Lobby from '@/views/Lobby.vue'
-import Home from '@/views/Home.vue'
-import Login from '@/views/Login'
-import PlayerProfile from '@/views/PlayerProfile'
-import RedeemAccessKey from '@/views/RedeemAccessKey'
-import Leaderboard from '@/views/Leaderboard'
-import NotFound from '@/views/NotFound.vue'
-import Dashboard from '@/views/admin/Dashboard.vue'
 import CONSTANTS from '../../constants'
+
+const Admin = () => import('@/views/Admin.vue')
+const Link = () => import('@/views/Link.vue')
+const Lobby = () => import('@/views/Lobby.vue')
+const Home = () => import('@/views/Home.vue')
+const Login = () => import('@/views/Login')
+const PlayerProfile = () => import('@/views/PlayerProfile')
+const RedeemAccessKey = () => import('@/views/RedeemAccessKey')
+const Leaderboard = () => import('@/views/Leaderboard')
+const NotFound = () => import('@/views/NotFound.vue')
+const Dashboard = () => import('@/views/admin/Dashboard.vue')
+
 
 Vue.use(VueRouter)
 

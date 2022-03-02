@@ -5,11 +5,21 @@ const getAddress = require('../../api-utils/getAddress');
 const { ObjectId } = require('mongodb');
 const CONSTANTS = require('../../constants');
 
+function isAdmin(query) {
+    return CONSTANTS.admins.includes(query.address)
+}
 
 module.exports = async (req, res) => {
+    if(!isAdmin(req.query)) {
+        res.json({success:false, error:"invalid: not admin"})
+        return
+    }
+    let dateObjId
+    if(!req.query.dateObjId) throw new Error('Date not specified')
+    else dateObjId = req.query.dateObjId
     const client = await clientPromise;
     const db = client.db()
-    const cursor = db.collection("matches").find();
+    const cursor = db.collection("matches").find({_id: {$gte: ObjectId(dateObjId)}})
     let picks = {}
     let allPicks = 0
 
@@ -37,7 +47,6 @@ module.exports = async (req, res) => {
                 if(board[i][j].type !== undefined && board[i][j].type !== 'base') {
                     if(spaceshipsNameChange[board[i][j].type] === undefined) picks[board[i][j].type] = (picks[board[i][j].type] ?? 0) + 1;
                     else picks[spaceshipsNameChange[board[i][j].type]] = (picks[spaceshipsNameChange[board[i][j].type]] ?? 0) + 1;
-                    if(board[i][j].type === 'divinewind') console.log(matchDoc._id)
                     allPicks++
                 }
             }
