@@ -903,10 +903,10 @@ export default {
 		}, 2500)
 	  },
 	  startMovementFromFX(to) {
-		console.log('Moved from ', to)
+		// console.log('Moved from ', to)
 	  },
 	  startMovementToFX(to) {
-		console.log('Moved to ', to)
+		// console.log('Moved to ', to)
 	  }
 	//   checkBoardActions(newBoard, oldBoard) {
 	// 	newBoard = newBoard.state
