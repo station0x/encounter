@@ -1182,12 +1182,12 @@ input[placeholder], [placeholder], *[placeholder] {
 #chat-logs {
     height: 90%;
     padding-bottom: 10px;
-	overflow: scroll;
+	overflow: auto;
 }
 #action-logs {
     height: 90%;
     padding-bottom: 10px;
-	overflow: scroll;
+	overflow: auto;
 	padding-top: 10px;
 	height: 390px;
 }

@@ -1,11 +1,11 @@
 <template>
     <div>
-        <div class="loader-wrapper" v-if="sortedData === false">
+        <div class="loader-wrapper" v-if="!data">
             <Loader/>
         </div>
         <div v-else class="leaderboard">
             <h1 class="page-title">Leaderboard</h1>
-            <b-table @click="openProfile($event.address)" v-if="sortedData" :data="sortedData" :selected="selected" hoverable style="max-width: 900px; margin: 0 auto">
+            <b-table @click="openProfile($event.address)" v-if="data" :data="data" :selected="selected" hoverable style="max-width: 900px; margin: 0 auto">
                 <b-table-column cell-class="hoverable-cell" field="rank" label="Rank" width="30" numeric v-slot="props">
                     {{ props.index + 1 > 3 ? props.index + 1 : "" }}
                     <img v-if="props.index + 1 === 1" src="/top1.png"/>
@@ -32,7 +32,6 @@
 <script>
 import Loader from '@/components/Loader'
 import axios from 'axios'
-import arraySort from 'array-sort'
 export default {
     data() {
         return {
@@ -43,15 +42,6 @@ export default {
     },
     components: {
         Loader
-    },
-    computed: {
-        sortedData() {
-            if(this.data) {
-                return arraySort([...this.data], 'elo', {reverse: true})
-            } else {
-                return false
-            }
-        }
     },
     methods: {
         async fetchLeaderboard () {

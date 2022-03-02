@@ -346,7 +346,7 @@ g#leavequeue:hover > #leave-queue-btn {
     min-width: 350px;
     max-width: 600px;
     padding: 50px;
-    top: 50%;
+    top: 400px;
     left: 50%;
     transform: translateX(-50%) translateY(-50%);
     -ms-transform: translateX(-50%) translateY(-50%);

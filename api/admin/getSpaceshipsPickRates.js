@@ -47,7 +47,6 @@ module.exports = async (req, res) => {
                 if(board[i][j].type !== undefined && board[i][j].type !== 'base') {
                     if(spaceshipsNameChange[board[i][j].type] === undefined) picks[board[i][j].type] = (picks[board[i][j].type] ?? 0) + 1;
                     else picks[spaceshipsNameChange[board[i][j].type]] = (picks[spaceshipsNameChange[board[i][j].type]] ?? 0) + 1;
-                    if(board[i][j].type === 'divinewind') console.log(matchDoc._id)
                     allPicks++
                 }
             }
