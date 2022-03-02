@@ -65,9 +65,11 @@ import MiniLoader from '@/components/MiniLoader'
 import axios from 'axios'
 import arraySort from 'array-sort'
 import Chart from 'vue-bulma-chartjs'
+
+let pickingStartDatetime = new Date(1645848000000) // timestamp of picking bug solved
+
 export default {
     data() {
-        let pickingStartDatetime = new Date(1645848000000) // timestamp of picking bug solved
         return {
             data: undefined,
             selected: undefined,
@@ -131,7 +133,7 @@ export default {
                             '#FFFEE9',
                             '#FFFFFF'
                         ],
-                        borderWidth: 0
+                        borderWidth: 1
                     }]
                 }
                 this.sortedData.map(row => {
