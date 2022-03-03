@@ -3,11 +3,11 @@
         <div class="home-wrapper">
             <svg viewBox="0 0 864 548" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                 <g id="assets">
-                <rect class="float-on-hover" @click="$router.push({name: 'Lobby'})" style="cursor: pointer" id="deployment" x="272" width="312" height="313" fill="url(#pattern-d)"/>
+                <rect :class="{'float-on-hover':$store.state.profile && !$store.state.profile.banned, disabled:!$store.state.profile || $store.state.profile.banned}" @click="goToLobby" id="deployment" x="272" width="312" height="313" fill="url(#pattern-d)"/>
                 <rect id="refinery" style="cursor: not-allowed" y="165" width="257.804" height="258" fill="url(#pattern-r)"/>
                 <rect id="market" style="cursor: not-allowed" x="603" y="86" width="260.521" height="261" fill="url(#pattern-m)"/>
                 <rect id="factory" style="cursor: not-allowed" x="430" y="326" width="222" height="222" fill="url(#pattern-f)"/>
-                <rect class="float-on-hover" @click="$router.push({name: 'Leaderboard'})" style="cursor: pointer" id="leaderboard" x="237" y="372" width="170" height="170" fill="url(#pattern-l)"/>
+                <rect class="float-on-hover" @click="$router.push({name: 'Leaderboard'})" id="leaderboard" x="237" y="372" width="170" height="170" fill="url(#pattern-l)"/>
                 </g>
                 <defs>
                     <pattern id="pattern-d" patternContentUnits="objectBoundingBox" width="1" height="1">
@@ -93,6 +93,10 @@ export default {
           component: GameGuide,
           canCancel: ['escape', 'outside', 'x']
         })
+    },
+    goToLobby () {
+      if(!this.$store.state.profile || this.$store.state.profile.banned) return;
+      this.$router.push({name: 'Lobby'})
     }
   },
   watch: {
@@ -116,7 +120,8 @@ export default {
     animation: float 6s ease-in-out infinite; */
 }
 .float-on-hover {
-    transition: all .5s ease-in-out;
+  cursor: pointer;
+  transition: all .5s ease-in-out;
 }
 .float-on-hover:hover {
     transform: translatey(-10px);
@@ -126,6 +131,11 @@ export default {
   left: 0;
   bottom: 10vh;
   width: 300px;
+}
+.disabled {
+  filter: grayscale(1);
+  cursor:not-allowed;
+  user-select: none;
 }
 @media screen and (max-width: 1500px) {
     .home-wrapper {

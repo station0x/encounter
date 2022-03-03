@@ -12,6 +12,7 @@ module.exports = async (req, res) => {
    const address = getAddress(req.query.signature)
    const players = db.collection("players")
    let playerDoc = (await players.find({address}).limit(1).toArray())[0]
+   if(playerDoc.banned === true) throw new Error("Player is banned")
    if(playerDoc.activeMatch) throw new Error("Player already in match")
    const matchmakingQueue = db.collection("matchmaking_queue")
    let enqueued = await matchmakingQueue.count()
