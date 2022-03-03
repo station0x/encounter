@@ -151,7 +151,7 @@ export default {
             try {
                 const res = await axios.get('/api/admin/getSpaceshipsPickRates', {
                     params: {
-                        address: this.$store.state.address,
+                        signature: this.$store.state.signature,
                         dateObjId: objectId
                     }
                 })
@@ -166,7 +166,7 @@ export default {
             try {
                 const res = await axios.get('/api/admin/getFirstMatchDoc', {
                     params: {
-                        address: this.$store.state.address
+                        signature: this.$store.state.signature
                     }
                 })
                 this.firstMatchId = res.data.firstMatchDocId

@@ -15,8 +15,10 @@ module.exports = async (req, res) => {
             player.player = v.playerAlias && v.playerAlias.length > 0 ? v.playerAlias: v.address
             player.address = v.address
             player.gm = v.gm
+            player.banned = v.banned
             return player
         })
+        .filter(v => !v.banned)
 
     res.status(200).json({ success: true, leaderboard: playerDocs });
 }
