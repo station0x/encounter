@@ -8,7 +8,7 @@ module.exports = async (req, res) => {
     let address = req.query.address
     const client = await clientPromise;
     const db = client.db()
-    const cursor = db.collection("matches").find({$or: [ {player0: address}, {player1: address} ], $and: [{ winner: {$ne: null},  $or: [{picking: true},{picking: false}]}],  })
+    const cursor = db.collection("matches").find({$or: [ {player0: address}, {player1: address} ], $and: [{ winner: {$ne: null},  $or: [{picking: true},{picking: false}]}],  }).batchSize(1000)
     let picks = {}
     let allPicks = 0
 

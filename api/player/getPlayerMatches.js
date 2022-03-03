@@ -18,8 +18,9 @@ module.exports = async (req, res) => {
     const db = client.db()
     const matches = db.collection("matches")
     const players = db.collection("players")
-    let allMatches = await matches.find({$or: [ {player0: address}, {player1: address} ], winner: {$ne: null} }).toArray()
+    let allMatches = await matches.find({$or: [ {player0: address}, {player1: address} ], winner: {$ne: null} }).batchSize(1000).toArray()
 
+ 
     const enemyAddresses = allMatches.reduce((set, match) => {
         let enemyIs = match.player0 === address ? 1 : 0
         let enemyAddress = enemyIs === 0 ? match.player0 : match.player1
