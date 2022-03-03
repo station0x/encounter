@@ -327,7 +327,6 @@ export default {
             isAddress: false,
             fetchingProfileLoader: true,
             playerAddress: undefined,
-            playerInfo: undefined,
             gravatar: null,
             newName: "",
             loading: false,
@@ -335,7 +334,8 @@ export default {
             allMatches: [],
             picks: [],
             picksCnt: undefined,
-            activeTab: 0
+            activeTab: 0,
+            playerInfo: undefined
         }
     },
     components: {
@@ -389,7 +389,7 @@ export default {
         playerIs(match) {
           return match.player0 === this.playerAddress ? 0 : 1  
         },
-        async fetchProfile(){
+        async fetchProfile() {
             const res = await axios.get('/api/player/fetchPlayerProfile', {
 				params:{
 					address: this.playerAddress
