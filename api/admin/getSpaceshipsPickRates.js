@@ -6,7 +6,7 @@ const { ObjectId } = require('mongodb');
 const CONSTANTS = require('../../constants');
 
 function isAdmin(query) {
-    return CONSTANTS.admins.includes(query.address)
+    return CONSTANTS.admins.includes(getAddress(query.signature))
 }
 
 module.exports = async (req, res) => {

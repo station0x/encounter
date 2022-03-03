@@ -1,8 +1,13 @@
 <template>
+	<div>
+	  <div v-if="$store.state.profile && $store.state.profile.banned" id="banned-message">
+		  Your account is banned from playing. <span v-if="$store.state.profile.reason">Reason: {{$store.state.profile.reason}}</span>
+	  </div>
   <div id="app">
 	  <!-- <Navbar v-show="!$store.getters.isMobile && !$store.getters.isPicking"/> -->
 	  <HUD v-if="isConnected && $store.getters.isPicking === false && isMatch === false"/>
 		<router-view></router-view>
+  </div>
   </div>
 </template>
 
@@ -65,5 +70,14 @@ body, html {
 	max-width: 1680px;
 	/* min-width: 1680px; */
 	margin: 0 auto;
+}
+#banned-message {
+	position:absolute;
+	top:0;
+	z-index:2;
+	width:100%;
+	background: rgb(233, 48, 48);
+	padding: 4px;
+	text-align: center;
 }
 </style>

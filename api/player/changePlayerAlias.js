@@ -13,6 +13,7 @@ module.exports = async (req, res) => {
    const db = client.db()
    const players = db.collection("players")
    const playerDocByAddress = (await players.find({address}).limit(1).toArray())[0]
+   if(playerDocByAddress.banned === true) throw new Error("Player is banned")
    const playerDocByAlias = (await players.find({playerAlias:alias}).limit(1).toArray())[0]
 
    if(!playerDocByAddress) throw new Error('No player with this address')

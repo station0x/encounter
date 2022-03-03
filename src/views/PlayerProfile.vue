@@ -93,7 +93,7 @@
                         <path id="Vector_23" d="M171.752 231.466H163.586C163.431 231.466 163.283 231.528 163.173 231.637C163.064 231.747 163.002 231.895 163.002 232.05C163.002 232.204 163.064 232.353 163.173 232.462C163.283 232.572 163.431 232.633 163.586 232.633H171.752C171.907 232.633 172.056 232.572 172.165 232.462C172.274 232.353 172.336 232.204 172.336 232.05C172.336 231.895 172.274 231.747 172.165 231.637C172.056 231.528 171.907 231.466 171.752 231.466ZM163.586 230.3H163.638L166.071 230.078C166.337 230.051 166.586 229.934 166.777 229.745L172.027 224.495C172.23 224.28 172.341 223.993 172.333 223.697C172.325 223.4 172.2 223.119 171.986 222.915L170.387 221.316C170.179 221.12 169.905 221.008 169.619 221C169.333 220.993 169.054 221.091 168.836 221.275L163.586 226.525C163.397 226.716 163.28 226.965 163.253 227.231L163.002 229.664C162.995 229.749 163.006 229.835 163.035 229.916C163.064 229.997 163.111 230.07 163.172 230.13C163.226 230.185 163.291 230.227 163.362 230.256C163.433 230.285 163.509 230.3 163.586 230.3ZM169.577 222.133L171.169 223.725L170.002 224.863L168.439 223.3L169.577 222.133Z" fill="#FBC115"/>
                         </g>
                         <g id="Group 395">
-                        <g v-if="playerInfo.elo > 1300" id="Group 390">
+                        <g v-if="playerInfo.elo >= CONSTANTS.economicPolicy.minRewardsElo" id="Group 390">
                         <g id="decor 6">
                         <path id="Vector_24" d="M134.31 116H119V119.877H137.989V119.704L134.31 116Z" fill="#B5FF7A"/>
                         <path id="Vector_25" d="M134.374 118.015L135.974 119.621V132.98H121.022V118.015H134.38H134.374ZM135.219 116H119.006V134.995H137.995V118.783L135.219 116V116Z" fill="#B5FF7A"/>
@@ -120,6 +120,8 @@
                         <g v-else-if="myRank === '#3'" id="Group 392">
                         <g id="Group3nd">
                         <path id="Subtract" fill-rule="evenodd" clip-rule="evenodd" d="M119 52V71H138V52H119ZM122.317 60.049H120.103V53.1289H122.317V60.049ZM125.506 60.049H123.292V53.1289H125.506V60.049ZM137.26 70.1262H135.047V67.9131H137.26V70.1262ZM126.287 60.049H128.5V53.1289H126.287V60.049ZM125.789 61.0221H123.582L123.56 61H120.28L120.191 63.2068H123.472V64.244H121.824L121.743 66.186H123.421L123.369 67.2232H120.088L120 69.43H125.48L125.789 61.0221ZM127.415 69.3639H126.267L126.422 64.9503H127.562L127.539 65.634L129.055 64.9723L129.416 66.0684L127.497 66.9038L127.415 69.3639ZM129.541 69.3638H130.004H130.688H131.078L131.787 69.0599L131.777 69.3638H132.917L133.123 63.4791H131.976L131.926 64.9503H130.828H130.21H129.695L129.541 69.3638ZM130.792 66.0904L130.721 68.3244L131.828 67.8452L131.887 66.0904H130.792Z" fill="#42526D"/>                        </g>
+                        </g>
+                        <g v-if="playerInfo.banned">
                         </g>
                         </g>
                         <g id="Group 404">
@@ -164,6 +166,11 @@
                         <rect id="Vampire-ship_2" x="434" y="182" width="22.5556" height="28" fill="url(#pattern3)"/>
                         <rect id="Vampire-ship_3" x="559" y="182" width="22.5556" height="28" fill="url(#pattern4)"/>
                         <rect id="Layer-1 1_2" x="373" y="330" width="87" height="95" fill="url(#pattern5)"/>
+                        </g>
+                        <g v-if="playerInfo.banned">
+                        <text id="Banned" fill="#DB0000" xml:space="preserve" style="white-space: pre" font-family="Anson" font-size="10" letter-spacing="0em"><tspan x="155" y="204.02">Banned</tspan></text>
+                        <rect fill="transparent" id="banned-badge" x="152.5" y="195.5" width="30.9216" height="12" rx="1.5" stroke="#DB0000"/>
+                        <foreignObject id="banned-tooltip" x="190" y="170" height="200" width="200"><div style="color:white; z-index:10">Banned from playing. <span v-if="playerInfo.reason && playerInfo.reason.length > 0">Reason: {{playerInfo.reason}}</span></div></foreignObject>
                         </g>
                         <defs>
                         <filter id="filter0_b_548_1914" x="-217" y="-130" width="633" height="738" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
@@ -306,6 +313,14 @@
                         </defs>
                     </svg>
                 </b-tab-item>
+                <b-tab-item v-if="$store.getters.isAdmin" label="Admin">
+                    <h1 class="title">Ban</h1>
+                    <b-field v-if="!playerInfo.banned" label="Reason" label-position="on-border">
+                        <b-input style="width:50%" v-model="reason"></b-input>
+                        <b-button :loading="banLoading" @click="ban" type="is-danger">BAN</b-button>
+                    </b-field>
+                    <b-button :loading="banLoading" @click="unban" v-else type="is-success">UNBAN</b-button>
+                </b-tab-item>
             </b-tabs>
         </div>
         <div v-show="!fetchingProfileLoader" class="profile-background"></div>
@@ -320,6 +335,7 @@ import VictoryMatch from '@/components/match-elements/VictoryMatch.vue'
 import DefeatMatch from '@/components/match-elements/DefeatMatch.vue'
 import axios from 'axios'
 import arraySort from 'array-sort'
+import CONSTANTS from '../../constants'
 
 export default {
     data() {
@@ -335,6 +351,9 @@ export default {
             picks: [],
             picksCnt: undefined,
             activeTab: 0,
+            reason:"Farming rewards using fake accounts",
+            banLoading:false,
+            CONSTANTS,
             playerInfo: undefined
         }
     },
@@ -377,6 +396,34 @@ export default {
         }
     },
     methods: {
+        async ban () {
+            this.banLoading = true
+            await axios.get('/api/admin/ban', {
+				params:{
+					signature: this.$store.state.signature,
+                    address: this.playerAddress,
+                    reason:this.reason,
+                    ban:true
+				}
+            })
+            await this.fetchProfile()
+            this.banLoading = false
+            this.$store.dispatch('fetchProfile')
+        },
+        async unban () {
+            this.banLoading = true
+            await axios.get('/api/admin/ban', {
+				params:{
+					signature: this.$store.state.signature,
+                    address: this.playerAddress,
+                    ban:false
+				}
+            })
+            await this.fetchProfile()
+            this.banLoading = false
+            this.$store.dispatch('fetchProfile')
+
+        },
         getCicularWinRateOpacity(wins, matches, slot) {
             const rate = Math.floor(wins/matches * 100)
             return slot <= rate / (100/24) ? "1" : "0.43"
@@ -625,5 +672,17 @@ input[placeholder], [placeholder], *[placeholder] {
   z-index: 1;
   left: 0;
   right: 0;
+}
+#banned-tooltip {
+    display: none;
+}
+#banned-tooltip > div{
+    background: black;
+    padding: 5px;
+    font-size:14px;
+    line-height: 16px;
+}
+#banned-badge:hover ~ #banned-tooltip {
+    display:block;
 }
 </style>

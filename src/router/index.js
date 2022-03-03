@@ -45,10 +45,11 @@ router.beforeEach((to, from, next) => {
   if(to.matched.some(record => record.meta.requiresAdmin) && !isAdmin) next({ name: 'Home' })
   else if(to.matched.some(record => record.meta.requiresLogin) && !store.state.address) next({ name: 'Login' })
   else if(to.name == 'Login' && store.state.address) next({ name: 'Home' })
+  else if(to.name == 'Lobby' && (!store.state.profile || store.state.profile.banned)) next({ name: 'Home' })
   else next()
 })
 
-router.afterEach((to) => {
+router.afterEach((to, from, next) => {
   // Use next tick to handle router history correctly
   // see: https://github.com/vuejs/vue-router/issues/914#issuecomment-384477609
   Vue.nextTick(() => {
