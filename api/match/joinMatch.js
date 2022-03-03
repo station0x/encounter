@@ -21,6 +21,7 @@ module.exports = async (req, res) => {
     if((Date.now() - timestamp > LINK_EXPIRY_DURATION)) throw new Error("Invite link expired")
    }
    let playerDoc = (await players.find({address}).limit(1).toArray())[0];
+   if(playerDoc.banned === true) throw new Error("Player is banned")
    let inviteLink;
    if(!playerDoc) { // player document doesn't exist, let's create one
       inviteLink = new ObjectId();

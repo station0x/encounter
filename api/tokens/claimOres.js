@@ -23,7 +23,7 @@ module.exports = async (req, res) => {
     const db = client.db()
     const players = db.collection("players")
     const playerDoc = (await players.find({address}).limit(1).toArray())[0]
-
+    if(playerDoc.banned === true) throw new Error("Player is banned")
     if(!playerDoc.rewards) throw new Error("Player has no rewards")
 
     ores = ores.filter(v => playerDoc.rewards[v] && playerDoc.rewards[v] > 0);

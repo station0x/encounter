@@ -10,14 +10,25 @@ function isAdmin(query) {
 }
 
 module.exports = async (req, res) => {
+    console.log(req.query)
     if(!isAdmin(req.query)) {
         res.json({success:false, error:"invalid: not admin"})
         return
     }
     const client = await clientPromise;
     const db = client.db()
-    let firstMatchDocId = await db.collection("matches").findOne();
-    firstMatchDocId = firstMatchDocId._id
-    
-   res.status(200).json({ firstMatchDocId, success: true });
+    const players = db.collection("players")
+    if(req.query.ban === 'true') {
+        await players.update({address:req.query.address}, {$set: {
+            banned:true,
+            reason: req.query.reason
+        }})
+    } else if(req.query.ban === 'false') {
+        await players.update({address:req.query.address}, {$unset: {
+            banned:"",
+            reason: ""
+        }})
+    }
+
+   res.status(200).json({ success: true });
 }
