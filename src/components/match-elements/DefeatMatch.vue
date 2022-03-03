@@ -18,8 +18,8 @@
         </g>
         <g id="Group 465">
         <g id="Group 465_2">
-        <text id="12:04 pm 21 jan,2012" fill="#8B8B8B" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="10" letter-spacing="0em"><tspan x="400" y="24.418">{{ startDate }}</tspan></text>
-        <text id="Duration: 60:00" fill="#8B8B8B" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="12" letter-spacing="0em"><tspan x="400" y="40.1016">Duration: {{ duration }}</tspan></text>
+        <text id="12:04 pm 21 jan,2012" fill="#8B8B8B" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="10" letter-spacing="0em"><tspan x="500" y="24.418">{{ startDate }}</tspan></text>
+        <text id="Duration: 60:00" fill="#8B8B8B" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="12" letter-spacing="0em"><tspan x="500" y="40.1016">Duration: {{ duration }}</tspan></text>
         </g>
         </g>
         <!-- <g id="1200 (-30)">
