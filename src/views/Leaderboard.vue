@@ -58,8 +58,8 @@ export default {
             }
         },
         openProfile(address) {
-          let routeData = this.$router.resolve({ name: 'Player Profile', params: { playerAddress: address } })
-          window.open(routeData.href, '_blank')
+            let routeData = this.$router.resolve({ name: 'Player Profile', params: { playerAddress: address } })
+            window.open(routeData.href, '_self')
         },
     },
     async created() {

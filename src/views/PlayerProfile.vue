@@ -57,7 +57,7 @@
                         </g>
                         </g>
                         <rect id="empty-owned 1" x="382" y="331" width="72.7065" height="82.19" fill="url(#patternempty)"/>
-                        <text id="user name" fill="#FBC115" xml:space="preserve" style="white-space: pre" font-family="Anson" font-size="22" letter-spacing="0em"><tspan x="34" y="229.844">{{ playerInfo.playerAlias.length > 0 ? playerInfo.playerAlias : 'Captain' }}</tspan></text>
+                        <text id="user name" fill="#FBC115" xml:space="preserve" style="white-space: pre" font-family="Anson" font-size="22" letter-spacing="0em"><tspan x="34" y="229.844">{{ nameLoading === false ? playerAlias : 'UPDATING...'}}</tspan></text>
                         <text id="Rank" fill="#FFBF00" xml:space="preserve" style="white-space: pre" font-family="Anson" font-size="12" letter-spacing="0.2em"><tspan x="34" y="205.324">RANK</tspan></text>
                         <text id="#1" fill="#FFBF00" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="12" font-weight="bold" letter-spacing="0em"><tspan x="68" y="206.102">{{ myRank }}</tspan></text>
                         <text id="Stats" fill="white" xml:space="preserve" style="white-space: pre" font-family="Anson" font-size="17" letter-spacing="0.23em"><tspan x="237" y="124.084">STATS</tspan></text>
@@ -88,10 +88,13 @@
                         </g>
                         </g>
                         <line id="Line 30" x1="7" y1="275.5" x2="182" y2="275.5" stroke="#4F4F4E"/>
-                        <g id="edit-2" @click="editProfile()" style="cursor: pointer">
+                        <g id="edit-2" @click="profileModal = true" style="cursor: pointer">
                         <rect id="Rectangle 92" x="161" y="220" width="15" height="15" fill="#101010" fill-opacity="0.01"/>
                         <path id="Vector_23" d="M171.752 231.466H163.586C163.431 231.466 163.283 231.528 163.173 231.637C163.064 231.747 163.002 231.895 163.002 232.05C163.002 232.204 163.064 232.353 163.173 232.462C163.283 232.572 163.431 232.633 163.586 232.633H171.752C171.907 232.633 172.056 232.572 172.165 232.462C172.274 232.353 172.336 232.204 172.336 232.05C172.336 231.895 172.274 231.747 172.165 231.637C172.056 231.528 171.907 231.466 171.752 231.466ZM163.586 230.3H163.638L166.071 230.078C166.337 230.051 166.586 229.934 166.777 229.745L172.027 224.495C172.23 224.28 172.341 223.993 172.333 223.697C172.325 223.4 172.2 223.119 171.986 222.915L170.387 221.316C170.179 221.12 169.905 221.008 169.619 221C169.333 220.993 169.054 221.091 168.836 221.275L163.586 226.525C163.397 226.716 163.28 226.965 163.253 227.231L163.002 229.664C162.995 229.749 163.006 229.835 163.035 229.916C163.064 229.997 163.111 230.07 163.172 230.13C163.226 230.185 163.291 230.227 163.362 230.256C163.433 230.285 163.509 230.3 163.586 230.3ZM169.577 222.133L171.169 223.725L170.002 224.863L168.439 223.3L169.577 222.133Z" fill="#FBC115"/>
                         </g>
+                        <foreignObject v-if="nameLoading" x="9" y="271" width="171" height="20">
+                            <b-progress size="is-small" type="is-yellow" :rounded="false" style="height: 3px"></b-progress>
+                        </foreignObject>
                         <g id="Group 395">
                         <g v-if="playerInfo.elo >= CONSTANTS.economicPolicy.minRewardsElo" id="Group 390">
                         <g id="decor 6">
@@ -157,8 +160,8 @@
                         <text id="500_2" fill="#FBC115" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="12" font-weight="500" letter-spacing="0em"><tspan x="351" y="184.102">{{ wins }}</tspan></text>
                         <text id="30" fill="white" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="12" font-weight="500" letter-spacing="0em"><tspan x="351" y="238.102">{{ loses }}</tspan></text>
                         <text id="80%_2" fill="#FBC115" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="12" font-weight="bold" letter-spacing="0em"><tspan x="497.174" y="240.102">{{ picks[0].number > 0 ? Math.floor(picks[0].number/picksCnt * 100) : 0 }}%</tspan></text>
-                        <text id="10%" fill="#89ABDF" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="10" font-weight="bold" letter-spacing="0em"><tspan x="437.174" y="240.102">{{ picks[0].number > 0 ? Math.floor(picks[1].number/picksCnt * 100) : 0 }}%</tspan></text>
-                        <text id="5%" fill="#515151" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="10" font-weight="bold" letter-spacing="0em"><tspan x="563.119" y="240.102">{{ picks[0].number > 0 ?  Math.floor(picks[2].number/picksCnt * 100) : 0 }}%</tspan></text>
+                        <text id="10%" fill="#89ABDF" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="10" font-weight="bold" letter-spacing="0em"><tspan x="437.174" y="240.102">{{ picks[1].number > 0 ? Math.floor(picks[1].number/picksCnt * 100) : 0 }}%</tspan></text>
+                        <text id="5%" fill="#515151" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="10" font-weight="bold" letter-spacing="0em"><tspan x="563.119" y="240.102">{{ picks[2].number > 0 ?  Math.floor(picks[2].number/picksCnt * 100) : 0 }}%</tspan></text>
                         <text id="Vampship" fill="#FBC115" xml:space="preserve" style="white-space: pre; text-transform: uppercase" font-family="Anson" font-size="10" letter-spacing="0em"><tspan :x="getXValue(491.464, picks[0].type)" y="223.02">{{ picks[0].type }}</tspan></text>
                         <text id="Vampship_2" fill="#89ABDF" xml:space="preserve" style="white-space: pre; text-transform: uppercase" font-family="Anson" font-size="9" letter-spacing="0em"><tspan :x="getXValue(428.464, picks[1].type)" y="223.02">{{ picks[1].type }}</tspan></text>
                         <text id="Vampship_3" fill="#515151" xml:space="preserve" style="white-space: pre; text-transform: uppercase" font-family="Anson" font-size="9" letter-spacing="0em"><tspan :x="getXValue(553.464, picks[2].type)" y="223.02">{{ picks[2].type }}</tspan></text>
@@ -323,6 +326,9 @@
                 </b-tab-item>
             </b-tabs>
         </div>
+        <b-modal v-if="playerInfo" v-model="profileModal">
+            <UpdateProfileModal @updateName="updateName" @close="profileModal = false" :oldName="playerInfo.playerAlias" />
+        </b-modal>
         <div v-show="!fetchingProfileLoader" class="profile-background"></div>
         <v-gravatar style="display: none" ref="gravatar" :email="playerAddress" alt="Nobody" :size="530"/>
     </div>
@@ -336,6 +342,7 @@ import DefeatMatch from '@/components/match-elements/DefeatMatch.vue'
 import axios from 'axios'
 import arraySort from 'array-sort'
 import CONSTANTS from '../../constants'
+import UpdateProfileModal from '@/components/UpdateProfileModal.vue'
 
 export default {
     data() {
@@ -345,7 +352,7 @@ export default {
             playerAddress: undefined,
             gravatar: null,
             newName: "",
-            loading: false,
+            nameLoading: false,
             rankings: undefined,
             allMatches: [],
             picks: [],
@@ -354,13 +361,15 @@ export default {
             reason:"Farming rewards using fake accounts",
             banLoading:false,
             CONSTANTS,
-            playerInfo: undefined
+            playerInfo: undefined,
+            profileModal: false
         }
     },
     components: {
         Loader,
         VictoryMatch,
-        DefeatMatch
+        DefeatMatch,
+        UpdateProfileModal
     },
     computed: {
         formattedAddress() {
@@ -393,6 +402,12 @@ export default {
         },
         sortedMatches() {
             return arraySort([...this.allMatches], 'lastTurnTimestamp', {reverse: true})
+        },
+        playerAlias () {
+            if(this.playerInfo) {
+                if(this.playerInfo.playerAlias.length === 0) return 'Captain'
+                else return this.playerInfo.playerAlias.length <= 12 ? this.playerInfo.playerAlias : this.playerInfo.playerAlias.slice(0, 12) + '...'
+            } else return 'Captain'
         }
     },
     methods: {
@@ -424,6 +439,14 @@ export default {
             this.$store.dispatch('fetchProfile')
 
         },
+        // editProfile() {
+        //     this.$buefy.modal.open({
+        //         parent: this,
+        //         props: {'oldName': this.playerInfo.playerAlias},
+        //         component: UpdateProfileModal,
+        //         canCancel: ['escape', 'button']
+        //     })
+        // },
         getCicularWinRateOpacity(wins, matches, slot) {
             const rate = Math.floor(wins/matches * 100)
             return slot <= rate / (100/24) ? "1" : "0.43"
@@ -473,6 +496,8 @@ export default {
                     }
                 })
                 this.allMatches = res.data.allMatches
+                this.picks = res.data.picks
+                this.picksCnt = res.data.allPicks
             } catch {
                 this.getPlayerMatches()
             }
@@ -482,9 +507,14 @@ export default {
             //     this.selected = this.data[playerIndex]
             // }
         },
+        updateName(newName) {
+            this.newName = newName
+            this.submitName()
+            this.profileModal = false
+        },
         async submitName () {
             if(this.newName.length > 0) {
-                this.loading = true
+                this.nameLoading = true
                 try {
                     const res = await axios.get('/api/player/changePlayerAlias', {
                         params:{
@@ -511,7 +541,7 @@ export default {
                         })
                     }
                 } finally {
-                    this.loading = false
+                    this.nameLoading = false
                 }
             }
         }
@@ -524,7 +554,7 @@ export default {
                 this.fetchProfile(),
                 this.fetchLeaderboard(),
                 this.getPlayerMatches(),
-                this.fetchPlayerPicks()
+                // this.fetchPlayerPicks()
             ])
             this.fetchingProfileLoader = false
         } else {
@@ -684,5 +714,9 @@ input[placeholder], [placeholder], *[placeholder] {
 }
 #banned-badge:hover ~ #banned-tooltip {
     display:block;
+}
+progress.progress.is-small.is-yellow.is-squared {
+    background-image: linear-gradient(to right, #FBC115 30%, transparent 30%);
+    background-color: transparent;
 }
 </style>

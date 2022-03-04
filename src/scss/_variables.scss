@@ -8,6 +8,7 @@ $gray: rgba(0,0,0,.3);
 $light-gray: #222;
 $blue: #416BFF;
 $darken-blue: #a8b6f025;
+$yellow: #FBC115;
 
 // Update Bulma's global variables
 $grey-dark: $brown;
@@ -99,6 +100,10 @@ $colors: (
   "light-gray": (
     $light-gray,
     $white
+  ),
+  "yellow": (
+    $yellow,
+    $yellow
   )
 );
 
