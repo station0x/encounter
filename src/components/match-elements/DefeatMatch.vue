@@ -18,8 +18,8 @@
         </g>
         <g id="Group 465">
         <g id="Group 465_2">
-        <text id="12:04 pm 21 jan,2012" fill="#8B8B8B" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="10" letter-spacing="0em"><tspan x="500" y="24.418">{{ startDate }}</tspan></text>
-        <text id="Duration: 60:00" fill="#8B8B8B" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="12" letter-spacing="0em"><tspan x="500" y="40.1016">Duration: {{ duration }}</tspan></text>
+        <text id="12:04 pm 21 jan,2012" fill="#8B8B8B" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="10" letter-spacing="0em"><tspan x="450" y="24.418">{{ startDate }}</tspan></text>
+        <text id="Duration: 60:00" fill="#8B8B8B" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="12" letter-spacing="0em"><tspan x="450" y="40.1016">Duration: {{ duration }}</tspan></text>
         </g>
         </g>
         <!-- <g id="1200 (-30)">
@@ -33,7 +33,7 @@
         <text id="Defeat_2" fill="#FA1515" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="16" letter-spacing="0em"><tspan x="81" y="28.9688">Defeat</tspan></text>
         <text id="Ranked" fill="white" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="8" letter-spacing="0em"><tspan x="81" y="42.2344">{{ matchMode }}</tspan></text>
         </g>
-        <g id="Group 418">
+        <g id="Group 418" @click="openPlayerProfile(enemyAddress)" style="cursor: pointer">
         <text id="user name" fill="#A5A5A5" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="14" font-weight="500" letter-spacing="0em"><tspan x="286" y="25.7852">{{ enemyAlias }}</tspan></text>
         <text id="0xB0b1....8C0" fill="white" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="12" letter-spacing="0em"><tspan x="286" y="43.1016">{{ formattedAddress }}</tspan></text>
         </g>
@@ -70,6 +70,12 @@ export default {
                 return this.mode === 'matchmaking' ? 'Ranked' : 'Custom'
             } else return 'Custom'
         }
+    },
+    methods: {
+        openPlayerProfile(address) {
+            let routeData = this.$router.resolve({ name: 'Player Profile', params: { playerAddress: address } })
+            window.open(routeData.href, '_self')
+        },
     }
 }
 </script>
