@@ -248,7 +248,7 @@ export default new Vuex.Store({
     ],
     getters: {
         rewards (state) {
-            if(!state.profile || !state.profile.rewards) return {};
+            if(!state.profile || !state.profile.rewards || state.profile.banned === true) return {};
             if(Object.keys(state.profile.rewards).length !== Object.keys(state.withdrawnRewards).length) return {};
             return Object.keys(state.profile.rewards).reduce((acc, v) => {
                 const withdrawn = state.withdrawnRewards[v] || 0
@@ -258,6 +258,10 @@ export default new Vuex.Store({
                 }
                 return acc
             }, {})
+        },
+        isAdmin: state => {
+            return CONSTANTS.admins.includes(state.address)
+
         },
         innerWidth: state => {
             return state.innerWidth

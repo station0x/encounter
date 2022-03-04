@@ -16,14 +16,14 @@
         <path d="M202.973 33.0228L205.736 23.7471H208.426L204.343 35.4706H202.571L202.973 33.0228ZM200.428 23.7471L203.183 33.0228L203.602 35.4706H201.814L197.754 23.7471H200.428Z" fill="white"/>
         <path d="M215.627 32.4028C215.627 32.1935 215.594 32.0056 215.53 31.8392C215.471 31.6674 215.358 31.5118 215.192 31.3722C215.025 31.2273 214.792 31.085 214.491 30.9454C214.19 30.8059 213.801 30.6609 213.323 30.5106C212.792 30.3389 212.287 30.1456 211.809 29.9309C211.336 29.7162 210.918 29.4666 210.552 29.1821C210.193 28.8922 209.908 28.5567 209.699 28.1756C209.495 27.7945 209.393 27.3516 209.393 26.847C209.393 26.3586 209.5 25.9157 209.715 25.5185C209.93 25.1159 210.23 24.7724 210.617 24.4879C211.004 24.198 211.46 23.9752 211.986 23.8196C212.518 23.6639 213.1 23.586 213.734 23.586C214.598 23.586 215.353 23.7417 215.997 24.0531C216.642 24.3644 217.141 24.7911 217.495 25.3333C217.855 25.8755 218.035 26.4955 218.035 27.1933H215.635C215.635 26.8497 215.562 26.5491 215.417 26.2915C215.278 26.0284 215.063 25.8218 214.773 25.6715C214.488 25.5212 214.129 25.446 213.694 25.446C213.275 25.446 212.926 25.5104 212.647 25.6393C212.367 25.7627 212.158 25.9318 212.018 26.1465C211.879 26.3559 211.809 26.5921 211.809 26.8551C211.809 27.0537 211.857 27.2335 211.954 27.3946C212.056 27.5556 212.206 27.7059 212.405 27.8455C212.604 27.985 212.848 28.1166 213.138 28.24C213.428 28.3635 213.763 28.4843 214.145 28.6024C214.784 28.7956 215.345 29.013 215.828 29.2546C216.317 29.4961 216.725 29.7672 217.052 30.0678C217.38 30.3684 217.627 30.7093 217.793 31.0904C217.96 31.4715 218.043 31.9036 218.043 32.3867C218.043 32.8967 217.944 33.3529 217.745 33.7555C217.546 34.1581 217.259 34.499 216.883 34.7781C216.507 35.0573 216.059 35.2693 215.538 35.4142C215.017 35.5592 214.435 35.6316 213.79 35.6316C213.21 35.6316 212.639 35.5565 212.075 35.4062C211.511 35.2505 210.998 35.017 210.536 34.7057C210.08 34.3943 209.715 33.9971 209.441 33.514C209.167 33.0309 209.03 32.4592 209.03 31.7989H211.455C211.455 32.164 211.511 32.4726 211.624 32.7249C211.736 32.9772 211.895 33.1812 212.099 33.3368C212.308 33.4925 212.555 33.6052 212.84 33.675C213.13 33.7448 213.447 33.7797 213.79 33.7797C214.209 33.7797 214.553 33.7206 214.821 33.6026C215.095 33.4845 215.296 33.3207 215.425 33.1114C215.56 32.902 215.627 32.6659 215.627 32.4028Z" fill="white"/>
         </g>
-        <g id="Group 416">
+        <g id="Group 416" @click="openPlayerProfile(enemyAddress)" style="cursor: pointer">
         <text id="user name" fill="#A5A5A5" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="14" font-weight="500" letter-spacing="0em"><tspan x="286" y="25.7852">{{ enemyAlias }}</tspan></text>
         <text id="0xB0b1....8C0" fill="white" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="12" letter-spacing="0em"><tspan x="286" y="43.1016">{{ formattedAddress }}</tspan></text>
         </g>
         <g id="Group 464">
         <g id="Group 465">
-        <text id="12:04 pm 21 jan,2012" fill="#8B8B8B" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="10" letter-spacing="0em"><tspan x="400" y="24.418">{{ startDate }}</tspan></text>
-        <text id="Duration: 60:00" fill="#8B8B8B" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="12" letter-spacing="0em"><tspan x="400" y="40.1016">Duration: {{ duration }}</tspan></text>
+        <text id="12:04 pm 21 jan,2012" fill="#8B8B8B" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="10" letter-spacing="0em"><tspan x="450" y="24.418">{{ startDate }}</tspan></text>
+        <text id="Duration: 60:00" fill="#8B8B8B" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="12" letter-spacing="0em"><tspan x="450" y="40.1016">Duration: {{ duration }}</tspan></text>
         </g>
         </g>
         <text id="victory_2" fill="#FAC015" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="16" letter-spacing="0em"><tspan x="81" y="28.9688">Victory</tspan></text>
@@ -69,6 +69,12 @@ export default {
                 return this.mode === 'matchmaking' ? 'Ranked' : 'Custom'
             } else return 'Custom'
         }
+    },
+    methods: {
+        openPlayerProfile(address) {
+            let routeData = this.$router.resolve({ name: 'Player Profile', params: { playerAddress: address } })
+            window.open(routeData.href, '_self')
+        },
     }
 }
 </script>

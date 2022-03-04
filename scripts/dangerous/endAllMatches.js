@@ -13,6 +13,5 @@
     await matches.deleteMany({winner: { $type: 10 }})
     await players.updateMany({activeMatch: {$exists: true}}, {$unset:{activeMatch:""}})
 
-    console.log("Done")
     process.exit()
 }())

@@ -14,6 +14,7 @@ module.exports = async (req, res) => {
    const playerDoc = (await players.find({address}).limit(1).toArray())[0];
    let inviteLink;
    if(playerDoc.accessKey === undefined) throw new Error("Player is in guest mode and needs access key to create match")
+   if(playerDoc.banned === true) throw new Error("Player is banned")
    if(playerDoc.activeMatch) throw new Error("player already in match")
    const timestamp = playerDoc.inviteLink.getTimestamp().getTime()
    if(Date.now() - timestamp > LINK_EXPIRY_DURATION) {
