@@ -125,10 +125,11 @@ function endTurn(matchDoc, playerNumber) {
     return newMatchDoc
 }
 
-async function dodgeMatch(matchDoc, matches) {
+async function dodgeMatch(matchDoc, matches, dodgerAddress, players) {
     const newMatchDoc = {...matchDoc}
     if(!newMatchDoc.dodged) {
         newMatchDoc.dodged = true
+        newMatchDoc.dodgedBy = dodgerAddress
         newMatchDoc.board = newMatchDoc.board.map(row => row.map(col => {
             if(!col.type) {
                 return col
@@ -141,10 +142,16 @@ async function dodgeMatch(matchDoc, matches) {
             col.hp = CONSTANTS.spaceshipsAttributes[col.type].hp
             return col
         }))
-    } 
-    await matches.updateOne({_id:matchDoc._id}, {
-        $set:newMatchDoc
-    })
+    }
+    
+    await Promise.all([
+        matches.updateOne({_id:matchDoc._id}, {
+            $set:newMatchDoc
+        }),
+        players.updateOne({address:dodgerAddress}, {
+            $push:{dodges: Date.now()}
+        })
+    ])
 
     return newMatchDoc
 }

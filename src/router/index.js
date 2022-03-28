@@ -57,4 +57,4 @@ router.afterEach((to, from, next) => {
   })
 })
 
-  export default router
+export default router

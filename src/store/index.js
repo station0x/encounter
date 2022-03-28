@@ -43,6 +43,7 @@ export default new Vuex.Store({
             if(!matchId) state.matchState = undefined
         },
         setMatchState(state, matchDoc) {
+            console.log(matchDoc)
             matchDoc._id =  matchDoc._id.toString()
             matchDoc.playerIs = state.address === matchDoc.player0 ? 0 : 1
             matchDoc.state = matchDoc.board
@@ -192,7 +193,7 @@ export default new Vuex.Store({
             const mongodb = realm.currentUser.mongoClient("mongodb-atlas");
             const matches = mongodb.db(process.env.VUE_APP_DB_NAME).collection("matches");
             const intialMatchDoc = await matches.findOne({_id:Realm.BSON.ObjectId(state.matchId)})
-
+            console.log(intialMatchDoc._id)
             commit("setMatchState", intialMatchDoc)
             commit("setPicking", intialMatchDoc.picking)
             commit('load')
