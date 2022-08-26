@@ -13,6 +13,8 @@
     "@metamask/detect-provider": "^1.2.0",
     "array-sort": "^1.0.0",
     "axios": "^0.24.0",
+    "blessed": "^0.1.81",
+    "blessed-contrib": "^4.11.0",
     "buefy": "^0.9.13",
     "core-js": "^3.6.5",
     "debounce": "^1.2.1",

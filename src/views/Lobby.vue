@@ -4,8 +4,7 @@
         <Loader v-model="loading"/>
       </div>
       <div v-if="!loading">
-        <GetAccess v-if="!$store.state.registered && !$store.state.matchState"/>
-        <CreateMatch v-if="$store.state.registered && !$store.state.matchState"/>
+        <CreateMatch v-show="$store.state.registered && !$store.state.matchState"/>
         <Match v-if="$store.state.matchState"/>
       </div>
 	</div>
@@ -14,7 +13,6 @@
 <script>
 import CreateMatch from '@/components/CreateMatch.vue'
 import Match from '@/components/Match.vue'
-import GetAccess from '@/components/GetAccess.vue'
 import Loader from '@/components/Loader.vue'
 import axios from 'axios'
 
@@ -28,26 +26,44 @@ export default {
   components: {
     CreateMatch,
     Match,
-    Loader,
-    GetAccess
+    Loader  
   },
   methods: {
     async checkAddressAccess() {
       try {
-        let res = await axios.get("/api/access/checkPlayerAccess", {
+        let res = await axios.get("/api/access/checkPlayerRegistered", {
             params: {
               signature: this.$store.state.signature,
-              key: this.accessKey
             }
           })
           if(res.data.response.success) {
             this.$store.commit('registerAddress', true)
           } else {
-            this.$store.commit('registerAddress', false)
+            this.registerAddress()
           }
         } catch(err) {
           this.$store.commit('registerAddress', false)
         }
+    },
+    async registerAddress() {
+      this.loading = true
+      try {
+          let res = await axios.get("/api/access/registerAddress", {
+              params: {
+                  signature: this.$store.state.signature,
+              }
+          })
+          this.$store.commit('registerAddress', true)
+      } catch(err) {
+          this.$buefy.toast.open({
+              duration: 5000,
+              message: err,
+              position: 'is-bottom',
+              type: 'is-danger'
+          })
+      } finally {
+          this.loading = false
+      }
     }
   },
   computed: {

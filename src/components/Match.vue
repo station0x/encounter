@@ -22,7 +22,7 @@
             :lastTurnTimestamp="$store.state.matchState.lastTurnTimestamp"
         />
         <div v-if="$store.state.matchState.picking && $store.state.matchState.dodged" class="afk">
-            <div style="position: absolute; bottom: 0; left: 0; right: 0">
+            <div :class="{'not-red': $store.state.matchState.dodgedBy !== this.$store.state.address}" style="position: absolute; bottom: 0; left: 0; right: 0">
                 <svg viewBox="0 0 1514 97" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path opacity="0.1" d="M0.70752 31.1064V23.5558H156.605C161.732 23.548 166.81 24.5541 171.547 26.516C176.284 28.4779 180.587 31.357 184.207 34.9878C187.502 38.3016 191.422 40.9288 195.739 42.7173C200.057 44.5058 204.686 45.4201 209.36 45.4072H457.764C462.437 45.4201 467.067 44.5058 471.384 42.7173C475.702 40.9288 479.622 38.3016 482.917 34.9878L491.895 26.0092C495.512 22.3739 499.814 19.4917 504.552 17.5294C509.29 15.5672 514.369 14.5638 519.497 14.5773H758.348V18.0389H761.377V14.5773H996.333C1001.46 14.5638 1006.54 15.5672 1011.28 17.5294C1016.02 19.4917 1020.32 22.3739 1023.93 26.0092L1032.91 34.9878C1036.21 38.3016 1040.13 40.9288 1044.45 42.7173C1048.76 44.5058 1053.39 45.4201 1058.07 45.4072H1306.47C1311.14 45.4201 1315.77 44.5058 1320.09 42.7173C1324.41 40.9288 1328.33 38.3016 1331.62 34.9878C1334.72 31.8815 1338.32 29.32 1342.27 27.4112H1354L1514.47 27.2294V97.3268H0.923869V31.1237L0.70752 31.1064Z" fill="#3C3C3C"/>
                     <path d="M757.716 14.7721H995.701C1000.83 14.7586 1005.91 15.762 1010.65 17.7243C1015.38 19.6865 1019.69 22.5686 1023.3 26.204L1032.28 35.1825C1035.58 38.4963 1039.5 41.1236 1043.81 42.9121C1048.13 44.7006 1052.76 45.6149 1057.43 45.602H1305.84C1310.51 45.6149 1315.14 44.7006 1319.46 42.9121C1323.78 41.1236 1327.7 38.4963 1330.99 35.1825C1334.61 31.5472 1338.91 28.665 1343.65 26.7028C1348.39 24.7405 1353.47 23.7371 1358.59 23.7506H1514.51V27.2122H1358.61C1353.94 27.1993 1349.31 28.1136 1344.99 29.9021C1340.67 31.6906 1336.75 34.3178 1333.46 37.6316C1329.84 41.2677 1325.54 44.1504 1320.8 46.1127C1316.06 48.075 1310.98 49.078 1305.86 49.0636H1057.45C1052.32 49.078 1047.24 48.075 1042.51 46.1127C1037.77 44.1504 1033.47 41.2677 1029.85 37.6316L1020.87 28.6531C1017.58 25.3393 1013.66 22.7121 1009.34 20.9236C1005.02 19.135 1000.39 18.2208 995.718 18.2337H757.733L757.716 14.7721Z" fill="url(#paint0_linear_289_23142)"/>
@@ -126,28 +126,28 @@
                         <g id="Group 311">
                         <g id="Group 310">
                         <g id="Group 293">
-                        <path id="Vector" d="M361.467 22.2657H359.045V18.0273H361.463L361.467 22.2657Z" fill="#DB0000"/>
-                        <path id="Vector_2" d="M365.1 22.2657H363.283V18.0273H365.096L365.1 22.2657Z" fill="#DB0000" fill-opacity="0.9"/>
-                        <path id="Vector_3" d="M369.338 22.2657H366.916V18.0273H369.334L369.338 22.2657Z" fill="#DB0000" fill-opacity="0.8"/>
-                        <path id="Vector_4" d="M372.971 22.2657H371.154V18.0273H372.968L372.971 22.2657Z" fill="#DB0000" fill-opacity="0.7"/>
-                        <path id="Vector_5" d="M377.209 22.2657H374.787V18.0273H377.205L377.209 22.2657Z" fill="#DB0000" fill-opacity="0.6"/>
-                        <path id="Vector_6" d="M380.842 22.2657H379.025V18.0273H380.839L380.842 22.2657Z" fill="#DB0000" fill-opacity="0.5"/>
-                        <path id="Vector_7" d="M385.081 22.2657H382.659V18.0273H385.076L385.081 22.2657Z" fill="#DB0000" fill-opacity="0.4"/>
-                        <path id="Vector_8" d="M388.713 22.2657H386.897V18.0273H388.71L388.713 22.2657Z" fill="#DB0000" fill-opacity="0.3"/>
-                        <path id="Vector_9" d="M392.952 22.2657H390.53V18.0273H392.947L392.952 22.2657Z" fill="#DB0000" fill-opacity="0.2"/>
-                        <path id="Vector_10" d="M396.584 22.2657H394.768V18.0273H396.581L396.584 22.2657Z" fill="#DB0000" fill-opacity="0.1"/>
+                        <path id="Vector" d="M361.467 22.2657H359.045V18.0273H361.463L361.467 22.2657Z" :fill="$store.state.matchState.dodgedBy === this.$store.state.address ? '#DB0000' : '#FBC115'"/>
+                        <path id="Vector_2" d="M365.1 22.2657H363.283V18.0273H365.096L365.1 22.2657Z" :fill="$store.state.matchState.dodgedBy === this.$store.state.address ? '#DB0000' : '#FBC115'" fill-opacity="0.9"/>
+                        <path id="Vector_3" d="M369.338 22.2657H366.916V18.0273H369.334L369.338 22.2657Z" :fill="$store.state.matchState.dodgedBy === this.$store.state.address ? '#DB0000' : '#FBC115'" fill-opacity="0.8"/>
+                        <path id="Vector_4" d="M372.971 22.2657H371.154V18.0273H372.968L372.971 22.2657Z" :fill="$store.state.matchState.dodgedBy === this.$store.state.address ? '#DB0000' : '#FBC115'" fill-opacity="0.7"/>
+                        <path id="Vector_5" d="M377.209 22.2657H374.787V18.0273H377.205L377.209 22.2657Z" :fill="$store.state.matchState.dodgedBy === this.$store.state.address ? '#DB0000' : '#FBC115'" fill-opacity="0.6"/>
+                        <path id="Vector_6" d="M380.842 22.2657H379.025V18.0273H380.839L380.842 22.2657Z" :fill="$store.state.matchState.dodgedBy === this.$store.state.address ? '#DB0000' : '#FBC115'" fill-opacity="0.5"/>
+                        <path id="Vector_7" d="M385.081 22.2657H382.659V18.0273H385.076L385.081 22.2657Z" :fill="$store.state.matchState.dodgedBy === this.$store.state.address ? '#DB0000' : '#FBC115'" fill-opacity="0.4"/>
+                        <path id="Vector_8" d="M388.713 22.2657H386.897V18.0273H388.71L388.713 22.2657Z" :fill="$store.state.matchState.dodgedBy === this.$store.state.address ? '#DB0000' : '#FBC115'" fill-opacity="0.3"/>
+                        <path id="Vector_9" d="M392.952 22.2657H390.53V18.0273H392.947L392.952 22.2657Z" :fill="$store.state.matchState.dodgedBy === this.$store.state.address ? '#DB0000' : '#FBC115'" fill-opacity="0.2"/>
+                        <path id="Vector_10" d="M396.584 22.2657H394.768V18.0273H396.581L396.584 22.2657Z" :fill="$store.state.matchState.dodgedBy === this.$store.state.address ? '#DB0000' : '#FBC115'" fill-opacity="0.1"/>
                         </g>
                         <g id="Group 294">
-                        <path id="Vector_11" d="M170.137 18.0278L172.559 18.0278L172.559 22.2661L170.141 22.2661L170.137 18.0278Z" fill="#DB0000"/>
-                        <path id="Vector_12" d="M166.504 18.0278L168.321 18.0278L168.321 22.2661L166.508 22.2661L166.504 18.0278Z" fill="#DB0000" fill-opacity="0.9"/>
-                        <path id="Vector_13" d="M162.266 18.0278L164.688 18.0278L164.688 22.2661L162.27 22.2661L162.266 18.0278Z" fill="#DB0000" fill-opacity="0.8"/>
-                        <path id="Vector_14" d="M158.633 18.0278L160.45 18.0278L160.45 22.2661L158.636 22.2661L158.633 18.0278Z" fill="#DB0000" fill-opacity="0.7"/>
-                        <path id="Vector_15" d="M154.395 18.0278L156.817 18.0278L156.817 22.2661L154.399 22.2661L154.395 18.0278Z" fill="#DB0000" fill-opacity="0.6"/>
-                        <path id="Vector_16" d="M150.762 18.0278L152.579 18.0278L152.579 22.2661L150.765 22.2661L150.762 18.0278Z" fill="#DB0000" fill-opacity="0.5"/>
-                        <path id="Vector_17" d="M146.523 18.0278L148.945 18.0278L148.945 22.2661L146.528 22.2661L146.523 18.0278Z" fill="#DB0000" fill-opacity="0.4"/>
-                        <path id="Vector_18" d="M142.891 18.0278L144.707 18.0278L144.707 22.2661L142.894 22.2661L142.891 18.0278Z" fill="#DB0000" fill-opacity="0.3"/>
-                        <path id="Vector_19" d="M138.652 18.0278L141.074 18.0278L141.074 22.2661L138.657 22.2661L138.652 18.0278Z" fill="#DB0000" fill-opacity="0.2"/>
-                        <path id="Vector_20" d="M135.02 18.0278L136.836 18.0278L136.836 22.2661L135.023 22.2661L135.02 18.0278Z" fill="#DB0000" fill-opacity="0.1"/>
+                        <path id="Vector_11" d="M170.137 18.0278L172.559 18.0278L172.559 22.2661L170.141 22.2661L170.137 18.0278Z" :fill="$store.state.matchState.dodgedBy === this.$store.state.address ? '#DB0000' : '#FBC115'"/>
+                        <path id="Vector_12" d="M166.504 18.0278L168.321 18.0278L168.321 22.2661L166.508 22.2661L166.504 18.0278Z" :fill="$store.state.matchState.dodgedBy === this.$store.state.address ? '#DB0000' : '#FBC115'" fill-opacity="0.9"/>
+                        <path id="Vector_13" d="M162.266 18.0278L164.688 18.0278L164.688 22.2661L162.27 22.2661L162.266 18.0278Z" :fill="$store.state.matchState.dodgedBy === this.$store.state.address ? '#DB0000' : '#FBC115'" fill-opacity="0.8"/>
+                        <path id="Vector_14" d="M158.633 18.0278L160.45 18.0278L160.45 22.2661L158.636 22.2661L158.633 18.0278Z" :fill="$store.state.matchState.dodgedBy === this.$store.state.address ? '#DB0000' : '#FBC115'" fill-opacity="0.7"/>
+                        <path id="Vector_15" d="M154.395 18.0278L156.817 18.0278L156.817 22.2661L154.399 22.2661L154.395 18.0278Z" :fill="$store.state.matchState.dodgedBy === this.$store.state.address ? '#DB0000' : '#FBC115'" fill-opacity="0.6"/>
+                        <path id="Vector_16" d="M150.762 18.0278L152.579 18.0278L152.579 22.2661L150.765 22.2661L150.762 18.0278Z" :fill="$store.state.matchState.dodgedBy === this.$store.state.address ? '#DB0000' : '#FBC115'" fill-opacity="0.5"/>
+                        <path id="Vector_17" d="M146.523 18.0278L148.945 18.0278L148.945 22.2661L146.528 22.2661L146.523 18.0278Z" :fill="$store.state.matchState.dodgedBy === this.$store.state.address ? '#DB0000' : '#FBC115'" fill-opacity="0.4"/>
+                        <path id="Vector_18" d="M142.891 18.0278L144.707 18.0278L144.707 22.2661L142.894 22.2661L142.891 18.0278Z" :fill="$store.state.matchState.dodgedBy === this.$store.state.address ? '#DB0000' : '#FBC115'" fill-opacity="0.3"/>
+                        <path id="Vector_19" d="M138.652 18.0278L141.074 18.0278L141.074 22.2661L138.657 22.2661L138.652 18.0278Z" :fill="$store.state.matchState.dodgedBy === this.$store.state.address ? '#DB0000' : '#FBC115'" fill-opacity="0.2"/>
+                        <path id="Vector_20" d="M135.02 18.0278L136.836 18.0278L136.836 22.2661L135.023 22.2661L135.02 18.0278Z" :fill="$store.state.matchState.dodgedBy === this.$store.state.address ? '#DB0000' : '#FBC115'" fill-opacity="0.1"/>
                         </g>
                         <g id="Group 309">
                         <g id="Group 292">
@@ -160,14 +160,18 @@
                         <path id="Vector_27" d="M2.55854 105.404L10.49 97.4596L10.4516 93.8716L0 104.341V181.649L11.2064 192.874V189.261L2.55854 180.598V105.404Z" fill="url(#paint6_linear_289_23253)"/>
                         <path id="Vector_28" d="M520.51 97.4593L528.442 105.404V180.598L519.794 189.261L519.768 192.913L531 181.649V104.341L520.523 93.8457L520.51 97.4593Z" fill="url(#paint7_linear_289_23253)"/>
                         </g>
-                        <text id="Match cancelled" fill="#DB0000" xml:space="preserve" style="white-space: pre" font-family="Anson" font-size="28" letter-spacing="0em"><tspan x="181.166" y="19.756">match cancelled</tspan></text>
+                        <text id="Match cancelled" :fill="$store.state.matchState.dodgedBy === this.$store.state.address ? '#DB0000' : '#FBC115'" xml:space="preserve" style="white-space: pre" font-family="Anson" font-size="28" letter-spacing="0em"><tspan x="181.166" y="19.756">match cancelled</tspan></text>
                         </g>
                         </g>
-                        <text id="You were disconnected from the match due to inactivity. make sure to stay active during matchmaking to avoid future penalties" fill="white" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="12" letter-spacing="0em"><tspan x="78.8848" y="83.6553">YOU WERE DISCONNECTED FROM THE MATCH DUE TO INACTIVITY.&#10;</tspan><tspan x="87.7559" y="99.6553">MAKE SURE TO STAY ACTIVE DURING MATCHMAKING TO AVOID </tspan><tspan x="211.746" y="115.655">FUTURE PENALTIES</tspan></text>
+                        <text id="You were disconnected from the match due to inactivity. make sure to stay active during matchmaking to avoid future penalties" fill="white" xml:space="preserve" style="white-space: pre" font-family="Roboto" font-size="12" letter-spacing="0em" x="50%" text-anchor="middle">
+                            <tspan x="50%" :y="$store.state.matchState.dodgedBy === this.$store.state.address ? '83.6553' : '105'">{{ $store.state.matchState.dodgedBy === this.$store.state.address ? 'YOU WERE DISCONNECTED FROM THE MATCH DUE TO INACTIVITY.' : 'YOU WERE DISCONNECTED FROM THE MATCH DUE TO ENEMY INACTIVITY.' }}&#10;</tspan>
+                            <tspan x="50%" y="99.6553"> {{ $store.state.matchState.dodgedBy === this.$store.state.address ? 'MAKE SURE TO STAY ACTIVE DURING MATCHMAKING TO AVOID' : '' }} </tspan>
+                            <tspan x="50%" y="115.655">{{ $store.state.matchState.dodgedBy === this.$store.state.address ? 'FUTURE PENALTIES' : '' }}</tspan>
+                        </text>
                         <g id="Group 287">
                         <g @click="continueBtn" style="cursor: pointer" id="Group 135">
                         <path id="Rectangle 5" d="M193.25 154.25L339.75 154.25L339.75 184.566L334.767 189.75L200.103 189.75L193.25 182.896L193.25 154.25Z" fill="url(#paint8_linear_289_23253)" stroke="#FBC115" stroke-width="0.5"/>
-                        <text id="Accept" fill="#FBC115" xml:space="preserve" style="white-space: pre; cursor: pointer" font-family="Anson" font-size="18" letter-spacing="0em"><tspan x="243.428" y="174.736">ACCEPT</tspan></text>
+                        <text id="Accept" fill="#FBC115" xml:space="preserve" style="white-space: pre; cursor: pointer" font-family="Anson" font-size="18" letter-spacing="0em" x="50%" text-anchor="middle" y="174.736">{{ $store.state.matchState.dodgedBy === this.$store.state.address ? 'ACCEPT' : 'NEW MATCH'}}</text>
                         </g>
                         </g>
                         </g>
@@ -923,6 +927,9 @@ export default {
     width: 60vw;
     max-width: 700px;
     margin-top: 25vh;
+}
+.not-red {
+    filter: grayscale(1);
 }
 @keyframes fadeInOpacity {
 	0% {

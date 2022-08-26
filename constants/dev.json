@@ -6,7 +6,7 @@
   ],
   "initFuel": 100,
   "turnTimeout": 9000,
-  "pickingTurnTimeout": 60000,
+  "pickingTurnTimeout": 30,
   "pickingInsertionsAllowedPerTurn": 9,
   "pickingRounds": 1, 
   "maxFuel": 1000,

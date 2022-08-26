@@ -47,7 +47,8 @@ module.exports = async (req, res) => {
 
     if(matchDoc.picking && playerInsertions < CONSTANTS.pickingInsertionsAllowedPerTurn) {
         // Dodge the game without penalty (for testing)
-        dodgeMatch(newMatchStats, matches)
+        let dodgerAddress = matchDoc.playerTurn === 0 ? matchDoc.player0 : player1
+        dodgeMatch(newMatchStats, matches, dodgerAddress, players)
         await Promise.all([
             players.updateOne({address:matchDoc.player0}, {
                 $unset:{activeMatch:""},
