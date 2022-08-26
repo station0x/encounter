@@ -1,5 +1,10 @@
 # encounter
 
+## Run app with serverless-functions
+```
+vercel dev
+```
+
 ## Project setup
 ```
 yarn install
