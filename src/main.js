@@ -21,7 +21,7 @@ Vue.use(VueAnime)
 Vue.config.productionTip = false
 
 Vue.use (Hotjar, {
-  id: '2744722',
+  id: '3169193',
   isProduction: true,
   snippetVersion: 6
 })

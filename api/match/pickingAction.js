@@ -8,6 +8,7 @@ const { isOccupied } = require('../../common/board')
 
 
 module.exports = async (req, res) => {
+    console.log('picking action fired')
     const client = await clientPromise;
     const db = client.db()
     const address = getAddress(req.query.signature)

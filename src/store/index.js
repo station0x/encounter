@@ -158,6 +158,7 @@ export default new Vuex.Store({
                     dispatch("startRealm")
                     dispatch("stopPolling")
                 }
+                console.log(res)
                 commit('setActiveMatchId', res.data.matchId)   
 
                 if(!res.data.matchId) {

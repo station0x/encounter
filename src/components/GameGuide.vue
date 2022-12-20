@@ -77,11 +77,13 @@ export default {
     margin: 10px;
     padding: 20px 15px;
     background: rgba(0,0,0,.3);
-     backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
     height: 470px;
     float: left;
 }
 .spaceship-grid {
+    overflow-x: hidden;
+    width: 960px;
     display: inline-block;
 }
 </style>

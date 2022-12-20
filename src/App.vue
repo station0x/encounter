@@ -41,7 +41,7 @@ export default {
         isPicking: 'isPicking'
     }),
 	isConnected() {
-        return this.$store.state.address && this.$store.state.address.length > 0? true : false
+        return this.$store.state.address && this.$store.state.address.length > 0 ? true : false
     },
 	isMatch() {
 		return this.$store.state.matchState === undefined ? false : true
@@ -79,5 +79,27 @@ body, html {
 	background: rgb(233, 48, 48);
 	padding: 4px;
 	text-align: center;
+}
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: none; 
+  border-radius: 10px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #FBC115;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #ffd452;;
+    border-radius: 16px;
+    cursor: pointer;
 }
 </style>

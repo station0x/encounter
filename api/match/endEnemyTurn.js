@@ -21,6 +21,8 @@ module.exports = async (req, res) => {
     if(matchDoc.player1 === address) playerNumber = 1
     if(playerNumber !== 0 && playerNumber !== 1) throw new Error("You are not a player in this match")
     if(playerNumber === matchDoc.playerTurn) throw new Error("Not enemy turn")
+    console.log('date now', Date.now())
+    console.log(matchDoc.lastTurnTimestamp + (CONSTANTS.turnTimeout * 1000))
     if(Date.now() <= matchDoc.lastTurnTimestamp + (CONSTANTS.turnTimeout * 1000)) throw new Error("Turn has not ended yet")
 
     let newMatchStats = {...matchDoc}
@@ -47,7 +49,7 @@ module.exports = async (req, res) => {
 
     if(matchDoc.picking && playerInsertions < CONSTANTS.pickingInsertionsAllowedPerTurn) {
         // Dodge the game without penalty (for testing)
-        let dodgerAddress = matchDoc.playerTurn === 0 ? matchDoc.player0 : player1
+        let dodgerAddress = matchDoc.playerTurn === 0 ? matchDoc.player0 : matchDoc.player1
         dodgeMatch(newMatchStats, matches, dodgerAddress, players)
         await Promise.all([
             players.updateOne({address:matchDoc.player0}, {

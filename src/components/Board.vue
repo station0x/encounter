@@ -1197,7 +1197,10 @@ input[placeholder], [placeholder], *[placeholder] {
 }
 section.tab-content {
 	height: 395px !important;
-    padding: 15px !important;
+    padding-top: 15px !important;
+	padding-bottom: 15px !important;
+	padding-right: 5px !important;
+	padding-left: 5px !important;
 }
 .b-tabs .tab-content {
 	height: 100% !important;

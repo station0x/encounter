@@ -102,7 +102,7 @@
                         </g>
                         <path v-if="!isMyTurn" id="my-countdown-holder" d="M427.437 540.009V542.768H420.54V540.009H427.437ZM437.301 540.009V542.768H430.404V540.009H437.301Z" fill="#515151"/>
                         <foreignObject v-if="isMyTurn" class="my-countdown" :x="countdown > 9? 413: 420" :y="insertionsAllowed === 0 ? 504 : 519" width="150" height="200">{{ countdown }}</foreignObject>
-                        <foreignObject @click="endTurn()" v-if="isMyTurn && insertionsAllowed === 0" class="my-countdown blinking-element" :x="413"  y="534" width="150" height="200" style="font-size: 16px; cursor: pointer">END</foreignObject>
+                        <foreignObject @click="endTurn()" v-if="isMyTurn && insertionsAllowed === 0" class="my-countdown cd-glow" :x="413"  y="534" width="150" height="200" style="font-size: 16px; cursor: pointer">END</foreignObject>
                         <g v-if="!isMyTurn" id="enemy-picking">
                         <g id="Group 276">
                         <g id="Group 93">
@@ -526,6 +526,7 @@ export default {
             }
         },
         insertSpaceship(spaceship, hexId, hex) {
+            console.log('inserting spaceship', spaceship, hexId, hex)
             if(this.isMyTurn && hex.type === undefined && this.insertionsAllowed > 0) {
                 let sameInserted = 0
                 this.myPicks.forEach((element) => {
@@ -832,6 +833,12 @@ export default {
     filter: grayscale(1);
     transform: scale(0.8);
     transform-origin: top;
+}
+.cd-glow {
+    background: transparent;
+    width: 33px;
+    height: 23px;
+    filter: drop-shadow(0em 0em 0.5em blue);
 }
 /* .clearfix:before,
 .clearfix:after {

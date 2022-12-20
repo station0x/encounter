@@ -14,7 +14,6 @@ const Leaderboard = () => import('@/views/Leaderboard')
 const NotFound = () => import('@/views/NotFound.vue')
 const Dashboard = () => import('@/views/admin/Dashboard.vue')
 
-
 Vue.use(VueRouter)
 
 const TITLE = ' | Station ZeroX: Encounter'

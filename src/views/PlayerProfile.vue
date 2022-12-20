@@ -315,6 +315,10 @@
                         </linearGradient>
                         </defs>
                     </svg>
+                    <center>
+                        <img class="sd-icon" width="50px" src="/scroll-down.svg"/>
+                        <h1>Scroll down for more matches</h1>
+                    </center>
                 </b-tab-item>
                 <b-tab-item v-if="$store.getters.isAdmin" label="Admin">
                     <h1 class="title">Ban</h1>
@@ -718,5 +722,9 @@ input[placeholder], [placeholder], *[placeholder] {
 progress.progress.is-small.is-yellow.is-squared {
     background-image: linear-gradient(to right, #FBC115 30%, transparent 30%);
     background-color: transparent;
+}
+
+.sd-icon {
+    margin-top: 20px;
 }
 </style>

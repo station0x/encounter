@@ -169,7 +169,7 @@
                             <tspan x="50%" y="115.655">{{ $store.state.matchState.dodgedBy === this.$store.state.address ? 'FUTURE PENALTIES' : '' }}</tspan>
                         </text>
                         <g id="Group 287">
-                        <g @click="continueBtn" style="cursor: pointer" id="Group 135">
+                        <g @click="continueBtn()" style="cursor: pointer" id="Group 135">
                         <path id="Rectangle 5" d="M193.25 154.25L339.75 154.25L339.75 184.566L334.767 189.75L200.103 189.75L193.25 182.896L193.25 154.25Z" fill="url(#paint8_linear_289_23253)" stroke="#FBC115" stroke-width="0.5"/>
                         <text id="Accept" fill="#FBC115" xml:space="preserve" style="white-space: pre; cursor: pointer" font-family="Anson" font-size="18" letter-spacing="0em" x="50%" text-anchor="middle" y="174.736">{{ $store.state.matchState.dodgedBy === this.$store.state.address ? 'ACCEPT' : 'NEW MATCH'}}</text>
                         </g>
@@ -684,7 +684,7 @@
             <center>
                 <img class="result-vector" :src="victory"/>
                     <svg width="210" viewBox="0 0 147 36" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-top: 55px">
-                        <g id="Group 287" @click="continueBtn" style="cursor: pointer">
+                        <g id="Group 287" @click="continueBtn()" style="cursor: pointer">
                         <g id="Group 135">
                         <path id="Rectangle 5" d="M0.250001 28.8964L0.250003 0.249998L146.75 0.250011L146.75 30.566L141.768 35.75L7.10355 35.75L0.250001 28.8964Z" fill="url(#paint0_linear_293_27083)" stroke="#FBC115" stroke-width="0.5"/>
                         </g>
@@ -711,7 +711,7 @@
             <center>
                 <img class="result-vector" :src="defeat"/>
                     <svg width="210" viewBox="0 0 147 36" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-top: 55px">
-                        <g id="Group 287" @click="continueBtn" style="cursor: pointer">
+                        <g id="Group 287" @click="continueBtn()" style="cursor: pointer">
                         <g id="Group 135">
                         <path id="Rectangle 5" d="M0.250001 28.8964L0.250003 0.249998L146.75 0.250011L146.75 30.566L141.768 35.75L7.10355 35.75L0.250001 28.8964Z" fill="url(#paint0_linear_293_27083)" stroke="#FBC115" stroke-width="0.5"/>
                         </g>
@@ -742,6 +742,7 @@ import PickingView from './PickingView.vue'
 import CONSTANTS from '../../constants'
 import ResourceItem from '@/components/ResourceItem.vue'
 import Rewards from '@/components/Rewards.vue'
+import axios from 'axios'
 
 export default {
     data() {
@@ -761,6 +762,15 @@ export default {
     methods: {
         async continueBtn () {
             this.loading = true
+            try {
+                await axios.get('/api/match/endStuckMatch', {
+                    params:{
+                        signature:this.$store.state.signature,
+                    }
+                })
+            } catch(err) {
+                console.log(err)
+            }
             await this.$store.dispatch("startPolling")
         },
         async claimBtn () {

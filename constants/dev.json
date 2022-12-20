@@ -5,9 +5,9 @@
     "0x203A62f2B684f1B06e52B8DC2c8B69AE44b40887"
   ],
   "initFuel": 100,
-  "turnTimeout": 9000,
-  "pickingTurnTimeout": 30,
-  "pickingInsertionsAllowedPerTurn": 9,
+  "turnTimeout": 45,
+  "pickingTurnTimeout": 900,
+  "pickingInsertionsAllowedPerTurn": 3,
   "pickingRounds": 1, 
   "maxFuel": 1000,
   "fuelPerTurn": 50,
