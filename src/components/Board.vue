@@ -8,8 +8,8 @@
 						<b-tabs v-model="tabsModel" @input="tabClicked" expanded class="logs-tabs">
 							<b-tab-item value="logs" >
 								<template #header>
-									<b-icon icon="information-outline"></b-icon>
-									<span> Game Log <b-tag v-if="newLogs !== 0" type="is-dark" rounded style="margin-left:6px"> {{ newLogs }} </b-tag> </span>
+									<b-icon size="is-small" icon="information-outline"></b-icon>
+									<span class="sidemenu-header"> Game Log <b-tag v-if="newLogs !== 0" type="is-dark" rounded style="margin-left:6px"> {{ newLogs }} </b-tag> </span>
 								</template>
 								<div id="action-logs">
 									<div v-for="(msg, key) in sortedLogs" :key="key">
@@ -24,8 +24,8 @@
 							</b-tab-item>
 							<b-tab-item value="chat" class="logs-tabs">
 								<template #header>
-									<b-icon icon="forum"></b-icon>
-									<span> Chat <b-tag v-if="newChats !== 0" type="is-link is-light" rounded style="margin-left:6px"> {{ newChats }} </b-tag> </span>
+									<b-icon size="is-small" icon="forum"></b-icon>
+									<span class="sidemenu-header"> Chat <b-tag v-if="newChats !== 0" type="is-link is-light" rounded style="margin-left:6px"> {{ newChats }} </b-tag> </span>
 								</template>
 								<div id="chat-logs">
 									<div v-for="(msg, key) in sortedChats" :key="key">
@@ -93,7 +93,7 @@
 					<h1 v-if="spaceshipStats.type !== 'base'" style="color: white; font-size: 17px; text-align: left; margin: 0px 20px 10px 20px;font-family: 'Roboto';">Abilities</h1>
 					<div v-if="spaceshipStats.type !== 'base'" class="info-card">
 							<img class="info-card-icon" :src="moveInfoIcon" />
-							<p class="info-card-move-number">1</p>
+							<p class="info-card-move-number" style="padding-left: 6px">  {{ spaceshipStats.moveCost }}</p>
 							<h1 class="info-card-text"> Move </h1>
 							<span :myTurn="!isMyTurn" class="info-card-energy">-{{spaceshipStats.moveCost}}</span>
 							<img :myTurn="!isMyTurn" class="info-card-energy-icon" src="/energy.svg" width="23px"/>
@@ -1183,6 +1183,7 @@ input[placeholder], [placeholder], *[placeholder] {
     height: 90%;
     padding-bottom: 10px;
 	overflow: auto;
+	padding-right: 5px;
 }
 #action-logs {
     height: 90%;
@@ -1197,14 +1198,14 @@ input[placeholder], [placeholder], *[placeholder] {
 }
 section.tab-content {
 	height: 395px !important;
-    padding-top: 15px !important;
-	padding-bottom: 15px !important;
-	padding-right: 5px !important;
-	padding-left: 5px !important;
+    padding-bottom: 30px;
 }
 .b-tabs .tab-content {
 	height: 100% !important;
 	padding-top: 0px !important;
+	padding-bottom: 30px;
+	padding-right: 0 !important;
+	padding-left: 15px !important;
 }
 .chat-message {
 	background: black;
@@ -1274,5 +1275,8 @@ a#\32 3-label:active {
 }
 a#\32 1-label:active {
 	border-bottom-color: #416BFF !important;
+}
+.sidemenu-header {
+	font-size: 15px !important;
 }
 </style>

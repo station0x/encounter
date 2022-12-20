@@ -80,6 +80,9 @@ body, html {
 	padding: 4px;
 	text-align: center;
 }
+::-webkit-scrollbar:horizontal {
+  display: none;
+}
 ::-webkit-scrollbar {
   width: 4px;
 }

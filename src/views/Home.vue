@@ -84,7 +84,7 @@ import GameGuide from '@/components/GameGuide.vue'
 export default {
   data() {
     return {
-
+      
     }
   },
   methods: {

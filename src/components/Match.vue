@@ -751,7 +751,8 @@ export default {
             victory: 'https://res.cloudinary.com/station0x/image/upload/v1645057034/encouter/victory_msdozp.svg',
             defeat: 'https://res.cloudinary.com/station0x/image/upload/v1645057036/encouter/defeat_nahvao.svg',
             loading: false,
-            CONSTANTS
+            CONSTANTS,
+            pingSfx: require('../assets/sfx/futuristic_ping.webm')
         }
     },
     components: {
@@ -792,6 +793,18 @@ export default {
         "$store.state.matchState" (newState, oldState) {
             if(newState.picking !== oldState.picking ) {
             }
+        }
+    },
+    created() {
+        if(this.$store.state.matchState.history.length === 0) {
+            var audio = new Audio(this.pingSfx)
+            try {
+                audio.play()
+            } catch(e) { console.log(e) }
+            document.title = "Lobby | Station ZeroX: Encounter" 
+            setInterval(() => {
+                document.title = 'NEW MATCH FOUND!'
+            }, 1000)
         }
     }
 }

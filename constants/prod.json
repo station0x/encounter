@@ -352,7 +352,7 @@
     "battlestar": {
       "attack": 25,
       "hp": 65,
-      "moveFuelCost": 2,
+      "moveFuelCost": 1,
       "attackFuelCost": 3,
       "desc": "Battlestar is tough and have moderately high damage. It's balanced. It have 25 attack damage, 65 hp and consumes 2 fuel per turn."
     },
