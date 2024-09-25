@@ -67,9 +67,13 @@
     },
     "rules": {}
   },
+  "engines": {
+    "node": "18.x"
+  },
   "browserslist": [
     "> 1%",
     "last 2 versions",
     "not dead"
   ]
+  
 }
