@@ -13,7 +13,7 @@ module.exports = async (req, res) => {
     const address = getAddress(req.query.signature)
     const matches = db.collection("matches")
     const players = db.collection("players")
-    const matchDoc = (await matches.find({_id:ObjectId(req.query.matchId)}).limit(1).toArray())[0];
+    const matchDoc = (await matches.find({_id: new ObjectId(req.query.matchId)}).limit(1).toArray())[0];    console.log(matchDoc)
     if(!matchDoc) throw new Error("Match does not exist")
     if(matchDoc.winner) throw new Error("Match already ended")
     let playerNumber;
